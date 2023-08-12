@@ -1,5 +1,11 @@
-﻿<MudNavMenu>
+﻿@using Squill.Services;
+@inject ProjectService ProjectService
+
+<MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
-    <MudNavLink Href="fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Fetch data</MudNavLink>
+    <MudNavLink Href="project/new" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">New Project</MudNavLink>
+    @foreach(var project in ProjectService.GetAllProjects())
+    {
+        <MudNavLink Href="@($"project/{project.Guid}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Workspaces">@project.Name</MudNavLink>
+    }
 </MudNavMenu>

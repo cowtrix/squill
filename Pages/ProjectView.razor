@@ -1,0 +1,114 @@
+﻿@page "/project/{Guid}"
+@page "/project/"
+@using Squill.Components
+@using Squill.Data;
+@using Squill.Services;
+
+@inject ProjectService ProjectService
+
+@if (!Session.IsSynchronized)
+{
+    <div>Synchronizing</div>
+}
+else
+{
+    <MudTabs @bind-ActivePanelIndex="_index" Border="true" Outlined="true" PanelClass="px-4 py-6" ApplyEffectsToContainer="true">
+        <ChildContent>
+            @foreach (var item in _tabs)
+            {
+                <MudTabPanel Text="@(item.NameOverride ?? item.Element.Name)" Tag="@item">
+                    @{
+                        var t = item.Element.GetType();
+                        switch (t.Name)
+                        {
+                            case nameof(Project):
+                                
+                                break;
+                        }
+                    }
+                </MudTabPanel>
+            }
+        </ChildContent>
+        <Header>
+            <MudButtonGroup>
+                <MudTooltip Text="Append a tab">
+                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@AddTabCallback" />
+                </MudTooltip>
+            </MudButtonGroup>
+        </Header>
+        <TabPanelHeader>
+            @{
+                var tab = context.Tag as TabView;
+                if (!tab.Sticky)
+                {
+                    <MudIconButton Class="ml-2 pa-1" Color="Color.Error" Icon="@Icons.Material.Filled.Remove" OnClick="(_) => RemoveTab(context)" />
+                }
+            }
+        </TabPanelHeader>
+    </MudTabs>
+}
+
+@code {
+    [Parameter]
+    public string Guid { get; set; }
+
+    public ProjectSession Session { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (System.Guid.TryParse(Guid, out var guid))
+        {
+            Session = await ProjectService.GetSession(guid);
+        }
+        if (!Session.IsSynchronized)
+        {
+            Session.TryStartLoad();
+            Session.OnSynchronized += OnSynchronized;
+        }
+        _tabs.Add(new TabView { Element = Session.Project, NameOverride = "Project", Id = System.Guid.NewGuid(), Sticky = true });
+    }
+
+    private void OnSynchronized(object? sender, EventArgs args)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private class TabView
+    {
+        public Guid Id { get; set; }
+        public bool Sticky { get; set; }
+        public string NameOverride { get; set; }
+        public IElement Element { get; set; }
+    }
+
+    private List<TabView> _tabs = new();
+    private int _index = 0;
+    private int? _nextIndex = null;
+
+    private void RemoveTab(MudTabPanel tabPanel)
+    {
+        var tab = (TabView)tabPanel.Tag;
+        if (tab != null)
+        {
+            _tabs.Remove(tab);
+        }
+    }
+
+    private void AddTabCallback()
+    {
+        var tabView = new TabView { Element = Session.Project, Id = System.Guid.NewGuid() };
+        _tabs.Add(tabView);
+        _nextIndex = _tabs.Count - 1;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (_nextIndex.HasValue == true)
+        {
+            _index = _nextIndex.Value;
+            _nextIndex = null;
+            StateHasChanged();
+        }
+    }
+
+}

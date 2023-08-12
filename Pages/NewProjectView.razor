@@ -1,0 +1,25 @@
+﻿@page "/project/new"
+
+@using Squill.Components
+@using Squill.Data;
+@using Squill.Services;
+
+@inject ProjectService ProjectService
+@inject NavigationManager NavManager
+
+<MudContainer Fixed="true">
+    <ProjectEditForm Project=m_newProject OnSubmit="CreateNewProject" />
+</MudContainer>
+
+@code {
+    private Project m_newProject = new Project { Guid = System.Guid.NewGuid(), Name = "Untitled Project" };
+
+    private async Task CreateNewProject()
+    {
+        if (m_newProject.IsConfigured)
+        {
+            await ProjectService.UpdateProject(m_newProject);
+            NavManager.NavigateTo($"/project/{m_newProject.Guid}");
+        }
+    }
+}

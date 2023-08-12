@@ -1,0 +1,30 @@
+﻿@using Squill.Data;
+
+<MudItem>
+    <MudPaper Class="pa-4">
+        <MudForm @ref="m_form">
+            <MudStack>
+                <MudText>@Project.Guid</MudText>
+                <MudTextField Label="Name" @bind-Value=Project.Name />
+                <MudTextField Label="URL" @bind-Value=Project.RepositoryURL />
+                <MudTextField Label="Token" @bind-Value=Project.RepositoryToken />
+                <MudButton OnClick="OnSubmitForm">Submit</MudButton>
+            </MudStack>
+        </MudForm>
+    </MudPaper>
+</MudItem>
+
+@code {
+    [Parameter]
+    public Project Project { get; set; }
+
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+
+    private MudForm m_form;
+
+    private async Task OnSubmitForm()
+    {
+        await OnSubmit.InvokeAsync();
+    }
+}
