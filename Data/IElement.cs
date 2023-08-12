@@ -2,6 +2,11 @@
 
 public interface IElement
 {
-	Guid Guid { get; set; }
-	string Name { get; set; }
+	Guid Guid { get; }
+	string Name { get; }
+}
+
+public interface IContainerElement : IElement
+{
+	IEnumerable<Guid> Children { get; }
 }

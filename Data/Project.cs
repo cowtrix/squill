@@ -2,7 +2,7 @@
 
 namespace Squill.Data;
 
-public class Project : IElement
+public class Project
 {
     public static string DataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "squill_data");
 

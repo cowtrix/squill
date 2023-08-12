@@ -14,28 +14,57 @@ else
 {
     <MudTabs @bind-ActivePanelIndex="_index" Border="true" Outlined="true" PanelClass="px-4 py-6" ApplyEffectsToContainer="true">
         <ChildContent>
-            @foreach (var item in _tabs)
+            @foreach (var tab in _tabs)
             {
-                <MudTabPanel Text="@(item.NameOverride ?? item.Element.Name)" Tag="@item">
+                <MudTabPanel Text="@(tab.NameOverride ?? tab.Element.Name)" Tag="@tab">
                     @{
-                        var t = item.Element.GetType();
-                        switch (t.Name)
+                        if (tab.Element == null)
                         {
-                            case nameof(Project):
-                                
-                                break;
+                            <MudGrid>
+                                @foreach (var element in Session.Elements)
+                                {
+                                    <MudCard>
+                                        <MudCardContent>
+                                            <MudText>@element.Name</MudText>
+                                        </MudCardContent>
+                                        <MudCardActions>
+                                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => tab.Element = element">Open</MudButton>
+                                        </MudCardActions>
+                                    </MudCard>
+                                }
+                                <MudCard>
+                                    <MudCardContent>
+                                        <MudText>Add New Element</MudText>
+                                    </MudCardContent>
+                                    <MudCardActions>
+                                        <MudSelect T="string" AdornmentIcon="@Icons.Material.Filled.Add" AnchorOrigin="Origin.BottomCenter">
+                                            @foreach(var elementType in )
+                                        </MudSelect>
+                                    </MudCardActions>
+                                </MudCard>
+                            </MudGrid>
+                        }
+                        else
+                        {
+                            var t = tab.Element.GetType();
+                            switch (t.Name)
+                            {
+                                case nameof(Project):
+
+                                    break;
+                            }
                         }
                     }
                 </MudTabPanel>
             }
         </ChildContent>
-        <Header>
-            <MudButtonGroup>
-                <MudTooltip Text="Append a tab">
-                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@AddTabCallback" />
-                </MudTooltip>
-            </MudButtonGroup>
-        </Header>
+        @*<Header>
+    <MudButtonGroup>
+    <MudTooltip Text="Append a tab">
+    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@AddTabCallback" />
+    </MudTooltip>
+    </MudButtonGroup>
+    </Header>*@
         <TabPanelHeader>
             @{
                 var tab = context.Tag as TabView;
@@ -65,7 +94,7 @@ else
             Session.TryStartLoad();
             Session.OnSynchronized += OnSynchronized;
         }
-        _tabs.Add(new TabView { Element = Session.Project, NameOverride = "Project", Id = System.Guid.NewGuid(), Sticky = true });
+        _tabs.Add(new TabView { Element = null, NameOverride = "Project", Id = System.Guid.NewGuid(), Sticky = true });
     }
 
     private void OnSynchronized(object? sender, EventArgs args)
@@ -94,9 +123,9 @@ else
         }
     }
 
-    private void AddTabCallback()
+    private void AddTab(IElement element)
     {
-        var tabView = new TabView { Element = Session.Project, Id = System.Guid.NewGuid() };
+        var tabView = new TabView { Element = element, Id = System.Guid.NewGuid() };
         _tabs.Add(tabView);
         _nextIndex = _tabs.Count - 1;
     }
