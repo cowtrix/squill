@@ -1,0 +1,41 @@
+﻿@inherits EditorBase<Manuscript>
+
+@using Squill.Data;
+
+<MudStack>
+    @foreach (var chapterGuid in Element.Chapters)
+    {
+        var chapter = Session.GetMetaData(Guid.Parse(chapterGuid));        
+        if (chapter != null)
+        {
+            chapter.Attributes.TryGetValue(Chapter.WORD_COUNT_ATTRIB_KEY, out var wordCount);
+            <MudItem>
+                <MudStack Row="true">
+                    <span>@chapter.Name</span>
+                    <span>@(wordCount ?? "0") Words</span>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => TabManager.AddTab(chapter)" Style="padding:0;" />
+                </MudStack>
+            </MudItem>
+        }
+        else
+        {
+            <MudItem>
+                <MudText Color="Color.Error">Bad Element Ref: @chapterGuid</MudText>
+            </MudItem>
+        }
+    }
+    <MudDivider />
+    <MudButton OnClick="AddChapter"><MudIcon Icon="@Icons.Material.Filled.Add" />New Chapter</MudButton>
+</MudStack>
+
+@code {
+    private async Task AddChapter()
+    {
+        var newChapter = await Session.CreateNewElement(typeof(Chapter)) as IElementComponent;
+        newChapter.Owner = Element.Guid.ToString();
+        await Session.UpdateElement(newChapter);
+        Element.Chapters.Add(newChapter.Guid.ToString());
+        await Invalidate();
+    }
+}

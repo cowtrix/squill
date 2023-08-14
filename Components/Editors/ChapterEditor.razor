@@ -1,0 +1,38 @@
+﻿@inherits EditorBase<Chapter>
+
+@using Squill.Data;
+
+@{
+    
+}
+
+<MudItem>
+    @if(!Guid.TryParse(Element.Owner, out var ownerGuid))
+    {
+        <span>Chapter not owned by any manuscript.</span>
+    }
+    else
+    {
+        var ownerMeta = Session.GetMetaData(ownerGuid);
+        if(ownerMeta == null)
+        {
+            <span>Bad chapter link, please reestablish.</span>
+        }
+        else
+        {
+            <span>Chapter of @ownerMeta.Name</span>
+        }
+    }
+    <EditForm EditContext="m_context">
+        <MarkdownEditor @bind-Value=Element.Content />
+    </EditForm>
+</MudItem>
+
+@code {
+    private EditContext m_context;
+
+    protected override void OnInitialized()
+    {
+        m_context = new EditContext(Element);
+    }
+}

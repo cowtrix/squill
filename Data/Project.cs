@@ -1,10 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using Squill.Services;
+using System.Text.Json.Serialization;
 
 namespace Squill.Data;
 
 public class Project
 {
-    public static string DataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "squill_data");
+    public string DataDir => Path.Combine(ProjectService.DataDirectory, Guid.ToString());
 
     public Guid Guid { get; set; }
     public string Name { get; set; }

@@ -1,5 +1,6 @@
 ﻿using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
+using System.Text.Json;
 
 namespace Squill.Data;
 
@@ -8,52 +9,53 @@ public class ProjectSession
     public ProjectSession(Project project)
     {
         Project = project;
+        m_factory = new ElementFactory(this);
+        m_elementCache = new Dictionary<Guid, IElement>();
     }
 
     public const string MASTER_NAME = "squill_master";
 
     public Project Project { get; set; }
-    public IEnumerable<IElement> Elements => m_elements.Values;
+    public IEnumerable<ElementMetaData> ElementMeta => m_elementMetadata.Values;
     public bool IsSynchronized { get; set; }
     public event EventHandler OnSynchronized;
-
-    private string RepositoryPath => Path.Combine(Project.DataDir, Project.Guid.ToString());
 
     private Repository m_repository;
     private Task? m_workerTask;
     private ElementFactory m_factory;
-    private Dictionary<Guid, IElement> m_elements;
+    private Dictionary<Guid, ElementMetaData> m_elementMetadata;
+    private Dictionary<Guid, IElement> m_elementCache;
 
-    public void TryStartLoad()
+    public void TryStartSynchronize()
     {
         if (m_workerTask != null)
         {
             return;
         }
-        m_workerTask = new Task(async () => await LoadAsync());
+        m_workerTask = new Task(async () => await SynchronizeAsync());
         m_workerTask.Start();
     }
 
-    private async Task LoadAsync()
+    private async Task SynchronizeAsync()
     {
         if (!Project.IsConfigured)
         {
             throw new Exception("Project not configured");
         }
-        if (!Directory.Exists(Project.GetPath()))
+        if (!Directory.Exists(Project.DataDir))
         {
-            Repository.Clone(Project.RepositoryURL, RepositoryPath, new CloneOptions { CredentialsProvider = GetCredentials });
+            Repository.Clone(Project.RepositoryURL, Project.DataDir, new CloneOptions { CredentialsProvider = GetCredentials });
         }
-        m_repository = new Repository(RepositoryPath);
+        m_repository = new Repository(Project.DataDir);
         if (!m_repository.Branches.Any(b => b.FriendlyName == MASTER_NAME))
         {
             m_repository.CreateBranch(MASTER_NAME);
         }
         Commands.Checkout(m_repository, m_repository.Branches.Single(b => b.FriendlyName == MASTER_NAME));
-
-        m_elements = Directory.GetFiles(RepositoryPath, "*.meta", SearchOption.AllDirectories)
-            .Select(p => m_factory.GetElement(p))
-            .ToDictionary(e => e.Guid, e => e);
+        
+        m_elementMetadata = Directory.GetFiles(Project.DataDir, "*.meta", SearchOption.AllDirectories)
+            .Select(p => m_factory.GetMetaData(p))
+            .ToDictionary(e => Guid.Parse(e.Guid), e => e);
 
         IsSynchronized = true;
         OnSynchronized?.Invoke(this, null);
@@ -66,6 +68,7 @@ public class ProjectSession
         {
             throw new Exception();
         }
+        Commands.Stage(m_repository, Directory.GetFiles(Project.DataDir));
     }
 
     private Credentials GetCredentials(string url, string usernameFromUrl, SupportedCredentialTypes types)
@@ -75,5 +78,58 @@ public class ProjectSession
             throw new Exception();
         }
         return new UsernamePasswordCredentials { Username = "cowtrix", Password = Project.RepositoryToken };
+    }
+
+    public async Task<IElement> CreateNewElement(Type t)
+    {
+        if (!Project.IsConfigured || !IsSynchronized)
+        {
+            throw new Exception();
+        }
+        var newElement = m_factory.CreateNewElement(t);
+        m_elementMetadata[newElement.Item2.Guid] = newElement.Item1;
+        return newElement.Item2;
+    }
+
+    public T GetElement<T>(ElementMetaData metaData) where T: class
+    {
+        if(!m_elementCache.TryGetValue(Guid.Parse(metaData.Guid), out var ele))
+        {
+            ele = m_factory.GetElementAtPath(metaData.Path);
+            m_elementCache[ele.Guid] = ele;
+        }
+        return (T)ele;
+    }
+
+    public ElementMetaData? GetMetaData(Guid guid)
+    {
+        if(!m_elementMetadata.TryGetValue(guid, out var ele))
+        {
+            return null;
+        }
+        return ele;
+    }
+
+    public async Task UpdateElement(IElement element)
+    {
+        var meta = GetMetaData(element.Guid);
+        meta.LastModified = DateTimeOffset.UtcNow.Ticks;
+        await File.WriteAllTextAsync(meta.Path, JsonSerializer.Serialize(element, element.GetType()));
+        await File.WriteAllTextAsync(meta.Path + ".meta", JsonSerializer.Serialize(meta));
+    }
+
+    public async Task RenameElement(ElementMetaData meta, string newName)
+    {
+        if(meta.Name == newName)
+        {
+            return;
+        }
+        var newPath = Path.Combine(Path.GetDirectoryName(meta.Path), newName + Path.GetExtension(meta.Path));
+        File.Copy(meta.Path, newPath);
+        File.Delete(meta.Path);
+        File.Delete(meta.Path + ".meta");
+        meta.Path = newPath;
+        meta.Name = newName;
+        await File.WriteAllTextAsync(meta.Path + ".meta", JsonSerializer.Serialize(meta));
     }
 }

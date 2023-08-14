@@ -7,9 +7,10 @@ namespace Squill.Services;
 
 public class ProjectService
 {
+    public static string DataDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "squill_data");
     private static Dictionary<Guid, ProjectSession> m_activeSessions = new Dictionary<Guid, ProjectSession>();
 
-    private static string GetMetaPath(string filename) => Path.Combine(Project.DataDir, filename);
+    private static string GetProjectMetaPath(string filename) => Path.Combine(DataDirectory, filename);
 
     public async Task<ProjectSession> GetSession(Guid guid)
     {
@@ -25,7 +26,7 @@ public class ProjectService
 
     public async Task<Project> GetProject(Guid guid)
     {
-        var path = GetMetaPath($"{guid}.meta");
+        var path = GetProjectMetaPath($"{guid}.meta");
         if (!File.Exists(path))
         {
             var newProj = new Project
@@ -41,16 +42,16 @@ public class ProjectService
 
     public async Task UpdateProject(Project project)
     {
-        File.WriteAllText(GetMetaPath($"{project.Guid}.meta"), JsonSerializer.Serialize(project));
+        File.WriteAllText(GetProjectMetaPath($"{project.Guid}.meta"), JsonSerializer.Serialize(project));
     }
 
     public IEnumerable<Project> GetAllProjects()
     {
-        if (!Directory.Exists(Project.DataDir))
+        if (!Directory.Exists(DataDirectory))
         {
-            Directory.CreateDirectory(Project.DataDir);
+            Directory.CreateDirectory(DataDirectory);
         }
-        var allProj = Directory.GetFiles(Project.DataDir, "*.meta");
+        var allProj = Directory.GetFiles(DataDirectory, "*.meta");
         return allProj
             .Select(p => JsonSerializer.Deserialize<Project>(File.ReadAllText(p)))
             .Where(p => p != null);

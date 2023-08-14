@@ -1,0 +1,35 @@
+﻿@using Squill.Data;
+
+<MudItem>
+    <MudPaper Width="200px" Height="150px">
+        <MudCardContent>
+            <MudText>Add New Element</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudSelect T="Type" AdornmentIcon="@Icons.Material.Filled.Add" AnchorOrigin="Origin.BottomCenter" SelectedValuesChanged="OnSelected">
+                @foreach (var elementType in ElementFactory.SupportedTypes)
+                {
+                    <MudSelectItem Value="elementType">@elementType.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudCardActions>
+    </MudPaper>
+</MudItem>
+
+@code {
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    [Parameter]
+    public EventCallback<IElement> OnElementCreated { get; set; }
+
+    private async Task OnSelected(IEnumerable<Type> types)
+    {
+        if (types.Count() > 1)
+        {
+            throw new Exception();
+        }
+        var newElement = await Session.CreateNewElement(types.Single());
+        await OnElementCreated.InvokeAsync(newElement);
+    }
+}

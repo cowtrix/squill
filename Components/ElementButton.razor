@@ -1,0 +1,20 @@
+﻿@using Squill.Data;
+
+<MudItem>
+    <MudPaper Width="200px" Height="150px">
+        <MudCardContent>
+            <MudText>@Element.Name</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="async (p) => await OnClick.InvokeAsync(Element)">Open</MudButton>
+        </MudCardActions>
+    </MudPaper>
+</MudItem>
+
+@code {
+    [Parameter]
+    public ElementMetaData Element { get; set; }
+
+    [Parameter]
+    public EventCallback<ElementMetaData> OnClick { get; set; }
+}
