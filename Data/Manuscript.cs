@@ -20,6 +20,7 @@ namespace Squill.Data
     public class Chapter : ElementComponent
     {
         public const string WORD_COUNT_ATTRIB_KEY = "word_count";
+        public const string PARENT_INDEX_ATTRIB_KEY = "index";
 
         public string Content { get; set; }
 

@@ -1,0 +1,77 @@
+﻿
+<div class="textarea-container">
+    <div class="page">
+        @for (var i = 0; i < m_paragraphs.Count; i++)
+        {
+            var paragraph = m_paragraphs[i];
+            <ParagraphDrawer Content=@paragraph.Content Index=i OnEnterPressed=Enter Focus=paragraph.TakeFocus />
+            paragraph.TakeFocus = false;
+        }
+    </div>
+</div>
+
+@code {
+    public class Paragraph
+    {
+        public bool TakeFocus { get; set; }
+        public string Content { get; set; }
+
+        public Paragraph(string content, bool takeFocus = false)
+        {
+            Content = content.Trim();
+            TakeFocus = takeFocus;
+        }
+    }
+
+    [Parameter]
+    public string Value
+    {
+        get
+        {
+            return string.Join(Environment.NewLine, m_paragraphs.Select(p => p.Content));
+        }
+        set
+        {
+            m_paragraphs = value.Split('\n', StringSplitOptions.TrimEntries)
+                .Select(p => new Paragraph(p)).ToList();
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    private string m_lastValue { get; set; }
+    private Task m_autosaveThread { get; set; }
+    private List<Paragraph> m_paragraphs;
+
+    protected override void OnInitialized()
+    {
+        m_lastValue = Value;
+        m_autosaveThread = new Task(async () => await AutoSave());
+        m_autosaveThread.Start();
+
+        var paragraphs = Value.Split('\n', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+    }
+
+    public void Enter(ParagraphDrawer paragraph)
+    {
+        m_paragraphs[paragraph.Index].Content = m_paragraphs[paragraph.Index].Content.Trim();
+        m_paragraphs.Insert(paragraph.Index + 1, new Paragraph(string.Empty, true));
+        StateHasChanged();
+    }
+
+    private async Task AutoSave()
+    {
+        while (true)
+        {
+            await Task.Delay(TimeSpan.FromMinutes(1));
+            if (m_lastValue == Value)
+            {
+                continue;
+            }
+            await InvokeAsync(async () => await ValueChanged.InvokeAsync(Value));
+            m_lastValue = Value;
+        }
+    }
+}

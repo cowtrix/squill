@@ -1,0 +1,38 @@
+﻿<InputTextArea @onkeydown="@(async (e) => await Enter(e))" @ref=Input class="markdown-textfield" @bind-Value=Content />
+
+@code {
+
+    [CascadingParameter]
+    public MarkdownEditor Editor { get; set; }
+
+    [Parameter]
+    public string Content { get; set; }
+
+    [Parameter]
+    public int Index { get; set; }
+
+    [Parameter]
+    public bool Focus { get; set; }
+
+    [Parameter]
+    public EventCallback<ParagraphDrawer> OnEnterPressed { get; set; }
+
+    public InputTextArea Input { get; set; }
+
+    public async Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            await OnEnterPressed.InvokeAsync(this);
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Focus)
+        {
+            await Input.Element.Value.FocusAsync();
+        }
+    }
+}
