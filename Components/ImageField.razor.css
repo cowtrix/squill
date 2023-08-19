@@ -1,0 +1,17 @@
+﻿.img-button
+{
+    display: flex;
+    position: relative;
+    align-items: center;
+    background-color: #000000;
+    border-radius: 5px;
+    width: 10rem;
+}
+
+::deep.img-button svg {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}

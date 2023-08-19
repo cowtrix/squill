@@ -1,20 +1,18 @@
 ﻿@using Squill.Data;
 
-<MudItem>
-    <MudPaper Width="200px" Height="150px">
-        <MudCardContent>
-            <MudText>Add New Element</MudText>
-        </MudCardContent>
-        <MudCardActions>
-            <MudSelect T="Type" AdornmentIcon="@Icons.Material.Filled.Add" AnchorOrigin="Origin.BottomCenter" SelectedValuesChanged="OnSelected">
-                @foreach (var elementType in ElementFactory.SupportedTypes)
-                {
-                    <MudSelectItem Value="elementType">@elementType.Name</MudSelectItem>
-                }
-            </MudSelect>
-        </MudCardActions>
-    </MudPaper>
-</MudItem>
+@*<MudSelect T="Type" AdornmentIcon="@Icons.Material.Filled.Add" AnchorOrigin="Origin.BottomRight" SelectedValuesChanged="OnSelected" Style="max-width:1.5rem;">
+    @foreach (var elementType in ElementFactory.SupportedTypes)
+    {
+        <MudSelectItem Value="elementType">@elementType.Name</MudSelectItem>
+    }
+</MudSelect>*@
+
+<MudMenu Icon="@Icons.Material.Filled.Add">
+    @foreach (var elementType in ElementFactory.SupportedTypes)
+    {
+        <MudMenuItem OnClick="async () => await OnSelected(elementType)">@elementType.Name</MudMenuItem>
+    }
+</MudMenu>
 
 @code {
     [Parameter]
@@ -23,13 +21,9 @@
     [Parameter]
     public EventCallback<IElement> OnElementCreated { get; set; }
 
-    private async Task OnSelected(IEnumerable<Type> types)
+    private async Task OnSelected(Type type)
     {
-        if (types.Count() > 1)
-        {
-            throw new Exception();
-        }
-        var newElement = await Session.CreateNewElement(types.Single());
+        var newElement = await Session.CreateNewElement(type);
         await OnElementCreated.InvokeAsync(newElement);
     }
 }

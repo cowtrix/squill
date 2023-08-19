@@ -1,0 +1,20 @@
+﻿@inherits MudInput<string>
+
+<div class="img-button" @onclick=Click>
+    @if (!string.IsNullOrEmpty(Value))
+    {
+        <MudImage Src="@Value" Width="2" />
+    }
+    else
+    {
+        <MudIcon Icon="@Icons.Material.Filled.Image" />
+    }
+    <MudIcon Icon="@Icons.Material.Filled.Add" Class="fade-hover" />
+</div>
+
+@code {
+    public void Click()
+    {
+
+    }
+}

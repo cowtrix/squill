@@ -7,7 +7,7 @@ namespace Squill.Data;
 public class ElementMetaData
 {
     public string Guid { get; set; }
-    public string Name { get; set; }    
+    public string Name { get; set; }
     public string Type { get; set; }
     public long LastModified { get; set; }
     public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
@@ -18,7 +18,12 @@ public class ElementMetaData
 
 public class ElementFactory
 {
-    public static IEnumerable<Type> SupportedTypes => new[] { typeof(Manuscript), typeof(Chapter) };
+    public static IEnumerable<Type> SupportedTypes => new[]
+    {
+        typeof(Manuscript),
+        typeof(Chapter),
+        typeof(Character)
+    };
 
     private ProjectSession m_session;
     public ElementFactory(ProjectSession session)

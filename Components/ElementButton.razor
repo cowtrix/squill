@@ -1,20 +1,28 @@
 ﻿@using Squill.Data;
 
+@{
+    var type = Type.GetType(Element.Type);
+}
+
 <MudItem>
-    <MudPaper Width="200px" Height="150px">
+    <MudPaper Width="250px" Height="150px">
         <MudCardContent>
-            <MudText>@Element.Name</MudText>
+            <MudStack Row=true>
+                <MudIcon Icon="@type?.GetIcon()" />
+                <MudText>@Element.Name</MudText>
+            </MudStack>
+            <MudText Typo="Typo.subtitle2">@(type?.GetName())</MudText>
         </MudCardContent>
         <MudCardActions>
-            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="async (p) => await OnClick.InvokeAsync(Element)">Open</MudButton>
+            <MudIconButton OnClick="() => TabManager.AddTab(Element)" Icon="@Icons.Material.Filled.OpenInNew" />
         </MudCardActions>
     </MudPaper>
 </MudItem>
 
-@code {
+    @code {
     [Parameter]
     public ElementMetaData Element { get; set; }
 
     [Parameter]
-    public EventCallback<ElementMetaData> OnClick { get; set; }
+    public Squill.Components.TabManager TabManager { get; set; }
 }

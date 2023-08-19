@@ -39,6 +39,9 @@ else
                                     case nameof(Chapter):
                                         <ChapterEditor Element="@(Session.GetElement<Chapter>(tab.Target))" Session="Session" TabManager="TabManager" />
                                         break;
+                                    case nameof(Character):
+                                        <CharacterEditor Element="@(Session.GetElement<Character>(tab.Target))" Session="Session" TabManager="TabManager" />
+                                        break;
                                 }
                             }
                         }
@@ -61,13 +64,16 @@ else
                         {
                             <MudStack Class="tab-rename" Row="true" Style="max-height: 2rem;">
                                 <MudTextField @bind-Value=tab.NameOverride Style="margin: 0;" />
-                                <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Check" OnClick="async (_) => await TabManager.FinishRename(context)" />
+                                <MudIconButton Size=Size.Small Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Check" OnClick="async (_) => await TabManager.FinishRename(context)" />
                             </MudStack>
                         }
                         else
                         {
-                            <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Edit" OnClick="(_) => TabManager.BeginRename(context)" Size="Size.Small" />
-                            <MudIconButton Class="ml-2 pa-1" Color="Color.Error" Icon="@Icons.Material.Filled.Remove" OnClick="(_) => TabManager.RemoveTab(context)" Size="Size.Small" />
+                            <div class="fade-hover">
+                                <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Edit" OnClick="(_) => TabManager.BeginRename(context)" Size="Size.Small" />
+                                <MudIconButton Class="ml-2 pa-1" Color="Color.Error" Icon="@Icons.Material.Filled.Remove" OnClick="(_) => TabManager.RemoveTab(context)" Size="Size.Small" />
+
+                            </div>
                         }
                     }
                 }

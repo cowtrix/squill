@@ -1,0 +1,19 @@
+﻿body {
+}
+.fade-hover {
+    opacity: 0;
+    transition: opacity ease-in-out .25s;
+}
+
+    .fade-hover:hover {
+        opacity: 1;
+    }
+
+.count-pill {
+    background-color: var(--mud-palette-text-primary);
+    color: black;
+    margin-left: .4rem;
+    font-size: .75rem;
+    padding: .1rem .25rem .1rem .25rem;
+    border-radius: 1rem;
+}

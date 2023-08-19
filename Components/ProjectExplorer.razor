@@ -1,25 +1,56 @@
 ﻿@using Squill.Data;
 
+@{
+    var elements = Session.ElementMeta as IEnumerable<ElementMetaData>;
+    switch (m_sortMode)
+    {
+        case SortMode.DateModified:
+            elements = elements.OrderBy(e => e.LastModified);
+            break;
+        case SortMode.Alphabetical:
+            elements = elements.OrderBy(e => e.Name);
+            break;
+        case SortMode.Type:
+            elements = elements.OrderBy(e => e.Type);
+            break;
+    }
+}
+
 <MudToolBar>
-    <MudChipSet Filter=true MultiSelection=true @bind-SelectedChips=m_currentChips>
-        @foreach (var type in ElementFactory.SupportedTypes)
-        {
-            <MudChip Icon="@type.GetIcon()" Color="@type.GetColor()" Tag="type">@type.GetName() @Session.GetTypeCount(type)</MudChip>
-        }
-    </MudChipSet>
+    <MudStack Row=true Style="width: 100%">
+        <MudChipSet Filter=true MultiSelection=true @bind-SelectedChips=m_currentChips>
+            @foreach (var type in ElementFactory.SupportedTypes)
+            {
+                <MudChip Icon="@type.GetIcon()" Color="@type.GetColor()" Tag="type">@type.GetName() <span class="count-pill">@Session.GetTypeCount(type)</span></MudChip>
+            }
+        </MudChipSet>
+        <MudSpacer />
+        <MudSelect Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Sort" @bind-Value=m_sortMode Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
+            <MudSelectItem Value="SortMode.DateModified">Date Modified</MudSelectItem>
+            <MudSelectItem Value="SortMode.Alphabetical">Alphabetical</MudSelectItem>
+            <MudSelectItem Value="SortMode.Type">Type</MudSelectItem>
+        </MudSelect>
+    </MudStack>
 </MudToolBar>
 <MudGrid Spacing="2" Justify="Justify.Center">
-    @foreach (var element in Session.ElementMeta)
+    @foreach (var element in elements)
     {
         if (m_currentChips == null || !m_currentChips.Any() || m_currentChips.Any(c => (c.Tag as Type).FullName == element.Type))
         {
-            <ElementButton Element="element" OnClick="() => TabManager.AddTab(element)" />
+            <ElementButton Element="element" TabManager=TabManager />
         }
     }
-    <NewElementButton Session="Session" OnElementCreated="StateHasChanged" />
 </MudGrid>
+<NewElementButton Session="Session" OnElementCreated="e => TabManager.AddTab(Session.GetMetaData(e.Guid))" />
 
 @code {
+    public enum SortMode
+    {
+        DateModified,
+        Alphabetical,
+        Type,
+    }
+
     [Parameter]
     public ProjectSession Session { get; set; }
 
@@ -27,4 +58,6 @@
     public Squill.Components.TabManager TabManager { get; set; }
 
     private MudChip[] m_currentChips;
+    private SortMode m_sortMode;
+
 }

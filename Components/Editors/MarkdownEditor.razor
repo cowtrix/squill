@@ -28,7 +28,7 @@
     {
         get
         {
-            return string.Join(Environment.NewLine, m_paragraphs.Select(p => p.Content));
+            return string.Join(Environment.NewLine, m_paragraphs?.Select(p => p.Content));
         }
         set
         {

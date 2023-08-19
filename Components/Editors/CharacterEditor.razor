@@ -1,0 +1,23 @@
+﻿@inherits EditorBase<Character>
+
+@using Squill.Data;
+
+@{
+    if(Element.Avatar == null)
+    {
+        Element.Avatar = new Avatar();
+    }
+}
+
+<MudItem>
+    <MudStack Row=true>
+        <ImageField @bind-Value=@Element.Avatar.URL />
+        <MudStack Style="width: 100%;">
+            <MudTextField Label="Description" @bind-Value=@Element.Description Variant="Variant.Outlined" DisableUnderLine=true Lines="4" />
+        </MudStack>
+    </MudStack>    
+</MudItem>
+
+@code {
+
+}
