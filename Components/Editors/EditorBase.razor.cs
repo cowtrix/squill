@@ -14,7 +14,7 @@ public partial class EditorBase<T> : ComponentBase, IAsyncDisposable
     public ProjectSession Session { get; set; }
 
     [Parameter]
-    public TabManager TabManager { get; set; }
+    public Squill.Components.TabManager TabManager { get; set; }
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }

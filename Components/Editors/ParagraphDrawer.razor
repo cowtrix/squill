@@ -1,4 +1,9 @@
-﻿<InputTextArea @onkeydown="@(async (e) => await Enter(e))" @ref=Input class="markdown-textfield" @bind-Value=Content />
+﻿@inject IJSRuntime JS
+
+<div class="grow-wrap text">
+    <InputTextArea @onkeydown="@(async (e) => await HandleInput(e))" @ref=Input class="markdown-textfield" @bind-Value=Value @oninput="Update" />
+    <div class="text">@(string.IsNullOrEmpty(Value) ? " " : Value + " ")</div>
+</div>
 
 @code {
 
@@ -6,7 +11,11 @@
     public MarkdownEditor Editor { get; set; }
 
     [Parameter]
-    public string Content { get; set; }
+    public string Value { get => __value.Trim(); set => __value = value?.Trim() ?? string.Empty; }
+    private string __value;
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
 
     [Parameter]
     public int Index { get; set; }
@@ -17,13 +26,29 @@
     [Parameter]
     public EventCallback<ParagraphDrawer> OnEnterPressed { get; set; }
 
+    [Parameter]
+    public EventCallback<ParagraphDrawer> OnBackspaceDelete { get; set; }
+
     public InputTextArea Input { get; set; }
 
-    public async Task Enter(KeyboardEventArgs e)
+
+    private void Update(ChangeEventArgs args)
+    {
+        Value = (args.Value as string).Trim();
+        InvokeAsync(async () => await ValueChanged.InvokeAsync(Value));
+        StateHasChanged();
+    }
+
+    public async Task HandleInput(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
             await OnEnterPressed.InvokeAsync(this);
+            StateHasChanged();
+        }
+        if (e.Code == "Backspace" || e.Code == "Delete")
+        {
+            await OnBackspaceDelete.InvokeAsync(this);
             StateHasChanged();
         }
     }

@@ -18,7 +18,7 @@ public class ElementMetaData
 
 public class ElementFactory
 {
-    public static IEnumerable<Type> SupportedTypes => new[] { typeof(Manuscript) };
+    public static IEnumerable<Type> SupportedTypes => new[] { typeof(Manuscript), typeof(Chapter) };
 
     private ProjectSession m_session;
     public ElementFactory(ProjectSession session)

@@ -1,7 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using Squill.Shared;
+using System.Text.Json.Serialization;
 
 namespace Squill.Data
 {
+    [ElementDisplay(Icon = "LibraryBooks")]
     public class Manuscript : ElementBase
     {
         public List<string> Chapters { get; set; } = new List<string>();

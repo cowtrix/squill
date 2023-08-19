@@ -132,4 +132,6 @@ public class ProjectSession
         meta.Name = newName;
         await File.WriteAllTextAsync(meta.Path + ".meta", JsonSerializer.Serialize(meta));
     }
+
+    public int GetTypeCount(Type t) => m_elementMetadata.Count(m => m.Value.Type == t.FullName);
 }

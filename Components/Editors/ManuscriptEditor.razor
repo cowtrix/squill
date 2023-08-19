@@ -14,6 +14,7 @@
                     <span>@chapter.Name</span>
                     <span>@(wordCount ?? "0") Words</span>
                     <MudSpacer />
+                    <MudIconButton Icon="@Icons.Material.Filled.LinkOff" OnClick="() => Element.Chapters.Remove(chapter.Guid)" Style="padding:0;" />
                     <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => TabManager.AddTab(chapter)" Style="padding:0;" />
                 </MudStack>
             </MudItem>

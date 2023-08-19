@@ -3,22 +3,30 @@
 @using Squill.Data;
 
 <MudItem>
-    @if(!Guid.TryParse(Element.Owner, out var ownerGuid))
-    {
-        <span>Chapter not owned by any manuscript.</span>
-    }
-    else
-    {
-        var ownerMeta = Session.GetMetaData(ownerGuid);
-        if(ownerMeta == null)
-        {
-            <span>Bad chapter link, please reestablish.</span>
-        }
-        else
-        {
-            <span>Chapter of @ownerMeta.Name</span>
-        }
-    }
+    <MudPaper Elevation="25">
+        <MudToolBar DisableGutters=true Style="height: 2.5rem; padding: 0 .5rem 0 .5rem;">
+            <MudIcon Icon="@Icons.Material.Outlined.Numbers" /> Word Count: @Element.WordCount
+            <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;" />
+            @if (!Guid.TryParse(Element.Owner, out var ownerGuid))
+            {
+                <span class="toolbar-label">Chapter not owned by any manuscript.</span>
+            }
+            else
+            {
+                var ownerMeta = Session.GetMetaData(ownerGuid);
+                if (ownerMeta == null)
+                {
+                    <span class="toolbar-label">Bad chapter link, please reestablish.</span>
+                }
+                else
+                {
+                    <span class="toolbar-label">Chapter of @ownerMeta.Name</span>
+                }
+            }
+        </MudToolBar>
+    </MudPaper>
+    
+
     <EditForm EditContext="m_context">
         <MarkdownEditor @bind-Value=Element.Content />
     </EditForm>

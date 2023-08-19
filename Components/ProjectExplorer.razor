@@ -1,0 +1,30 @@
+﻿@using Squill.Data;
+
+<MudToolBar>
+    <MudChipSet Filter=true MultiSelection=true @bind-SelectedChips=m_currentChips>
+        @foreach (var type in ElementFactory.SupportedTypes)
+        {
+            <MudChip Icon="@type.GetIcon()" Color="@type.GetColor()" Tag="type">@type.GetName() @Session.GetTypeCount(type)</MudChip>
+        }
+    </MudChipSet>
+</MudToolBar>
+<MudGrid Spacing="2" Justify="Justify.Center">
+    @foreach (var element in Session.ElementMeta)
+    {
+        if (m_currentChips == null || !m_currentChips.Any() || m_currentChips.Any(c => (c.Tag as Type).FullName == element.Type))
+        {
+            <ElementButton Element="element" OnClick="() => TabManager.AddTab(element)" />
+        }
+    }
+    <NewElementButton Session="Session" OnElementCreated="StateHasChanged" />
+</MudGrid>
+
+@code {
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    [Parameter]
+    public Squill.Components.TabManager TabManager { get; set; }
+
+    private MudChip[] m_currentChips;
+}

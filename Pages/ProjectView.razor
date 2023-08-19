@@ -1,4 +1,5 @@
 ﻿@page "/project/{Guid}"
+@page "/project/{Guid}/{Element}"
 @page "/project/"
 @using Squill.Components
 @using Squill.Components.Editors
@@ -6,83 +7,85 @@
 @using Squill.Services;
 
 @inject ProjectService ProjectService
+@inject NavigationManager NavManager
 
+<TabManager @ref=TabManager Session="Session" />
 @if (!Session.IsSynchronized)
 {
     <div>Synchronizing</div>
 }
 else
 {
-    <MudTabs @bind-ActivePanelIndex="TabManager.Index" Border="true" Outlined="true" PanelClass="px-4 py-6" ApplyEffectsToContainer="true">
-        <ChildContent>
-            @foreach (var tab in TabManager.Tabs)
-            {
-                <MudTabPanel Text="@(!tab.IsEditing ? (tab.NameOverride ?? tab.Target.Name) : "")" Tag="@tab">
-                    @{
-                        if (tab.Target == null)
-                        {
-                            <MudGrid Spacing="2" Justify="Justify.Center">
-                                @foreach (var element in Session.ElementMeta)
+    @if (TabManager != null)
+    {
+        <MudTabs @bind-ActivePanelIndex="TabManager.Index" Border="true" Outlined="true" PanelClass="px-4 py-6" ApplyEffectsToContainer="true">
+            <ChildContent>
+                @foreach (var tab in TabManager.Tabs)
+                {
+                    <MudTabPanel Text="@(!tab.IsEditing ? (tab.NameOverride ?? tab.Target.Name) : "")" Tag="@tab">
+                        @{
+                            if (tab.Target == null)
+                            {
+                                <ProjectExplorer Session=Session TabManager=TabManager />
+                            }
+                            else
+                            {
+                                var t = Type.GetType(tab.Target.Type);
+                                switch (t.Name)
                                 {
-                                    <ElementButton Element="element" OnClick="() => TabManager.AddTab(element)" />
+                                    case nameof(Manuscript):
+                                        <ManuscriptEditor Element="@(Session.GetElement<Manuscript>(tab.Target))" Session="Session" TabManager="TabManager" />
+                                        break;
+                                    case nameof(Chapter):
+                                        <ChapterEditor Element="@(Session.GetElement<Chapter>(tab.Target))" Session="Session" TabManager="TabManager" />
+                                        break;
                                 }
-                                <NewElementButton Session="Session" OnElementCreated="StateHasChanged" />
-                            </MudGrid>
+                            }
+                        }
+                    </MudTabPanel>
+                }
+            </ChildContent>
+            <Header>
+                <MudButtonGroup>
+                    <MudTooltip Text="Append a tab">
+                        <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="() => TabManager.AddTab(null)" />
+                    </MudTooltip>
+                </MudButtonGroup>
+            </Header>
+            <TabPanelHeader>
+                @{
+                    var tab = context.Tag as TabManager.TabView;
+                    if (!tab.Sticky)
+                    {
+                        if (tab.IsEditing)
+                        {
+                            <MudStack Class="tab-rename" Row="true" Style="max-height: 2rem;">
+                                <MudTextField @bind-Value=tab.NameOverride Style="margin: 0;" />
+                                <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Check" OnClick="async (_) => await TabManager.FinishRename(context)" />
+                            </MudStack>
                         }
                         else
                         {
-                            var t = Type.GetType(tab.Target.Type);
-                            switch (t.Name)
-                            {
-                                case nameof(Manuscript):
-                                    <ManuscriptEditor Element="@(Session.GetElement<Manuscript>(tab.Target))" Session="Session" TabManager="TabManager" />
-                                    break;
-                                case nameof(Chapter):
-                                    <ChapterEditor Element="@(Session.GetElement<Chapter>(tab.Target))" Session="Session" TabManager="TabManager" />
-                                    break;
-                            }
+                            <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Edit" OnClick="(_) => TabManager.BeginRename(context)" Size="Size.Small" />
+                            <MudIconButton Class="ml-2 pa-1" Color="Color.Error" Icon="@Icons.Material.Filled.Remove" OnClick="(_) => TabManager.RemoveTab(context)" Size="Size.Small" />
                         }
                     }
-                </MudTabPanel>
-            }
-        </ChildContent>
-        <Header>
-            <MudButtonGroup>
-                <MudTooltip Text="Append a tab">
-                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="() => TabManager.AddTab(null)" />
-                </MudTooltip>
-            </MudButtonGroup>
-        </Header>
-        <TabPanelHeader>
-            @{
-                var tab = context.Tag as TabManager.TabView;
-                if (!tab.Sticky)
-                {
-                    if (tab.IsEditing)
-                    {
-                        <MudStack Class="tab-rename" Row="true" Style="max-height: 2rem;">
-                            <MudTextField @bind-Value=tab.NameOverride Style="margin: 0;"/>
-                            <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Check" OnClick="async (_) => await FinishRename(context)" />
-                        </MudStack>
-                    }
-                    else
-                    {
-                        <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Edit" OnClick="(_) => BeginRename(context)" Size="Size.Small" />
-                        <MudIconButton Class="ml-2 pa-1" Color="Color.Error" Icon="@Icons.Material.Filled.Remove" OnClick="(_) => TabManager.RemoveTab(context)" Size="Size.Small" />
-                    }
                 }
-            }
-        </TabPanelHeader>
-    </MudTabs>
+            </TabPanelHeader>
+        </MudTabs>
+    }
 }
 
 @code {
     [Parameter]
     public string Guid { get; set; }
 
+    [Parameter]
+    public string Element { get; set; }
+
     public ProjectSession Session { get; set; }
 
-    public TabManager TabManager { get; set; } = new TabManager();
+    public TabManager TabManager { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,8 +98,19 @@ else
             Session.TryStartSynchronize();
             Session.OnSynchronized += OnSynchronized;
         }
-        TabManager.AddTab(null, "Elements", true);
-        TabManager.OnUpdated += (s, e) => InvokeAsync(StateHasChanged);
+    }
+
+    private void FocusTab(object? sender, TabManager.TabView tab)
+    {
+        if (tab?.Target != null)
+        {
+            NavManager.NavigateTo($"/project/{Session.Project.Guid}/{tab.Target.Guid}");
+        }
+        else
+        {
+            NavManager.NavigateTo($"/project/{Session.Project.Guid}/");
+        }
+        StateHasChanged();
     }
 
     private void OnSynchronized(object? sender, EventArgs args)
@@ -106,27 +120,18 @@ else
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (TabManager.NextIndex.HasValue == true)
+        if (firstRender)
         {
-            TabManager.Index = TabManager.NextIndex.Value;
-            TabManager.NextIndex = null;
-            StateHasChanged();
+            TabManager.AddTab(null, "Elements", true);
+            TabManager.OnTabAdded += FocusTab;
+            TabManager.OnTabFocused += FocusTab;
+            TabManager.OnTabRemoved += FocusTab;
         }
-    }
 
-    private void BeginRename(MudTabPanel tab)
-    {
-        var tabView = tab.Tag as TabManager.TabView;
-        tabView.IsEditing = true;
-        tabView.NameOverride = tabView.Target.Name;
-        StateHasChanged();
-    }
-
-    private async Task FinishRename(MudTabPanel tab)
-    {
-        var tabView = tab.Tag as TabManager.TabView;
-        tabView.IsEditing = false;
-        await Session.RenameElement(tabView.Target, tabView.NameOverride);
-        StateHasChanged();
+        if (Element != null && System.Guid.TryParse(Element, out var elementGuid) &&
+            !TabManager.Tabs.Any(t => t.Target?.Guid == elementGuid.ToString()))
+        {
+            TabManager.AddTab(Session.GetMetaData(elementGuid));
+        }
     }
 }

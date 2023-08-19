@@ -1,0 +1,87 @@
+﻿@using Squill.Data;
+
+@code {
+    public class TabView
+    {
+        public Guid Id { get; set; }
+        public bool Sticky { get; set; }
+        public string? NameOverride { get; set; }
+        public ElementMetaData? Target { get; set; }
+
+        public bool IsEditing { get; set; }
+    }
+
+    public TabView CurrentTab => Tabs.ElementAtOrDefault(Index);
+
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    public int Index
+    {
+        get => __index;
+        set
+        {
+            if(__index != value)
+            {
+                __index = value;
+                OnTabFocused?.Invoke(this, CurrentTab);
+            }
+        }
+    }
+    private int __index;
+    public int? NextIndex = null;
+    public List<TabView> Tabs = new();
+    public event EventHandler<TabView> OnTabAdded, OnTabRemoved, OnTabFocused;
+
+    public void RemoveTab(MudTabPanel tabPanel)
+    {
+        var tab = (TabView)tabPanel.Tag;
+        if (tab != null)
+        {
+            Tabs.Remove(tab);
+        }
+        OnTabRemoved?.Invoke(this, tab);
+    }
+
+    public void AddTab(ElementMetaData? element, string nameOverride = null, bool sticky = false)
+    {
+        var tabView = new TabView
+            {
+                Target = element,
+                Id = System.Guid.NewGuid(),
+                NameOverride = nameOverride,
+                Sticky = sticky
+            };
+        Tabs.Add(tabView);
+        NextIndex = Tabs.Count - 1;
+        OnTabAdded?.Invoke(this, tabView);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (NextIndex.HasValue == true)
+        {
+            Index = NextIndex.Value;
+            NextIndex = null;
+            OnTabFocused.Invoke(this, CurrentTab);
+            StateHasChanged();
+        }
+    }
+
+    public void BeginRename(MudTabPanel tab)
+    {
+        var tabView = tab.Tag as TabManager.TabView;
+        tabView.IsEditing = true;
+        tabView.NameOverride = tabView.Target.Name;
+        StateHasChanged();
+    }
+
+    public async Task FinishRename(MudTabPanel tab)
+    {
+        var tabView = tab.Tag as TabManager.TabView;
+        tabView.IsEditing = false;
+        await Session.RenameElement(tabView.Target, tabView.NameOverride);
+        StateHasChanged();
+    }
+
+}
