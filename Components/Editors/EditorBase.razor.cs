@@ -21,7 +21,7 @@ public partial class EditorBase<T> : ComponentBase, IAsyncDisposable
 
     protected MudForm Form { get; set; }
 
-    public async ValueTask DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
         await Session.UpdateElement(Element);
     }
@@ -31,4 +31,5 @@ public partial class EditorBase<T> : ComponentBase, IAsyncDisposable
         await Session.UpdateElement(Element);
         StateHasChanged();
     }
+
 }

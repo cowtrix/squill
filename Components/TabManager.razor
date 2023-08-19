@@ -45,6 +45,13 @@
 
     public void AddTab(ElementMetaData? element, string nameOverride = null, bool sticky = false)
     {
+        var existingIndex = Tabs.FindIndex(p => p.Target?.Guid == element.Guid);
+        if(existingIndex >= 0)
+        {
+            NextIndex = existingIndex;
+            StateHasChanged();
+            return;
+        }
         var tabView = new TabView
             {
                 Target = element,

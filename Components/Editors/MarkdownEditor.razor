@@ -4,7 +4,7 @@
         @for (var i = 0; i < m_paragraphs.Count; i++)
         {
             var paragraph = m_paragraphs[i];
-            <ParagraphDrawer Value=@paragraph.Content ValueChanged="(s) => Update(paragraph, s)" Index=i OnEnterPressed=Enter OnBackspaceDelete=Backspace Focus=paragraph.TakeFocus />
+            <ParagraphDrawer Value=@paragraph.Content WordStyle="WordStyle" ValueChanged="(s) => Update(paragraph, s)" Index=i OnEnterPressed=Enter OnBackspaceDelete=Backspace Focus=paragraph.TakeFocus />
             paragraph.TakeFocus = false;
         }
     </div>
@@ -24,7 +24,7 @@
     }
 
     [Parameter]
-    public string Value
+    public new string Value
     {
         get
         {
@@ -39,6 +39,9 @@
 
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public Func<string, string> WordStyle { get; set; }
 
     private string m_lastValue { get; set; }
     private Task m_autosaveThread { get; set; }
@@ -61,6 +64,7 @@
         m_paragraphs[paragraph.Index].Content = m_paragraphs[paragraph.Index].Content?.Trim() ?? string.Empty;
         m_paragraphs.Insert(paragraph.Index + 1, new Paragraph(string.Empty, true));
         StateHasChanged();
+        InvokeAsync(async () => await ValueChanged.InvokeAsync(Value));
     }
 
     public void Backspace(ParagraphDrawer paragraph)
@@ -74,6 +78,7 @@
                 focus.TakeFocus = true;
             }
             StateHasChanged();
+            InvokeAsync(async () => await ValueChanged.InvokeAsync(Value));
         }
     }
 
@@ -81,7 +86,7 @@
     {
         while (true)
         {
-            await Task.Delay(TimeSpan.FromMinutes(1));
+            await Task.Delay(TimeSpan.FromSeconds(10));
             if (m_lastValue == Value)
             {
                 continue;

@@ -10,7 +10,9 @@ StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configurat
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<ProjectService>();
+builder.Services.AddSingleton<GalleryService>();
 builder.Services.AddMudServices();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

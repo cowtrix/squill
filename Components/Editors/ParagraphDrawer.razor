@@ -2,7 +2,7 @@
 
 <div class="grow-wrap text">
     <InputTextArea @onkeydown="@(async (e) => await HandleInput(e))" @ref=Input class="markdown-textfield" @bind-Value=Value @oninput="Update" />
-    <div class="text">@(string.IsNullOrEmpty(Value) ? " " : Value + " ")</div>
+    <div class="text">@((MarkupString)WordStyle(string.IsNullOrEmpty(Value) ? " " : Value + " "))</div>
 </div>
 
 @code {
@@ -28,6 +28,9 @@
 
     [Parameter]
     public EventCallback<ParagraphDrawer> OnBackspaceDelete { get; set; }
+
+    [Parameter]
+    public Func<string, string> WordStyle { get; set; }
 
     public InputTextArea Input { get; set; }
 

@@ -11,7 +11,7 @@
 
 <MudItem>
     <MudStack Row=true>
-        <ImageField @bind-Value=@Element.Avatar.URL />
+        <ImageField @bind-Value=@Element.Avatar.URL Session=Session />
         <MudStack Style="width: 100%;">
             <MudTextField Label="Description" @bind-Value=@Element.Description Variant="Variant.Outlined" DisableUnderLine=true Lines="4" />
         </MudStack>
@@ -19,5 +19,4 @@
 </MudItem>
 
 @code {
-
 }

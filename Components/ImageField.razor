@@ -1,20 +1,58 @@
-﻿@inherits MudInput<string>
+﻿@using Squill.Data;
+@using Squill.Services;
+@inherits MudInput<string>
+@inject GalleryService Gallery
+@inject IJSRuntime JS
 
-<div class="img-button" @onclick=Click>
+<div class="img-button">
     @if (!string.IsNullOrEmpty(Value))
     {
-        <MudImage Src="@Value" Width="2" />
+        <image id="@m_guid" />
     }
     else
     {
         <MudIcon Icon="@Icons.Material.Filled.Image" />
     }
-    <MudIcon Icon="@Icons.Material.Filled.Add" Class="fade-hover" />
+    <div class="img-actions fade-hover">
+        <MudIcon Icon="@Icons.Material.Filled.Add" />
+        <div class="import-export">
+            <MudIcon Icon="@Icons.Material.Filled.ImportExport" />
+            <InputFile OnChange="OnFileUploaded" accept=".png" />
+        </div>
+    </div>
 </div>
 
 @code {
-    public void Click()
-    {
+    [Parameter]
+    public ProjectSession Session { get; set; }
 
+    private Guid m_guid;
+
+    protected override void OnInitialized()
+    {
+        m_guid = System.Guid.NewGuid();
+    }
+
+    public async Task OnFileUploaded(InputFileChangeEventArgs args)
+    {
+        MemoryStream ms = new MemoryStream();
+        await args.File.OpenReadStream().CopyToAsync(ms);
+        var bytes = ms.ToArray();
+        Value = args.File.Name;
+        await ValueChanged.InvokeAsync(Value);
+        Gallery.SaveNewImage(Session, args.File.Name, bytes);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(Value))
+        {
+            var imageStream = Gallery.GetImage(Session, Value);
+            if (imageStream != null)
+            {
+                var dotnetImageStream = new DotNetStreamReference(imageStream);
+                await JS.InvokeVoidAsync("setImage", m_guid.ToString(), dotnetImageStream);
+            }
+        }
     }
 }

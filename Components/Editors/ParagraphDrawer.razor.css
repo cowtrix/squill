@@ -9,6 +9,14 @@
         color: #00000000;
     }
 
+::deep span.tag {
+    background-color: #ff6a00;
+    opacity: .2;
+    border-radius: 5px;
+    outline: 5px solid #ff6a00;
+    outline-offset: -1px;
+}
+
 ::deep.grow-wrap > textarea {
     position: absolute;
     top: 0;
@@ -21,13 +29,14 @@
     overflow: hidden;
     background-color: unset;
     padding: 0;
-    outline:none;
+    outline: none;
+    text-indent: 1rem;
 }
 
 ::deep.text > textarea, .text {
-    text-indent: 1rem;
     white-space: pre-wrap;
     font-size: 1rem;
     font-weight: 100;
     letter-spacing: 0;
+    text-indent: .75rem;
 }

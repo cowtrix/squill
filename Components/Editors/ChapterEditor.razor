@@ -1,6 +1,7 @@
 ﻿@inherits EditorBase<Chapter>
 
 @using Squill.Data;
+@using System.Text;
 
 <MudItem>
     <MudPaper Elevation="25">
@@ -28,7 +29,7 @@
     
 
     <EditForm EditContext="m_context">
-        <MarkdownEditor @bind-Value=Element.Content />
+        <MarkdownEditor @bind-Value=Element.Content WordStyle="InsertTags" />
     </EditForm>
 </MudItem>
 
@@ -38,5 +39,26 @@
     protected override void OnInitialized()
     {
         m_context = new EditContext(Element);
+    }
+
+    private string InsertTags(string rawInput)
+    {
+        var sb = new StringBuilder();
+        var w = rawInput.Split(' ');
+        foreach(var word in w)
+        {
+            var element = Session.ElementMeta.FirstOrDefault(m => m.Name == word);
+            if(element != null)
+            {
+                sb.Append("<span class=\"tag\">");
+            }
+            sb.Append(word);
+            if (element != null)
+            {
+                sb.Append("</span>");
+            }
+            sb.Append(' ');
+        }
+        return sb.ToString();
     }
 }

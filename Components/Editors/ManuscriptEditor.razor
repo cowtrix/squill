@@ -2,6 +2,10 @@
 
 @using Squill.Data;
 
+@{
+    base.BuildRenderTree(__builder);
+}
+
 <MudStack>
     @foreach (var chapterGuid in Element.Chapters)
     {

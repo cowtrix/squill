@@ -10,7 +10,7 @@ public class ElementDisplay : Attribute
 {
     public string Icon { get; set; }
     public string Name { get; set; }
-    public Color Color { get; set; }
+    public MudBlazor.Color Color { get; set; }
 }
 
 public static class TypeExtensions
@@ -41,12 +41,12 @@ public static class TypeExtensions
         return Icons.Material.Filled.InsertDriveFile;
     }
 
-    public static Color GetColor(this Type type)
+    public static MudBlazor.Color GetColor(this Type type)
     {
         var attr = type.GetCustomAttributes(typeof(ElementDisplay), true)
             .Cast<ElementDisplay>()
             .FirstOrDefault();
-        return attr != null ? attr.Color : Color.Default;
+        return attr != null ? attr.Color : MudBlazor.Color.Default;
     }
 
 }
