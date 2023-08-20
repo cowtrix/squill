@@ -1,0 +1,30 @@
+﻿@using Squill.Data;
+
+@{
+    var meta = Session.GetMetaData(Element);
+    if (meta != null)
+    {
+        var type = Type.GetType(meta.Type);
+        if (!meta.Attributes.TryGetValue("color", out var color))
+        {
+            color = type.GetColor().ToString();
+        }
+        <MudChip Icon="@type.GetIcon()" Style="@($"background-color:{color};color:black !important;" )" Size="Size.Small" Variant="Variant.Text" OnClick="Clicked">@meta.Name</MudChip>
+    }
+}
+
+@code {
+    [Parameter]
+    public Guid Element { get; set; }
+
+    [Parameter]
+    public Squill.Components.TabManager TabManager { get; set; }
+
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    private void Clicked(MouseEventArgs args)
+    {
+        TabManager.AddTab(Session.GetMetaData(Element));
+    }
+}

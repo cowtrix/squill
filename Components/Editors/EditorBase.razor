@@ -2,22 +2,6 @@
 
 @using Squill.Data;
 
-@{
-    var meta = Session.GetMetaData(Element.Guid);
-}
-
-<MudPaper>
-    <MudToolBar>
-        <MudStack Row="true">
-            <MudText>Last Saved: @(DateTimeOffset.FromUnixTimeMilliseconds(meta.LastModified))</MudText>
-        </MudStack>
-    </MudToolBar>
-</MudPaper>
-
-<MudForm @ref=Form>
-    @ChildContent
-</MudForm>
-
 @code{
 
 }

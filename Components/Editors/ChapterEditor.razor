@@ -1,37 +1,13 @@
-﻿@inherits EditorBase<Chapter>
+﻿@inherits GenericEditorBase<Chapter>
 
 @using Squill.Data;
 @using System.Text;
 
-<MudItem>
-    <MudPaper Elevation="25">
-        <MudToolBar DisableGutters=true Style="height: 2.5rem; padding: 0 .5rem 0 .5rem;">
-            <MudIcon Icon="@Icons.Material.Outlined.Numbers" /> Word Count: @Element.WordCount
-            <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;" />
-            @if (!Guid.TryParse(Element.Owner, out var ownerGuid))
-            {
-                <span class="toolbar-label">Chapter not owned by any manuscript.</span>
-            }
-            else
-            {
-                var ownerMeta = Session.GetMetaData(ownerGuid);
-                if (ownerMeta == null)
-                {
-                    <span class="toolbar-label">Bad chapter link, please reestablish.</span>
-                }
-                else
-                {
-                    <span class="toolbar-label">Chapter of @ownerMeta.Name</span>
-                }
-            }
-        </MudToolBar>
-    </MudPaper>
-    
-
+<MudPaper Elevation="15" Style="height: 1.5rem;" Outlined=true>
     <EditForm EditContext="m_context">
-        <MarkdownEditor @bind-Value=Element.Content WordStyle="InsertTags" />
+        <MarkdownEditor @bind-Value=Target.Content WordStyle="InsertTags" />
     </EditForm>
-</MudItem>
+</MudPaper>
 
 @code {
     private EditContext m_context;
@@ -45,12 +21,17 @@
     {
         var sb = new StringBuilder();
         var w = rawInput.Split(' ');
-        foreach(var word in w)
+        foreach (var word in w)
         {
             var element = Session.ElementMeta.FirstOrDefault(m => m.Name == word);
-            if(element != null)
+            if (element != null)
             {
-                sb.Append("<span class=\"tag\">");
+                var color = Type.GetType(element.Type).GetColor().ToString();
+                if (element.Attributes.TryGetValue("color", out var colVal))
+                {
+                    color = colVal;
+                }
+                sb.Append($"<span class=\"tag\" style=\"background-color:{color};outline: 5px solid {color};\">");
             }
             sb.Append(word);
             if (element != null)
@@ -61,4 +42,35 @@
         }
         return sb.ToString();
     }
+
+    public override RenderFragment Toolbar => __builder =>
+    {
+        <MudSpacer />
+        <MudTooltip Arrow=true RootStyle="display:flex;justify-content:center;">
+            <ChildContent>
+                <MudIcon Icon="@Icons.Material.Outlined.Numbers" Size="Size.Small" />@Target.WordCount
+            </ChildContent>
+            <TooltipContent>
+                Word Count
+            </TooltipContent>
+        </MudTooltip>
+        <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;" />
+        @if (!Guid.TryParse(Target.Owner, out var ownerGuid))
+        {
+            <span class="toolbar-label">Chapter not owned by any manuscript.</span>
+        }
+        else
+        {
+            var ownerMeta = Session.GetMetaData(ownerGuid);
+            if (ownerMeta == null)
+            {
+                <span class="toolbar-label">Bad chapter link, please reestablish.</span>
+            }
+            else
+            {
+                <span class="toolbar-label">Chapter of <ElementLink Element="ownerGuid" Session="Session" TabManager="TabManager"  /></span>
+            }
+        }
+        <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;" />
+    };
 }

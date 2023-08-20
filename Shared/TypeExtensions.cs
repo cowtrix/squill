@@ -10,7 +10,7 @@ public class ElementDisplay : Attribute
 {
     public string Icon { get; set; }
     public string Name { get; set; }
-    public MudBlazor.Color Color { get; set; }
+    public string Color { get; set; }
 }
 
 public static class TypeExtensions
@@ -41,12 +41,17 @@ public static class TypeExtensions
         return Icons.Material.Filled.InsertDriveFile;
     }
 
-    public static MudBlazor.Color GetColor(this Type type)
+    public static MudColor GetColor(this Type type)
     {
         var attr = type.GetCustomAttributes(typeof(ElementDisplay), true)
             .Cast<ElementDisplay>()
             .FirstOrDefault();
-        return attr != null ? attr.Color : MudBlazor.Color.Default;
+        if(attr.Color != null)
+        {
+            return new MudColor(attr.Color);
+        }
+        var rnd = new Random(type.FullName.Sum(c => (int)c));
+        return new MudColor(rnd.NextDouble() * 360, 1, .8, 255);
     }
 
 }

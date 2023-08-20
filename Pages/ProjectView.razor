@@ -18,7 +18,7 @@ else
 {
     @if (TabManager != null)
     {
-        <MudTabs @bind-ActivePanelIndex="TabManager.Index" Border="true" Outlined="true" PanelClass="px-4 py-6" ApplyEffectsToContainer="true">
+        <MudTabs @bind-ActivePanelIndex="TabManager.Index" Border="true" Outlined="true" PanelClass="tab-panel-container" ApplyEffectsToContainer="true">
             <ChildContent>
                 @foreach (var tab in TabManager.Tabs)
                 {
@@ -30,19 +30,27 @@ else
                             }
                             else
                             {
-                                var t = Type.GetType(tab.Target.Type);
-                                switch (t.Name)
-                                {
-                                    case nameof(Manuscript):
-                                        <ManuscriptEditor Element="@(Session.GetElement<Manuscript>(tab.Target))" Session="Session" TabManager="TabManager" />
-                                        break;
-                                    case nameof(Chapter):
-                                        <ChapterEditor Element="@(Session.GetElement<Chapter>(tab.Target))" Session="Session" TabManager="TabManager" />
-                                        break;
-                                    case nameof(Character):
-                                        <CharacterEditor Element="@(Session.GetElement<Character>(tab.Target))" Session="Session" TabManager="TabManager" />
-                                        break;
-                                }
+                                <EditorWrapper Session="Session" @ref=EditorWrapper Element="Session.GetElement<IElement>(tab.Target)" TabManager="TabManager">
+                                    <ChildContent>
+                                        <CascadingValue Value="EditorWrapper">
+                                            @{
+                                                var t = Type.GetType(tab.Target.Type);
+                                                switch (t.Name)
+                                                {
+                                                    case nameof(Manuscript):
+                                                        <ManuscriptEditor />
+                                                        break;
+                                                    case nameof(Chapter):
+                                                        <ChapterEditor />
+                                                        break;
+                                                    case nameof(Character):
+                                                        <CharacterEditor />
+                                                        break;
+                                                }
+                                            }
+                                        </CascadingValue>
+                                    </ChildContent>
+                                </EditorWrapper>
                             }
                         }
                     </MudTabPanel>
@@ -92,6 +100,8 @@ else
     public ProjectSession Session { get; set; }
 
     public TabManager TabManager { get; set; }
+
+    private EditorWrapper EditorWrapper { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

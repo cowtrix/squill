@@ -3,7 +3,6 @@
 public interface IElement
 {
 	Guid Guid { get; }
-	string Name { get; set; }
 	IEnumerable<(string, string)> GetAttributes();
 }
 

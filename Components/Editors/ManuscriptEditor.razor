@@ -1,4 +1,4 @@
-﻿@inherits EditorBase<Manuscript>
+﻿@inherits GenericEditorBase<Manuscript>
 
 @using Squill.Data;
 
@@ -6,33 +6,42 @@
     base.BuildRenderTree(__builder);
 }
 
-<MudStack>
-    @foreach (var chapterGuid in Element.Chapters)
-    {
-        var chapter = Session.GetMetaData(Guid.Parse(chapterGuid));        
-        if (chapter != null)
-        {
-            chapter.Attributes.TryGetValue(Chapter.WORD_COUNT_ATTRIB_KEY, out var wordCount);
-            <MudItem>
-                <MudStack Row="true">
-                    <span>@chapter.Name</span>
-                    <span>@(wordCount ?? "0") Words</span>
-                    <MudSpacer />
-                    <MudIconButton Icon="@Icons.Material.Filled.LinkOff" OnClick="() => Element.Chapters.Remove(chapter.Guid)" Style="padding:0;" />
-                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => TabManager.AddTab(chapter)" Style="padding:0;" />
-                </MudStack>
-            </MudItem>
-        }
-        else
-        {
-            <MudItem>
-                <MudText Color="Color.Error">Bad Element Ref: @chapterGuid</MudText>
-            </MudItem>
-        }
-    }
-    <MudDivider />
-    <MudButton OnClick="AddChapter"><MudIcon Icon="@Icons.Material.Filled.Add" />New Chapter</MudButton>
-</MudStack>
+<MudItem Style="margin: 1rem;">
+    <MudPaper Style="padding: 1rem;">
+        <MudPaper Elevation="5" Style="display:flex;margin-bottom: 1.5rem;padding: .75rem;align-items:center;">
+            <MudIcon Icon="@Icons.Material.Outlined.Numbers" Size="Size.Small" />Word Count: @Target.Chapters.Sum(c => int.Parse(Session.GetMetaData(Guid.Parse(c)).Attributes[Chapter.WORD_COUNT_ATTRIB_KEY]))
+        </MudPaper>
+        <MudStack>
+            @foreach (var chapterGuid in Target.Chapters)
+            {
+                var chapter = Session.GetMetaData(Guid.Parse(chapterGuid));
+                if (chapter != null)
+                {
+                    chapter.Attributes.TryGetValue(Chapter.WORD_COUNT_ATTRIB_KEY, out var wordCount);
+                    <MudItem>
+                        <MudStack Row="true">
+                            <span>@chapter.Name</span>
+                            <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
+                            <span>@(wordCount ?? "0") Words</span>
+                            <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
+                            <MudSpacer />
+                            <MudIconButton Icon="@Icons.Material.Filled.LinkOff" OnClick="() => Target.Chapters.Remove(chapter.Guid)" Style="padding:0;" />
+                            <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => TabManager.AddTab(chapter)" Style="padding:0;" />
+                        </MudStack>
+                    </MudItem>
+                }
+                else
+                {
+                    <MudItem>
+                        <MudText Color="Color.Error">Bad Element Ref: @chapterGuid</MudText>
+                    </MudItem>
+                }
+            }
+            <MudDivider />
+            <MudButton OnClick="AddChapter" Variant="Variant.Outlined"><MudIcon Icon="@Icons.Material.Filled.Add" />New Chapter</MudButton>
+        </MudStack>
+    </MudPaper>
+</MudItem>
 
 @code {
     private async Task AddChapter()
@@ -40,7 +49,7 @@
         var newChapter = await Session.CreateNewElement(typeof(Chapter)) as IElementComponent;
         newChapter.Owner = Element.Guid.ToString();
         await Session.UpdateElement(newChapter);
-        Element.Chapters.Add(newChapter.Guid.ToString());
+        Target.Chapters.Add(newChapter.Guid.ToString());
         await Invalidate();
     }
 }

@@ -17,3 +17,8 @@
     padding: .1rem .25rem .1rem .25rem;
     border-radius: 1rem;
 }
+
+.mud-tooltip-arrow::after{
+    right: 50%;
+    left: 50%;
+}

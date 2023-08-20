@@ -21,7 +21,7 @@
         <MudChipSet Filter=true MultiSelection=true @bind-SelectedChips=m_currentChips>
             @foreach (var type in ElementFactory.SupportedTypes)
             {
-                <MudChip Icon="@type.GetIcon()" Color="@type.GetColor()" Tag="type">@type.GetName() <span class="count-pill">@Session.GetTypeCount(type)</span></MudChip>
+                <MudChip Style="@($"background-color:{type.GetColor()};color:black !important;")" Icon="@type.GetIcon()" Tag="type">@type.GetName() <span class="count-pill">@Session.GetTypeCount(type)</span></MudChip>
             }
         </MudChipSet>
         <MudSpacer />

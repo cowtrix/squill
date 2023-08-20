@@ -79,11 +79,10 @@ public class ElementFactory
             name = GetAutomaticFilename(type, dir);
         }
         var newEle = Activator.CreateInstance(type) as IElement;
-        newEle.Name = name;
-        var outputPath = Path.Combine(m_session.Project.DataDir, $"{newEle.Name}.{newEle.GetType().Name.ToLowerInvariant()}");
+        var outputPath = Path.Combine(m_session.Project.DataDir, $"{name}.{newEle.GetType().Name.ToLowerInvariant()}");
         if (!string.IsNullOrEmpty(dir))
         {
-            outputPath = Path.Combine(m_session.Project.DataDir, dir, $"{newEle.Name}");
+            outputPath = Path.Combine(m_session.Project.DataDir, dir, name);
         }
         var meta = new ElementMetaData
         {
@@ -91,7 +90,7 @@ public class ElementFactory
             Guid = newEle.Guid.ToString(),
             Path = outputPath,
             Type = type.FullName,
-            LastModified = DateTimeOffset.UtcNow.Ticks,
+            LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
         };
         File.WriteAllText(outputPath, JsonSerializer.Serialize(newEle));
         File.WriteAllText(outputPath + ".meta", JsonSerializer.Serialize(meta));

@@ -1,0 +1,44 @@
+﻿@using Squill.Data;
+@{
+    var meta = Session.GetMetaData(Element.Guid);
+}
+
+<MudPaper Elevation="15" Style="height: 1.5rem;" Outlined=true>
+    <MudToolBar DisableGutters=true Style="width:100%;height: 1.5rem;overflow:hidden;">
+        <MudStack Row="true" Style="width:100%;align-items:center;">
+            <MudMenu Label="File" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined" >
+            </MudMenu>
+            @Toolbar
+        </MudStack>
+    </MudToolBar>
+</MudPaper>
+
+<MudForm @ref=Form.Value Class="form-container">
+    <CascadingValue Value="TabManager">
+        <CascadingValue Value="Element">
+            <CascadingValue Value="Session">
+                @ChildContent
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+</MudForm>
+
+@code {
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    public RenderFragment Toolbar => CurrentEditor?.Toolbar;
+
+    [Parameter]
+    public Squill.Components.TabManager TabManager { get; set; }
+
+    [Parameter]
+    public IElement Element { get; set; }
+
+    public EditorBase CurrentEditor { get; set; }
+
+    public CascadingValue<MudForm> Form { get; set; } = new CascadingValue<MudForm>();
+}

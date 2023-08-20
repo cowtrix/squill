@@ -114,6 +114,7 @@ public class ProjectSession
     {
         var meta = GetMetaData(element.Guid);
         meta.LastModified = DateTimeOffset.UtcNow.Ticks;
+        meta.Attributes = element.GetAttributes().ToDictionary(s => s.Item1, s => s.Item2);
         await File.WriteAllTextAsync(meta.Path, JsonSerializer.Serialize(element, element.GetType()));
         await File.WriteAllTextAsync(meta.Path + ".meta", JsonSerializer.Serialize(meta));
     }

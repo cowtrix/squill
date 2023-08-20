@@ -1,14 +1,18 @@
 ﻿
-<div class="textarea-container">
-    <div class="page">
-        @for (var i = 0; i < m_paragraphs.Count; i++)
-        {
-            var paragraph = m_paragraphs[i];
-            <ParagraphDrawer Value=@paragraph.Content WordStyle="WordStyle" ValueChanged="(s) => Update(paragraph, s)" Index=i OnEnterPressed=Enter OnBackspaceDelete=Backspace Focus=paragraph.TakeFocus />
-            paragraph.TakeFocus = false;
-        }
-    </div>
-</div>
+<MudItem>
+    <EditForm EditContext="m_context">
+        <div class="textarea-container">
+            <div class="page">
+                @for (var i = 0; i < m_paragraphs.Count; i++)
+                {
+                    var paragraph = m_paragraphs[i];
+                    <ParagraphDrawer Value=@paragraph.Content WordStyle="WordStyle" ValueChanged="(s) => Update(paragraph, s)" Index=i OnEnterPressed=Enter OnBackspaceDelete=Backspace Focus=paragraph.TakeFocus />
+                    paragraph.TakeFocus = false;
+                }
+            </div>
+        </div>
+    </EditForm>
+</MudItem>
 
 @code {
     public class Paragraph
@@ -46,12 +50,14 @@
     private string m_lastValue { get; set; }
     private Task m_autosaveThread { get; set; }
     private List<Paragraph> m_paragraphs;
+    private EditContext m_context;
 
     protected override void OnInitialized()
     {
         m_lastValue = Value;
         m_autosaveThread = new Task(async () => await AutoSave());
         m_autosaveThread.Start();
+        m_context = new EditContext(Value);
     }
 
     private void Update(Paragraph p, string val)

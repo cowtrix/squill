@@ -4,22 +4,30 @@ using Squill.Data;
 
 namespace Squill.Components.Editors;
 
-public partial class EditorBase<T> : ComponentBase, IAsyncDisposable
-    where T: class, IElement
+public abstract class EditorBase : ComponentBase, IAsyncDisposable
 {
-    [Parameter]
-    public T Element { get; set; }
+    [CascadingParameter]
+    public IElement Element { get; set; }
 
-    [Parameter]
+    [CascadingParameter]
     public ProjectSession Session { get; set; }
 
-    [Parameter]
+    [CascadingParameter]
+    public MudForm Form { get; set; }
+
+    [CascadingParameter]
+    public EditorWrapper Wrapper { get; set; }
+
+    [CascadingParameter]
     public Squill.Components.TabManager TabManager { get; set; }
 
-    [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public virtual RenderFragment Toolbar { get; }
 
-    protected MudForm Form { get; set; }
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        Wrapper.CurrentEditor = this;
+    }
 
     public virtual async ValueTask DisposeAsync()
     {
@@ -31,5 +39,10 @@ public partial class EditorBase<T> : ComponentBase, IAsyncDisposable
         await Session.UpdateElement(Element);
         StateHasChanged();
     }
+}
 
+public abstract partial class GenericEditorBase<T> : EditorBase
+    where T: class, IElement
+{
+    public T Target { get => Element as T; set => Element = value; }
 }
