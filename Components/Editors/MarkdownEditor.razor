@@ -32,12 +32,12 @@
     {
         get
         {
-            return string.Join(Environment.NewLine, m_paragraphs?.Select(p => p.Content));
+            return string.Join(Environment.NewLine, m_paragraphs.Select(p => p.Content));
         }
         set
         {
-            m_paragraphs = value?.Split('\n', StringSplitOptions.TrimEntries)
-                .Select(p => new Paragraph(p)).ToList();
+            m_paragraphs = value?.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.TrimEntries)
+                .Select(p => new Paragraph(p)).ToList() ?? new List<Paragraph> { new Paragraph("", true) };
         }
     }
 
@@ -49,7 +49,7 @@
 
     private string m_lastValue { get; set; }
     private Task m_autosaveThread { get; set; }
-    private List<Paragraph> m_paragraphs;
+    private List<Paragraph> m_paragraphs = new List<Paragraph>();
     private EditContext m_context;
 
     protected override void OnInitialized()
@@ -63,6 +63,13 @@
     private void Update(Paragraph p, string val)
     {
         p.Content = val;
+        if (p.Content.Contains(Environment.NewLine) || p.Content.Contains('\n'))
+        {
+            var output = Value;
+            m_paragraphs = output.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.TrimEntries)
+                .Select(p => new Paragraph(p)).ToList() ?? new List<Paragraph> { new Paragraph("", true) };
+            InvokeAsync(async () => await ValueChanged.InvokeAsync(Value));
+        }
     }
 
     public void Enter(ParagraphDrawer paragraph)

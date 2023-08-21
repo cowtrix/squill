@@ -4,7 +4,7 @@
 @using Squill.Data;
 
 @{
-    if (Target.Avatar == null)
+    if (Target != null && Target.Avatar == null)
     {
         Target.Avatar = new Avatar();
     }

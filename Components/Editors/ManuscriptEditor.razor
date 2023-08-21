@@ -12,19 +12,23 @@
             <MudIcon Icon="@Icons.Material.Outlined.Numbers" Size="Size.Small" />Word Count: @Target.Chapters.Sum(c => int.Parse(Session.GetMetaData(Guid.Parse(c)).Attributes[Chapter.WORD_COUNT_ATTRIB_KEY]))
         </MudPaper>
         <MudStack>
-            @foreach (var chapterGuid in Target.Chapters)
+            @for (var i = 0; i < Target.Chapters.Count; ++i)
             {
+                var chapterGuid = Target.Chapters[i];
+                var index = i;
                 var chapter = Session.GetMetaData(Guid.Parse(chapterGuid));
                 if (chapter != null)
                 {
                     chapter.Attributes.TryGetValue(Chapter.WORD_COUNT_ATTRIB_KEY, out var wordCount);
                     <MudItem>
                         <MudStack Row="true">
-                            <span>@chapter.Name</span>
+                            <span style="width: 30%;">@chapter.Name</span>
                             <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
                             <span>@(wordCount ?? "0") Words</span>
                             <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
                             <MudSpacer />
+                            <MudIconButton Icon="@Icons.Material.Filled.ExpandMore" OnClick="() => Reorder(chapter, index + 1)" Style="padding:0;" Disabled="@(index == Target.Chapters.Count - 1)" />
+                            <MudIconButton Icon="@Icons.Material.Filled.ExpandLess" OnClick="() => Reorder(chapter, index - 1)" Style="padding:0;" Disabled="@(index == 0)" />
                             <MudIconButton Icon="@Icons.Material.Filled.LinkOff" OnClick="() => Target.Chapters.Remove(chapter.Guid)" Style="padding:0;" />
                             <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => TabManager.AddTab(chapter)" Style="padding:0;" />
                         </MudStack>
@@ -38,18 +42,40 @@
                 }
             }
             <MudDivider />
-            <MudButton OnClick="AddChapter" Variant="Variant.Outlined"><MudIcon Icon="@Icons.Material.Filled.Add" />New Chapter</MudButton>
+            <MudButtonGroup Variant="Variant.Outlined">
+                <ElementPicker Label="Add Existing Chapter" ValueChanged="AddExistingChapter" ElementType=typeof(Chapter) />
+                <MudButton OnClick="AddNewChapter" Variant="Variant.Outlined"><MudIcon Icon="@Icons.Material.Filled.Add" />New Chapter</MudButton>
+            </MudButtonGroup>
         </MudStack>
     </MudPaper>
 </MudItem>
 
 @code {
-    private async Task AddChapter()
+    private async Task AddExistingChapter(ElementMetaData chapter)
+    {
+        if (!Target.Chapters.Contains(chapter.Guid.ToString()))
+        {
+            Target.Chapters.Add(chapter.Guid.ToString());
+            var chapterObj = Session.GetElement<Chapter>(chapter);
+            chapterObj.Owner = Target.Guid.ToString();
+            await Session.UpdateElement(chapterObj);
+            await Invalidate();
+        }
+    }
+
+    private void Reorder(ElementMetaData chapter, int newIndex)
+    {
+        Target.Chapters.Remove(chapter.Guid);
+        Target.Chapters.Insert(newIndex, chapter.Guid);
+    }
+
+    private async Task AddNewChapter()
     {
         var newChapter = await Session.CreateNewElement(typeof(Chapter)) as IElementComponent;
         newChapter.Owner = Element.Guid.ToString();
         await Session.UpdateElement(newChapter);
         Target.Chapters.Add(newChapter.Guid.ToString());
         await Invalidate();
+        TabManager.AddTab(Session.GetMetaData(newChapter.Guid));
     }
 }

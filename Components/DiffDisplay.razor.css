@@ -1,0 +1,25 @@
+﻿
+.diff-container {
+    position: fixed;
+    bottom: 0.25rem;
+    right: 0.25rem;
+    z-index: 10;
+    color: var(--mud-palette-text-primary);
+    box-shadow: var(--mud-elevation-5);
+    border-radius: 2rem;
+    background-color: var(--mud-palette-surface);
+    padding: 0 0 0 .25rem;
+    display: flex;
+    align-items: center;
+}
+
+::deep.diff-container .mud-icon-button {
+    background-color: #d1986f;
+    outline: solid 1px #ffffff79;
+    margin-right: .1rem;
+}
+
+::deep.diff-container .mud-chip {
+    outline: solid 1px #ffffff79;
+    margin: 0.1rem;
+}

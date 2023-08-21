@@ -13,6 +13,9 @@ builder.Services.AddSingleton<ProjectService>();
 builder.Services.AddSingleton<GalleryService>();
 builder.Services.AddMudServices();
 builder.Services.AddHttpClient();
+builder.Services.AddSignalR(e => {
+    e.MaximumReceiveMessageSize = 102400000;
+});
 
 var app = builder.Build();
 

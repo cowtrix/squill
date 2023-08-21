@@ -1,7 +1,7 @@
 ﻿@inject IJSRuntime JS
 
 <div class="grow-wrap text">
-        <InputTextArea @onkeydown="@(async (e) => await HandleInput(e))" @ref=Input class="markdown-textfield" @bind-Value=Value @oninput="Update" />
+    <InputTextArea @onkeydown="@(async (e) => await HandleInput(e))" @ref=Input class="markdown-textfield" @bind-Value=Value @oninput="Update" @onpaste=OnPaste />
     <div class="text">@((MarkupString)WordStyle(string.IsNullOrEmpty(Value) ? " " : Value + " "))</div>
 </div>
 
@@ -11,7 +11,11 @@
     public MarkdownEditor Editor { get; set; }
 
     [Parameter]
-    public string Value { get => __value.Trim(); set => __value = value?.Trim() ?? string.Empty; }
+    public string Value
+    {
+        get => __value.Trim();
+        set => __value = value?.Trim() ?? string.Empty;
+    }
     private string __value;
 
     [Parameter]
@@ -22,6 +26,7 @@
 
     [Parameter]
     public bool Focus { get; set; }
+
 
     [Parameter]
     public EventCallback<ParagraphDrawer> OnEnterPressed { get; set; }
@@ -40,6 +45,11 @@
         Value = (args.Value as string).Trim();
         InvokeAsync(async () => await ValueChanged.InvokeAsync(Value));
         StateHasChanged();
+    }
+
+    private async Task OnPaste(ClipboardEventArgs paste)
+    {
+        
     }
 
     public async Task HandleInput(KeyboardEventArgs e)

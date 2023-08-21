@@ -10,12 +10,14 @@
 @inject NavigationManager NavManager
 
 <TabManager @ref=TabManager Session="Session" />
+
 @if (!Session.IsSynchronized)
 {
     <div>Synchronizing</div>
 }
 else
 {
+    <DiffDisplay Session="Session" />
     @if (TabManager != null)
     {
         <MudTabs @bind-ActivePanelIndex="TabManager.Index" Border="true" Outlined="true" PanelClass="tab-panel-container" ApplyEffectsToContainer="true">
@@ -56,13 +58,13 @@ else
                     </MudTabPanel>
                 }
             </ChildContent>
-            <Header>
-                <MudButtonGroup>
-                    <MudTooltip Text="Append a tab">
-                        <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="() => TabManager.AddTab(null)" />
-                    </MudTooltip>
-                </MudButtonGroup>
-            </Header>
+            @*<Header>
+    <MudButtonGroup>
+    <MudTooltip Text="Append a tab">
+    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="() => TabManager.AddTab(null)" />
+    </MudTooltip>
+    </MudButtonGroup>
+    </Header>*@
             <TabPanelHeader>
                 @{
                     var tab = context.Tag as TabManager.TabView;

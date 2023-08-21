@@ -5,7 +5,7 @@
     switch (m_sortMode)
     {
         case SortMode.DateModified:
-            elements = elements.OrderBy(e => e.LastModified);
+            elements = elements.OrderByDescending(e => e.LastModified);
             break;
         case SortMode.Alphabetical:
             elements = elements.OrderBy(e => e.Name);

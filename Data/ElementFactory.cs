@@ -14,6 +14,17 @@ public class ElementMetaData
 
     [JsonIgnore]
     public string Path { get; set; }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ElementMetaData data &&
+               Guid == data.Guid;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Guid);
+    }
 }
 
 public class ElementFactory

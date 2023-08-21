@@ -3,11 +3,10 @@
     var meta = Session.GetMetaData(Element.Guid);
 }
 
-<MudPaper Elevation="15" Style="height: 1.5rem;" Outlined=true>
+<MudPaper Elevation="15" Style="height: 1.5rem;" Outlined=true Square=true>
     <MudToolBar DisableGutters=true Style="width:100%;height: 1.5rem;overflow:hidden;">
         <MudStack Row="true" Style="width:100%;align-items:center;">
-            <MudMenu Label="File" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined" >
-            </MudMenu>
+            <MudMenu Label="File" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined" />
             @Toolbar
         </MudStack>
     </MudToolBar>

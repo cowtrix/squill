@@ -1,0 +1,33 @@
+﻿@using Squill.Data;
+
+<MudMenu StartIcon="@ElementType.GetIcon()" Label="@Label" @bind-Value=Value Variant="Variant.Outlined" Dense=true >
+    @foreach (var match in Session.ElementMeta.Where(m => m.Type == ElementType.FullName))
+    {
+        <MudMenuItem OnClick="async () => await SetItem(match)">@match.Name</MudMenuItem>
+    }
+</MudMenu>
+
+@code {
+    [Parameter]
+    public Type ElementType { get; set; }
+
+    [Parameter]
+    public ElementMetaData Value { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public EventCallback<ElementMetaData> ValueChanged { get; set; }
+
+    [CascadingParameter]
+    public ProjectSession Session { get; set; }
+
+    private Converter<ElementMetaData> m_converter = new Converter<ElementMetaData> { SetFunc = m => m?.Name };
+
+    private async Task SetItem(ElementMetaData metaData)
+    {
+        Value = metaData;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

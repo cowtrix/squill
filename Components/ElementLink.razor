@@ -9,7 +9,7 @@
         {
             color = type.GetColor().ToString();
         }
-        <MudChip Icon="@type.GetIcon()" Style="@($"background-color:{color};color:black !important;" )" Size="Size.Small" Variant="Variant.Text" OnClick="Clicked">@meta.Name</MudChip>
+        <MudChip Icon="@type.GetIcon()" Style="@($"background-color:{color};color:black !important;" )" Size="Size.Small" Variant="Variant.Text" OnClick="Clicked">@meta.Name@ChildContent</MudChip>
     }
 }
 
@@ -19,6 +19,9 @@
 
     [Parameter]
     public Squill.Components.TabManager TabManager { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
 
     [Parameter]
     public ProjectSession Session { get; set; }

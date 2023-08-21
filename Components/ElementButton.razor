@@ -5,13 +5,13 @@
 }
 
 <MudItem>
-    <MudPaper Width="250px" Height="150px">
+    <MudPaper Width="250px" Height="150px" Style="@($"outline: 1px solid {type.GetColor()};")">
         <MudCardContent>
-            <MudStack Row=true>
-                <MudIcon Icon="@type?.GetIcon()" />
+            <MudStack Row=true >
+                <MudIcon Icon="@type?.GetIcon()" Style="@($"color: {type.GetColor()};")" />
                 <MudText>@Element.Name</MudText>
             </MudStack>
-            <MudText Typo="Typo.subtitle2">@(type?.GetName())</MudText>
+            <MudText Style="@($"color: {type.GetColor()};")" Typo="Typo.subtitle2">@(type?.GetName())</MudText>
         </MudCardContent>
         <MudCardActions>
             <MudIconButton OnClick="() => TabManager.AddTab(Element)" Icon="@Icons.Material.Filled.OpenInNew" />

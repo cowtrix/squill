@@ -1,0 +1,53 @@
+﻿@using Squill.Data;
+
+
+@{
+    var diff = Session.GetGitDiff();
+    if (diff != null)
+    {
+        <div class="diff-container">
+            <MudTooltip Arrow=true>
+                <ChildContent>
+                    <MudIconButton Color="Color.Secondary" Icon="@Icons.Material.Filled.Commit" OnClick="Commit" Size="Size.Small" />
+                </ChildContent>
+                <TooltipContent>
+                    Sync Changes
+                </TooltipContent>
+            </MudTooltip>
+            <MudTooltip Arrow=true>
+                <ChildContent>
+                    <MudChip Color="Color.Success" Icon="@Icons.Material.Filled.Add" Text="@diff.Added.Count().ToString()" Size="Size.Small" />
+                </ChildContent>
+                <TooltipContent>
+                    Added
+                </TooltipContent>
+            </MudTooltip>
+            <MudTooltip Arrow=true>
+                <ChildContent>
+                    <MudChip Color="Color.Error" Icon="@Icons.Material.Filled.HorizontalRule" Text="@diff.Deleted.Count().ToString()" Size="Size.Small" />
+                </ChildContent>
+                <TooltipContent>
+                    Deleted
+                </TooltipContent>
+            </MudTooltip>
+            <MudTooltip Arrow=true Placement="Placement.Start">
+                <ChildContent>
+                    <MudChip Color="Color.Info" Icon="@Icons.Material.Filled.Edit" Text="@diff.Modified.Count().ToString()" Size="Size.Small" />
+                </ChildContent>
+                <TooltipContent>
+                    Modified
+                </TooltipContent>
+            </MudTooltip>
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    private async Task Commit()
+    {
+        Session.Commit("", true);
+    }
+}

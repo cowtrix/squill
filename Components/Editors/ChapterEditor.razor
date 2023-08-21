@@ -3,14 +3,30 @@
 @using Squill.Data;
 @using System.Text;
 
-<MudPaper Elevation="15" Style="height: 1.5rem;" Outlined=true>
+<MudPaper Elevation="15" Outlined=true Square=true >
+    @if (m_showElementBreakdown)
+    {
+        <MudPaper Square=true>
+            @foreach (var ele in m_entityCount)
+            {
+                <ElementLink Element="Guid.Parse(ele.Key.Guid)" Session="Session" TabManager="TabManager">
+                    <span class="count-pill">@ele.Value</span>
+                </ElementLink>
+            }
+        </MudPaper>
+    }
     <EditForm EditContext="m_context">
+        @{
+            m_entityCount.Clear();
+        }
         <MarkdownEditor @bind-Value=Target.Content WordStyle="InsertTags" />
     </EditForm>
 </MudPaper>
 
 @code {
     private EditContext m_context;
+    private bool m_showElementBreakdown;
+    private Dictionary<ElementMetaData, int> m_entityCount = new Dictionary<ElementMetaData, int>();
 
     protected override void OnInitialized()
     {
@@ -23,7 +39,12 @@
         var w = rawInput.Split(' ');
         foreach (var word in w)
         {
-            var element = Session.ElementMeta.FirstOrDefault(m => m.Name == word);
+            var stripWord = word
+                .Replace(".", "")
+                .Replace("\"", "")
+                .Replace("!", "")
+                .Replace("?", "");
+            var element = Session.ElementMeta.FirstOrDefault(m => m.Name == stripWord);
             if (element != null)
             {
                 var color = Type.GetType(element.Type).GetColor().ToString();
@@ -32,6 +53,15 @@
                     color = colVal;
                 }
                 sb.Append($"<span class=\"tag\" style=\"background-color:{color};outline: 5px solid {color};\">");
+                if (!m_entityCount.TryGetValue(element, out var count))
+                {
+                    count = 1;
+                }
+                else
+                {
+                    count++;
+                }
+                m_entityCount[element] = count;
             }
             sb.Append(word);
             if (element != null)
@@ -45,16 +75,17 @@
 
     public override RenderFragment Toolbar => __builder =>
     {
+        <MudToggleIconButton Icon="@Icons.Material.Filled.DataArray" Size="Size.Small" @bind-Toggled=m_showElementBreakdown ToggledIcon="@Icons.Material.Filled.DataArray" Style="width: 2rem" />
         <MudSpacer />
         <MudTooltip Arrow=true RootStyle="display:flex;justify-content:center;">
             <ChildContent>
-                <MudIcon Icon="@Icons.Material.Outlined.Numbers" Size="Size.Small" />@Target.WordCount
+                <MudIcon Icon="@Icons.Material.Outlined.Numbers" Size="Size.Small" />WC: @Target.WordCount
             </ChildContent>
             <TooltipContent>
                 Word Count
             </TooltipContent>
         </MudTooltip>
-        <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;" />
+        <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
         @if (!Guid.TryParse(Target.Owner, out var ownerGuid))
         {
             <span class="toolbar-label">Chapter not owned by any manuscript.</span>
@@ -68,9 +99,9 @@
             }
             else
             {
-                <span class="toolbar-label">Chapter of <ElementLink Element="ownerGuid" Session="Session" TabManager="TabManager"  /></span>
+                <span class="toolbar-label">Chapter of <ElementLink Element="ownerGuid" Session="Session" TabManager="TabManager" /></span>
             }
         }
-        <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;" />
+        <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
     };
 }
