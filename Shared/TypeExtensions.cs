@@ -50,7 +50,12 @@ public static class TypeExtensions
         {
             return new MudColor(attr.Color);
         }
-        var rnd = new Random(type.FullName.Sum(c => (int)c));
+        return type.GetDefaultColor();
+    }
+
+    public static MudColor GetDefaultColor(this object obj)
+    {
+        var rnd = new Random(obj.ToString().Sum(c => (int)c));
         return new MudColor(rnd.NextDouble() * 360, .8, .7, 255);
     }
 

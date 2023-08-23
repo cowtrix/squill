@@ -3,7 +3,8 @@
 public interface IElement
 {
 	Guid Guid { get; }
-	IEnumerable<(string, string)> GetAttributes();
+	IEnumerable<(string, string)> GetAttributes(ProjectSession session);
+	bool ShouldTag { get; }
 }
 
 public interface IContainerElement : IElement

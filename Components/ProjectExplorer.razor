@@ -5,19 +5,19 @@
     switch (m_sortMode)
     {
         case SortMode.DateModified:
-            elements = elements.OrderByDescending(e => e.LastModified);
+            elements = elements.OrderByDescending(e => e.IsPinned()).ThenByDescending(e => e.LastModified);
             break;
         case SortMode.Alphabetical:
-            elements = elements.OrderBy(e => e.Name);
+            elements = elements.OrderByDescending(e => e.IsPinned()).ThenBy(e => e.Name);
             break;
         case SortMode.Type:
-            elements = elements.OrderBy(e => e.Type);
+            elements = elements.OrderByDescending(e => e.IsPinned()).ThenBy(e => e.Type);
             break;
-    }
+    };
 }
 
 <MudToolBar>
-    <MudStack Row=true Style="width: 100%">
+    <MudStack Row=true Style="width: 100%;align-items:center;">
         <MudChipSet Filter=true MultiSelection=true @bind-SelectedChips=m_currentChips>
             @foreach (var type in ElementFactory.SupportedTypes)
             {
@@ -25,11 +25,12 @@
             }
         </MudChipSet>
         <MudSpacer />
-        <MudSelect Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Sort" @bind-Value=m_sortMode Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
+        <MudSelect Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Sort" @bind-Value=m_sortMode Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" IconSize="Size.Small" Style="height:2.5rem;margin:0;">
             <MudSelectItem Value="SortMode.DateModified">Date Modified</MudSelectItem>
             <MudSelectItem Value="SortMode.Alphabetical">Alphabetical</MudSelectItem>
             <MudSelectItem Value="SortMode.Type">Type</MudSelectItem>
         </MudSelect>
+        <MudIconButton Color="Color.Secondary" Icon="@Icons.Material.Filled.Refresh" OnClick="Session.RefreshMetadata" Variant="Variant.Filled" Size="Size.Small" Style="height:2.5rem;width:2.5rem;" />
     </MudStack>
 </MudToolBar>
 <MudGrid Spacing="2" Justify="Justify.Center">
@@ -37,7 +38,7 @@
     {
         if (m_currentChips == null || !m_currentChips.Any() || m_currentChips.Any(c => (c.Tag as Type).FullName == element.Type))
         {
-            <ElementButton Element="element" TabManager=TabManager />
+            <ElementButton Element="element" Session=Session TabManager=TabManager OnRedraw="StateHasChanged"/>
         }
     }
 </MudGrid>

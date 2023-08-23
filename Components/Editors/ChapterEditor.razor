@@ -45,7 +45,7 @@
                 .Replace("!", "")
                 .Replace("?", "");
             var element = Session.ElementMeta.FirstOrDefault(m => m.Name == stripWord);
-            if (element != null)
+            if (element != null && element.ShouldTag())
             {
                 var color = Type.GetType(element.Type).GetColor().ToString();
                 if (element.Attributes.TryGetValue("color", out var colVal))

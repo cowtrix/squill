@@ -5,19 +5,22 @@
 }
 
 <MudItem>
-    <MudPaper Width="250px" Height="150px" Style="@($"outline: 1px solid {type.GetColor()};")">
+    <MudPaper Width="250px" Height="150px" Style="@($"outline: 1px solid {type.GetColor()};display:flex;flex-direction:column;")">
         <MudCardContent>
-            <MudStack Row=true >
+            <MudStack Row=true>
                 <MudIcon Icon="@type?.GetIcon()" Style="@($"color: {type.GetColor()};")" />
                 <MudText>@Element.Name</MudText>
             </MudStack>
             <MudText Style="@($"color: {type.GetColor()};")" Typo="Typo.subtitle2">@(type?.GetName())</MudText>
-        </MudCardContent>
-        <MudCardActions>
-            <MudIconButton OnClick="() => TabManager.AddTab(Element)" Icon="@Icons.Material.Filled.OpenInNew" />
-        </MudCardActions>
-    </MudPaper>
-</MudItem>
+                <MudText Typo="Typo.caption">Last Modified: @GetLastModified()</MudText>
+            </MudCardContent>
+            <MudSpacer />
+            <MudCardActions Style="justify-content:end;">
+                <MudToggleIconButton Toggled=@Element.IsPinned() ToggledChanged="TogglePinned" Icon="@Icons.Material.Filled.PushPin" ToggledIcon="@Icons.Material.Filled.PushPin" ToggledColor="Color.Secondary" ToggledSize="Size.Small" Size="Size.Small" />
+                <MudIconButton OnClick="() => TabManager.AddTab(Element)" Icon="@Icons.Material.Filled.OpenInNew" ToggledColor="Color.Secondary" ToggledSize="Size.Small" Size="Size.Small" />
+            </MudCardActions>
+        </MudPaper>
+    </MudItem>
 
     @code {
     [Parameter]
@@ -25,4 +28,35 @@
 
     [Parameter]
     public Squill.Components.TabManager TabManager { get; set; }
+
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    [Parameter]
+    public EventCallback OnRedraw { get; set; }
+
+    private async Task TogglePinned()
+    {
+        Session.TogglePinElement(Element);
+        await OnRedraw.InvokeAsync();
+    }
+
+    private string GetLastModified()
+    {
+        var time = DateTimeOffset.FromUnixTimeMilliseconds(Element.LastModified);
+        var delta = DateTimeOffset.UtcNow - time;
+        if(delta.Days == 0)
+        {
+            if(delta.Hours > 0)
+            {
+                return $"{delta.Hours}h ago";
+            }
+            if(delta.Minutes > 0)
+            {
+                return $"{delta.Minutes}m ago";
+            }
+            return $"{delta.Seconds}s ago";
+        }
+        return time.LocalDateTime.ToShortDateString();
+    }
 }

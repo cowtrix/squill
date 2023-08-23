@@ -11,7 +11,7 @@
         <MudPaper Elevation="5" Style="display:flex;margin-bottom: 1.5rem;padding: .75rem;align-items:center;">
             <MudIcon Icon="@Icons.Material.Outlined.Numbers" Size="Size.Small" />Word Count: @Target.Chapters.Sum(c => int.Parse(Session.GetMetaData(Guid.Parse(c)).Attributes[Chapter.WORD_COUNT_ATTRIB_KEY]))
         </MudPaper>
-        <MudStack>
+        <MudStack Spacing="1">
             @for (var i = 0; i < Target.Chapters.Count; ++i)
             {
                 var chapterGuid = Target.Chapters[i];
@@ -22,10 +22,29 @@
                     chapter.Attributes.TryGetValue(Chapter.WORD_COUNT_ATTRIB_KEY, out var wordCount);
                     <MudItem>
                         <MudStack Row="true">
+                            <span style="width: 1rem;">@(index + 1).</span>
                             <span style="width: 30%;">@chapter.Name</span>
                             <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
-                            <span>@(wordCount ?? "0") Words</span>
+                            <span style="width: 10%;">@(wordCount ?? "0") Words</span>
                             <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
+                            @{
+                                var links = chapter.GetEntityLinks();
+                                if (links != null)
+                                {
+                                    <MudAvatarGroup MaxSize="Size.Small" Max="6">
+                                        @foreach (var entityLink in chapter.GetEntityLinks())
+                                        {
+                                            var meta = Session.GetMetaData(entityLink);
+                                            var type = Type.GetType(meta.Type);
+                                            if (!meta.Attributes.TryGetValue("color", out var color))
+                                            {
+                                                color = type.GetColor().ToString();
+                                            }
+                                            <MudAvatar Style="@($"background-color:{color};color:black !important;")" Size="Size.Small">@meta.Name.FirstOrDefault()</MudAvatar>
+                                        }
+                                    </MudAvatarGroup>
+                                }
+                            }
                             <MudSpacer />
                             <MudIconButton Icon="@Icons.Material.Filled.ExpandMore" OnClick="() => Reorder(chapter, index + 1)" Style="padding:0;" Disabled="@(index == Target.Chapters.Count - 1)" />
                             <MudIconButton Icon="@Icons.Material.Filled.ExpandLess" OnClick="() => Reorder(chapter, index - 1)" Style="padding:0;" Disabled="@(index == 0)" />

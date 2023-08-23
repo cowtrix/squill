@@ -116,10 +116,36 @@ public class ProjectSession
     public async Task UpdateElement(IElement element)
     {
         var meta = GetMetaData(element.Guid);
-        meta.LastModified = DateTimeOffset.UtcNow.Ticks;
-        meta.Attributes = element.GetAttributes().ToDictionary(s => s.Item1, s => s.Item2);
-        await File.WriteAllTextAsync(meta.Path, JsonSerializer.Serialize(element, element.GetType()));
-        await File.WriteAllTextAsync(meta.Path + ".meta", JsonSerializer.Serialize(meta));
+        var save = JsonSerializer.Serialize(element, element.GetType());
+        if (File.Exists(meta.Path))
+        {
+            var existing = await File.ReadAllTextAsync(meta.Path);
+            if (existing != save)
+            {
+                await File.WriteAllTextAsync(meta.Path, save);                
+            }
+        }
+        foreach (var attr in element.GetAttributes(this).ToDictionary(s => s.Item1, s => s.Item2))
+        {
+            meta.Attributes[attr.Key] = attr.Value;
+        }
+        await UpdateMetadata(meta);
+    }
+
+    public async Task UpdateMetadata(ElementMetaData meta)
+    {
+        var metaPath = meta.Path + ".meta";
+        var save = JsonSerializer.Serialize(meta);
+        if (File.Exists(metaPath))
+        {
+            var existing = await File.ReadAllTextAsync(metaPath);
+            if (existing != save)
+            {
+                meta.LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                save = JsonSerializer.Serialize(meta);
+                await File.WriteAllTextAsync(metaPath, save);
+            }
+        }
     }
 
     public async Task RenameElement(ElementMetaData meta, string newName)
@@ -161,5 +187,31 @@ public class ProjectSession
         options.CredentialsProvider = GetCredentials;
         var pushRefSpec = $"refs/heads/{MASTER_NAME}";
         m_repository.Network.Push(remote, pushRefSpec, options);
+    }
+
+    public void TogglePinElement(ElementMetaData element)
+    {
+        const string pin = "pin";
+        if (element.Attributes.ContainsKey(pin))
+        {
+            element.Attributes.Remove(pin);
+        }
+        else
+        {
+            element.Attributes[pin] = "true";
+        }
+        new Task(async () => await UpdateMetadata(element)).Start();
+    }
+
+    public async Task RefreshMetadata()
+    {
+        m_elementMetadata = Directory.GetFiles(Project.DataDir, "*.meta", SearchOption.AllDirectories)
+            .Select(p => m_factory.GetMetaData(p))
+            .ToDictionary(e => Guid.Parse(e.Guid), e => e);
+        foreach (var meta in m_elementMetadata.Values)
+        {
+            var element = GetElement<IElement>(meta);
+            await UpdateElement(element);
+        }
     }
 }

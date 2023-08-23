@@ -10,28 +10,41 @@
     }
 }
 
-<MudItem>
-    <MudStack Row=true>
-        <MudStack>
-            <ImageField @bind-Value=@Target.Avatar.URL Session=Session />
-            <MudColorPicker Label="Tag Color" @bind-Value=@Color Variant="Variant.Outlined" />
+<MudPaper Elevation="15" Outlined=true Square=true>
+    <MudItem>
+        <MudStack Row=true>
+            <MudStack>
+                <ImageField @bind-Value=@Target.Avatar.URL Session=Session />
+                <div class="color-picker">
+                    <div class="color-preview" style="background-color:@Color" />
+                    <MudColorPicker Label="Tag Color" @bind-Value=@Color Variant="Variant.Outlined" IconSize="Size.Small" Margin="Margin.Dense" />
+                </div>
+            </MudStack>
+            <MudStack Style="width: 100%;">
+                <MudTextField Label="Description" @bind-Value=@Target.Description Variant="Variant.Outlined" DisableUnderLine=true Lines="4" />
+            </MudStack>
         </MudStack>
-        <MudStack Style="width: 100%;">
-            <MudTextField Label="Description" @bind-Value=@Target.Description Variant="Variant.Outlined" DisableUnderLine=true Lines="4" />
-        </MudStack>
-    </MudStack>
-</MudItem>
+    </MudItem>
+</MudPaper>
 
 @code {
     private MudColor Color
     {
         get
         {
-            return new MudColor(Target.Color);
+            return string.IsNullOrEmpty(Target.Color) ? Meta.Name.GetDefaultColor() : new MudColor(Target.Color);
         }
         set
         {
-            Target.Color = value.ToString();
+            var defaultCol = Meta.Name.GetDefaultColor();
+            if (defaultCol == value)
+            {
+                Target.Color = null;
+            }
+            else
+            {
+                Target.Color = value.ToString();
+            }
         }
     }
 }

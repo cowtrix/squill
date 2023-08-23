@@ -6,6 +6,7 @@ namespace Squill.Data;
 
 public class ElementMetaData
 {
+
     public string Guid { get; set; }
     public string Name { get; set; }
     public string Type { get; set; }
@@ -24,6 +25,23 @@ public class ElementMetaData
     public override int GetHashCode()
     {
         return HashCode.Combine(Guid);
+    }
+}
+
+public static class ElementMetaDataExtensions
+{
+
+    public static bool IsPinned(this ElementMetaData metaData) => metaData.Attributes.ContainsKey("pin");
+
+    public static bool ShouldTag(this ElementMetaData metaData) => !metaData.Attributes.ContainsKey("notag");
+
+    public static IEnumerable<Guid> GetEntityLinks(this ElementMetaData metaData)
+    {
+        if(!metaData.Attributes.TryGetValue("links", out var links))
+        {
+            return null;
+        }
+        return JsonSerializer.Deserialize<List<string>>(links).Select(s => Guid.Parse(s));
     }
 }
 

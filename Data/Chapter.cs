@@ -1,4 +1,5 @@
 ﻿using Squill.Shared;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Squill.Data;
@@ -14,8 +15,22 @@ public class Chapter : ElementComponent<Manuscript>
     [JsonIgnore]
     public int WordCount => !string.IsNullOrEmpty(Content) ? Content.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length : 0;
 
-    public override IEnumerable<(string, string)> GetAttributes()
+    public override bool ShouldTag => true;
+
+    public override IEnumerable<(string, string)> GetAttributes(ProjectSession session)
     {
         yield return (WORD_COUNT_ATTRIB_KEY, WordCount.ToString());
+        if (!string.IsNullOrEmpty(Content))
+        {
+            var strip = Content
+                .Replace(".", "")
+                .Replace("\"", "")
+                .Replace("!", "")
+                .Replace("?", "")
+                .Split(' ')
+                .ToHashSet();
+            var links = session.ElementMeta.Where(m => m.ShouldTag() && strip.Contains(m.Name)).Select(m => m.Guid);
+            yield return ("links", JsonSerializer.Serialize(links));
+        }
     }
 }

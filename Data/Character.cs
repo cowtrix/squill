@@ -7,12 +7,14 @@ namespace Squill.Data;
 public class Character : ElementBase
 {
     public Avatar Avatar { get; set; } = new Avatar();
-    public string Color { get; set; } = "FFFFFF";
+    public string Color { get; set; }
     public string Description { get; set; }
 
-    public override IEnumerable<(string, string)> GetAttributes()
+    public override bool ShouldTag => true;
+
+    public override IEnumerable<(string, string)> GetAttributes(ProjectSession session)
     {
-        yield return ("color", Color);
+        yield return ("color", !string.IsNullOrEmpty(Color) ? Color : session.GetMetaData(Guid).Name.GetDefaultColor().ToString());
     }
 }
 

@@ -10,6 +10,9 @@ public abstract class EditorBase : ComponentBase, IAsyncDisposable
     public IElement Element { get; set; }
 
     [CascadingParameter]
+    public ElementMetaData Meta { get; set; }
+
+    [CascadingParameter]
     public ProjectSession Session { get; set; }
 
     [CascadingParameter]
