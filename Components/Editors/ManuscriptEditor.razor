@@ -21,7 +21,7 @@
                 {
                     chapter.Attributes.TryGetValue(Chapter.WORD_COUNT_ATTRIB_KEY, out var wordCount);
                     <MudItem>
-                        <MudStack Row="true">
+                        <MudStack Row="true" Class="manuscript-row">
                             <span style="width: 1rem;">@(index + 1).</span>
                             <span style="width: 30%;">@chapter.Name</span>
                             <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />

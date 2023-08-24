@@ -6,8 +6,15 @@
                 @for (var i = 0; i < m_paragraphs.Count; i++)
                 {
                     var paragraph = m_paragraphs[i];
-                    <ParagraphDrawer Value=@paragraph.Content WordStyle="WordStyle" ValueChanged="(s) => Update(paragraph, s)" Index=i OnEnterPressed=Enter OnBackspaceDelete=Backspace Focus=paragraph.TakeFocus />
-                    paragraph.TakeFocus = false;
+                    <ParagraphDrawer Value=@paragraph.Content
+                                     WordStyle="WordStyle"
+                                     ValueChanged="(s) => Update(paragraph, s)"
+                                     Index=i
+                                     OnEnterPressed=Enter
+                                     OnBackspaceDelete=Backspace
+                                     ForwardParagraph="ForwardParagraph"
+                                     BackParagraph="BackParagraph"
+                                     Focus="() => paragraph.TakeFocus" />
                 }
             </div>
         </div>
@@ -17,7 +24,21 @@
 @code {
     public class Paragraph
     {
-        public bool TakeFocus { get; set; }
+        public bool TakeFocus
+        {
+            get
+            {
+                if (m_takeFocus)
+                {
+                    m_takeFocus = false;
+                    return true;
+                }
+                return false;
+            }
+            set => m_takeFocus = value;
+        }
+        private bool m_takeFocus;
+        public int? CaretIndex { get; set; }
         public string Content { get; set; }
         public override string ToString() => Content;
         public Paragraph(string content, bool takeFocus = false)
@@ -92,6 +113,28 @@
             }
             StateHasChanged();
             InvokeAsync(async () => await ValueChanged.InvokeAsync(Value));
+        }
+    }
+
+    private async Task ForwardParagraph(ParagraphDrawer drawer)
+    {
+        var next = m_paragraphs.ElementAtOrDefault(drawer.Index + 1);
+        if (next != null)
+        {
+            next.TakeFocus = true;
+            next.CaretIndex = 0;
+            StateHasChanged();
+        }
+    }
+
+    private async Task BackParagraph(ParagraphDrawer drawer)
+    {
+        var prev = m_paragraphs.ElementAtOrDefault(drawer.Index - 1);
+        if (prev != null)
+        {
+            prev.TakeFocus = true;
+            prev.CaretIndex = int.MaxValue;
+            StateHasChanged();
         }
     }
 

@@ -1,8 +1,18 @@
-﻿@inject IJSRuntime JS
+﻿@using System.Text.Json;
+@inject IJSRuntime JS
 
 <div class="grow-wrap text">
-    <InputTextArea @onkeydown="@(async (e) => await HandleInput(e))" @ref=Input class="markdown-textfield" @bind-Value=Value @oninput="Update" @onpaste=OnPaste />
-    <div class="text">@((MarkupString)WordStyle(string.IsNullOrEmpty(Value) ? " " : Value + " "))</div>
+    <InputTextArea @onkeydown="@(async (e) => await HandleInput(e))" id="@ID" @ref=Input class="markdown-textfield" @bind-Value=Value @oninput="Update" @onpaste=OnPaste />
+    <div class="text">
+        @if (WordStyle == null)
+        {
+            @(Value + " ")
+        }
+        else if (!string.IsNullOrEmpty(Value))
+        {
+            @((MarkupString)WordStyle(Value + " "))
+        }
+    </div>
 </div>
 
 @code {
@@ -25,8 +35,10 @@
     public int Index { get; set; }
 
     [Parameter]
-    public bool Focus { get; set; }
+    public Func<bool> Focus { get; set; }
 
+    [Parameter]
+    public Func<int?> CaretIndex { get; set; }
 
     [Parameter]
     public EventCallback<ParagraphDrawer> OnEnterPressed { get; set; }
@@ -35,10 +47,16 @@
     public EventCallback<ParagraphDrawer> OnBackspaceDelete { get; set; }
 
     [Parameter]
+    public EventCallback<ParagraphDrawer> BackParagraph { get; set; }
+
+    [Parameter]
+    public EventCallback<ParagraphDrawer> ForwardParagraph { get; set; }
+
+    [Parameter]
     public Func<string, string> WordStyle { get; set; }
 
-
     public InputTextArea Input { get; set; }
+    public string ID { get; private set; } = Guid.NewGuid().ToString();
 
     private void Update(ChangeEventArgs args)
     {
@@ -49,7 +67,7 @@
 
     private async Task OnPaste(ClipboardEventArgs paste)
     {
-        
+
     }
 
     public async Task HandleInput(KeyboardEventArgs e)
@@ -64,13 +82,39 @@
             await OnBackspaceDelete.InvokeAsync(this);
             StateHasChanged();
         }
+        if (e.Code.Contains("Arrow"))
+        {
+            var caret = await JS.InvokeAsync<JsonElement>("getCursorPos", ID);
+            var startExists = caret.TryGetProperty("start", out var startJson);
+            var endExists = caret.TryGetProperty("end", out var endJson);
+            var start = startJson.GetInt32();
+            var end = endJson.GetInt32();
+
+            if(start == end)
+            {
+                if (start == 0 && e.Code == "ArrowLeft")
+                {
+                    await BackParagraph.InvokeAsync(this);
+                }
+                if(end >= Value.Length && e.Code == "ArrowRight")
+                {
+                    await ForwardParagraph.InvokeAsync(this);
+                }
+            }
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (Focus)
+        if (Focus())
         {
             await Input.Element.Value.FocusAsync();
+        }
+        var caret = CaretIndex();
+        if (caret.HasValue)
+        {
+            await JS.InvokeVoidAsync("setCursorPos", ID, caret.Value);
+            CaretIndex = null;
         }
     }
 }

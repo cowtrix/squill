@@ -6,11 +6,11 @@
 @{
     if (Target != null && Target.Avatar == null)
     {
-        Target.Avatar = new Avatar();
+        Target.Avatar = new CharacterAvatar();
     }
 }
 
-<MudPaper Elevation="15" Outlined=true Square=true>
+<MudPaper Elevation="15" Outlined=true Square=true Class="border-collapse">
     <MudItem>
         <MudStack Row=true>
             <MudStack>
@@ -21,6 +21,12 @@
                 </div>
             </MudStack>
             <MudStack Style="width: 100%;">
+                <MudChipSet OnClose="(i) => Target.CharacterTypes.Remove((eCharacterType)i.Value)" AllClosable=true >
+                    @foreach(var label in Target.CharacterTypes)
+                    {
+                        <MudChip>@label</MudChip>
+                    }
+                </MudChipSet>
                 <MudTextField Label="Description" @bind-Value=@Target.Description Variant="Variant.Outlined" DisableUnderLine=true Lines="4" />
             </MudStack>
         </MudStack>

@@ -1,5 +1,6 @@
 ﻿body {
 }
+
 .fade-hover {
     opacity: 0;
     transition: opacity ease-in-out .25s;
@@ -85,4 +86,28 @@
     top: 50%;
     transform: translate(0, -50%);
     border-radius: 1.5rem;
+}
+
+.border-collapse {
+    padding: 1rem;
+}
+
+@media (max-width: 800px) {
+    .mud-container, .border-collapse {
+        padding: 0.1rem;
+        margin-top: 0 !important;
+    }
+}
+
+.tab-panel-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.manuscript-row {
+    flex-wrap: wrap;
+    outline: 1px solid #ffffff33;
+    outline-offset: 2px;
+    border-radius: .5rem;
+    align-items: center;
 }

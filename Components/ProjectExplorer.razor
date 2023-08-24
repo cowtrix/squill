@@ -16,7 +16,7 @@
     };
 }
 
-<MudToolBar>
+<MudToolBar Style="height:unset;margin:.5rem;">
     <MudStack Row=true Style="width: 100%;align-items:center;">
         <MudChipSet Filter=true MultiSelection=true @bind-SelectedChips=m_currentChips>
             @foreach (var type in ElementFactory.SupportedTypes)

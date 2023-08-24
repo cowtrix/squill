@@ -17,6 +17,16 @@
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
 }
 
+@media (max-width: 800px) {
+    .page {
+        padding: 1rem;
+    }
+
+    .textarea-container {
+        padding: 0.1rem;
+    }
+}
+
 ::deep.textarea-container .markdown-textfield {
     color: white;
 }
