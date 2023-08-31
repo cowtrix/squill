@@ -51,7 +51,8 @@ public class ElementFactory
     {
         typeof(Manuscript),
         typeof(Chapter),
-        typeof(Character)
+        typeof(Character),
+        typeof(Timeline),
     };
 
     private ProjectSession m_session;

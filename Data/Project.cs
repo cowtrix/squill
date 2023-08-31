@@ -9,6 +9,7 @@ public class Project
 
     public Guid Guid { get; set; }
     public string Name { get; set; }
+    public string Owner { get; set; }
     public string RepositoryURL { get; set; }
     public string RepositoryToken { get; set; }
 

@@ -1,0 +1,31 @@
+﻿@using Squill.Data;
+@inherits GenericEditorBase<Timeline>
+
+<MudPaper Elevation="15" Outlined=true Square=true>
+    <MudStack Class="border-collapse p-relative" Justify="Justify.Center" >
+        <div class="line"></div>
+        @for (var i = 0; i < Target.Events.Count; i++)
+        {
+            var ev = Target.Events[i];
+            var counter = i;
+            <MudCard Outlined=true Style="min-width:50%;max-width:30rem;align-self:center;z-index:1;" Elevation="10">
+                <MudCardContent>
+                    <MudTextField Label="Title" @bind-Value=ev.Title />
+                    <MudTextField Lines=4 Label="Description" @bind-Value=ev.Description />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudIconButton Variant="Variant.Outlined" Icon="@Icons.Material.Filled.KeyboardArrowUp" OnClick="() => Target.SetIndex(ev, counter - 1)" Disabled="counter <= 0" />
+                    <MudIconButton Variant="Variant.Outlined" Icon="@Icons.Material.Filled.KeyboardArrowDown" OnClick="() => Target.SetIndex(ev, counter + 1)" Disabled="counter >= Target.Events.Count - 1" />
+                </MudCardActions>
+            </MudCard>
+        }
+        <MudButton OnClick="() => Target.Events.Add(new Timeline.Event())" Variant="Variant.Outlined" Style="min-width:50%;max-width:30rem;z-index:1;align-self:center;">
+            <MudIcon Icon="@Icons.Material.Filled.Add" />
+        </MudButton>
+    </MudStack>
+</MudPaper>
+
+
+@code {
+
+}

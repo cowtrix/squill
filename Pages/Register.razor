@@ -1,0 +1,53 @@
+﻿@using Squill.Services;
+@page "/register/"
+@inject UserService UserService
+@inject NavigationManager NavManager
+
+<MudCard>
+    <MudForm>
+        <MudCardContent>
+            <MudStack Style="padding: 2rem;">
+                @if (!string.IsNullOrEmpty(m_error))
+                {
+                    <MudText Color="Color.Error">@m_error</MudText>
+                }
+                <MudTextField Label="Username" @bind-Value=m_userName Variant="Variant.Outlined" />
+                <MudTextField Label="Email" @bind-Value=m_email Variant="Variant.Outlined" InputMode="InputMode.email" />
+                <MudTextField Label="Password" @bind-Value=m_password Variant="Variant.Outlined" InputType="InputType.Password" />
+                <MudButton OnClick="async () => await TryRegister()">Register</MudButton>
+            </MudStack>
+        </MudCardContent>
+    </MudForm>
+</MudCard>
+
+@code {
+    private string m_userName;
+    private string m_email;
+    private string m_password;
+    private string m_error;
+
+    private async Task TryRegister()
+    {
+        if (string.IsNullOrEmpty(m_userName) || UserService.UserExists(m_userName))
+        {
+            m_error = "Invalid username";
+            return;
+        }
+
+        if (string.IsNullOrEmpty(m_password) || m_password.Length < 5)
+        {
+            m_error = "Invalid password";
+            return;
+        }
+
+        if (string.IsNullOrEmpty(m_email))
+        {
+            m_error = "Invalid email";
+            return;
+        }
+
+        await UserService.Register(m_userName, m_email, m_password);
+
+        NavManager.NavigateTo("/", true);
+    }
+}

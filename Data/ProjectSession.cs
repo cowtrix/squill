@@ -1,28 +1,29 @@
 ﻿using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
+using Squill.Data.Auth;
 using System.Text.Json;
 
 namespace Squill.Data;
 
 public class ProjectSession
 {
-    public ProjectSession(Project project)
+    public ProjectSession(User user, Project project)
     {
         Project = project;
+        m_user = user;
         m_factory = new ElementFactory(this);
         m_elementCache = new Dictionary<Guid, IElement>();
     }
 
-    private static string Username => "cowtrix";
-    private static string Email = "seandgfinnegan@gmail.com";
-
     public const string MASTER_NAME = "squill_master";
 
     public Project Project { get; set; }
+    public string CurrentDirectory { get; set; } = "";
     public IEnumerable<ElementMetaData> ElementMeta => m_elementMetadata.Values;
     public bool IsSynchronized { get; set; }
     public event EventHandler OnSynchronized;
 
+    private User m_user;
     private Repository m_repository;
     private Task? m_workerTask;
     private ElementFactory m_factory;
@@ -80,7 +81,7 @@ public class ProjectSession
         {
             throw new Exception();
         }
-        return new UsernamePasswordCredentials { Username = Username, Password = Project.RepositoryToken };
+        return new UsernamePasswordCredentials { Username = m_user.Name, Password = Project.RepositoryToken };
     }
 
     public async Task<IElement> CreateNewElement(Type t)
@@ -89,7 +90,7 @@ public class ProjectSession
         {
             throw new Exception();
         }
-        var newElement = m_factory.CreateNewElement(t);
+        var newElement = m_factory.CreateNewElement(t, CurrentDirectory);
         m_elementMetadata[newElement.Item2.Guid] = newElement.Item1;
         return newElement.Item2;
     }
@@ -122,7 +123,7 @@ public class ProjectSession
             var existing = await File.ReadAllTextAsync(meta.Path);
             if (existing != save)
             {
-                await File.WriteAllTextAsync(meta.Path, save);                
+                await File.WriteAllTextAsync(meta.Path, save);
             }
         }
         foreach (var attr in element.GetAttributes(this).ToDictionary(s => s.Item1, s => s.Item2))
@@ -148,13 +149,13 @@ public class ProjectSession
         }
     }
 
-    public async Task RenameElement(ElementMetaData meta, string newName)
+    public async Task RenameElement(ElementMetaData meta, string dir, string newName)
     {
-        if (meta.Name == newName)
+        if (meta.Name == newName && meta.Path == dir)
         {
             return;
         }
-        var newPath = Path.Combine(Path.GetDirectoryName(meta.Path), newName + Path.GetExtension(meta.Path));
+        var newPath = Path.Combine(Path.GetDirectoryName(meta.Path), dir, newName + Path.GetExtension(meta.Path));
         File.Copy(meta.Path, newPath);
         File.Delete(meta.Path);
         File.Delete(meta.Path + ".meta");
@@ -175,12 +176,12 @@ public class ProjectSession
         return m_repository.Diff.Compare<TreeChanges>(m_repository.Head.Tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
     }
 
-    public void Commit(string message, bool userTriggerd)
+    public void Commit(string message, bool userTriggered)
     {
-        var sig = new Signature(Username, Email, DateTimeOffset.Now);
+        var sig = new Signature(m_user.Name, m_user.Email, DateTimeOffset.Now);
         if (GetGitDiff().Any())
         {
-            m_repository.Commit($"[SYNC] {message}{(userTriggerd ? " [Explicit]" : "")}", sig, sig);
+            m_repository.Commit($"[SYNC] {message}{(userTriggered ? " [Explicit]" : "")}", sig, sig);
         }
         var remote = m_repository.Network.Remotes["origin"];
         var options = new PushOptions();
@@ -214,4 +215,25 @@ public class ProjectSession
             await UpdateElement(element);
         }
     }
+
+    public void CreateNewFolder(string? name = null)
+    {
+        Directory.CreateDirectory(Path.Combine(Project.DataDir, CurrentDirectory, name ?? "New Folder"));
+    }
+
+    public IEnumerable<string> GetCurrentSubDirectories()
+    {
+        var targetPath = Path.Combine(Project.DataDir, CurrentDirectory);
+        if (!Directory.Exists(targetPath))
+        {
+            yield break;
+        }
+        foreach (var subDir in Directory.GetDirectories(Path.Combine(Project.DataDir, CurrentDirectory))
+            .Where(f => !System.IO.Path.GetFileName(f).StartsWith('.'))
+            .Select(d => System.IO.Path.GetFileName(d.Replace(Project.DataDir + Path.DirectorySeparatorChar, ""))))
+        {
+            yield return subDir;
+        }
+    }
+
 }

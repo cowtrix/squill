@@ -87,7 +87,8 @@
     {
         var tabView = tab.Tag as TabManager.TabView;
         tabView.IsEditing = false;
-        await Session.RenameElement(tabView.Target, tabView.NameOverride);
+        var containerDir = tabView.Target.Path.Replace(Session.Project.DataDir, "").Replace($"\\{Path.GetFileName(tabView.Target.Path)}", "");
+        await Session.RenameElement(tabView.Target, containerDir, tabView.NameOverride);
         StateHasChanged();
     }
 

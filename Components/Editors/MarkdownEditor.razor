@@ -1,7 +1,8 @@
-﻿
+﻿@using Squill.Data;
+
 <MudItem>
     <EditForm EditContext="m_context">
-        <div class="textarea-container">
+        <div class="textarea-container @(Minimal ? "textarea-minimal" : "")">
             <div class="page">
                 @for (var i = 0; i < m_paragraphs.Count; i++)
                 {
@@ -14,6 +15,9 @@
                                      OnBackspaceDelete=Backspace
                                      ForwardParagraph="ForwardParagraph"
                                      BackParagraph="BackParagraph"
+                                     CommentAdded="CommentAdded"
+                                     CommentsEnabled="CommentsEnabled"
+                                     CaretIndex="() => paragraph.CaretIndex"
                                      Focus="() => paragraph.TakeFocus" />
                 }
             </div>
@@ -43,6 +47,7 @@
         public override string ToString() => Content;
         public Paragraph(string content, bool takeFocus = false)
         {
+
             Content = content.Trim();
             TakeFocus = takeFocus;
         }
@@ -67,6 +72,15 @@
 
     [Parameter]
     public Func<string, string> WordStyle { get; set; }
+
+    [Parameter]
+    public bool Minimal { get; set; }
+
+    [Parameter]
+    public bool CommentsEnabled { get; set; }
+
+    [Parameter]
+    public EventCallback<Comment> CommentAdded { get; set; }
 
     private string m_lastValue { get; set; }
     private Task m_autosaveThread { get; set; }

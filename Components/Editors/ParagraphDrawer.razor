@@ -1,8 +1,10 @@
 ﻿@using System.Text.Json;
+@using MudBlazor.Extensions;
+@using Squill.Data;
 @inject IJSRuntime JS
 
 <div class="grow-wrap text">
-    <InputTextArea @onkeydown="@(async (e) => await HandleInput(e))" id="@ID" @ref=Input class="markdown-textfield" @bind-Value=Value @oninput="Update" @onpaste=OnPaste />
+    <InputTextArea @onkeydown="@(async (e) => await HandleInput(e))" id="@ID" @ref=Input class="markdown-textfield" @bind-Value=Value @oninput="Update" />
     <div class="text">
         @if (WordStyle == null)
         {
@@ -12,6 +14,17 @@
         {
             @((MarkupString)WordStyle(Value + " "))
         }
+    </div>
+    <div class="paragraph-actions fade-hover">
+        <MudStack>
+            @if (CommentsEnabled)
+            {
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.AddComment" OnClick="AddComment" />
+                <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@(m_currentCommentEdit != null)" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" Class="pa-4">
+                    <MarkdownEditor @bind-Value=m_currentCommentEdit.Text Minimal=true />
+                </MudPopover>
+            }
+        </MudStack>
     </div>
 </div>
 
@@ -53,7 +66,15 @@
     public EventCallback<ParagraphDrawer> ForwardParagraph { get; set; }
 
     [Parameter]
+    public EventCallback<Comment> CommentAdded { get; set; }
+
+    [Parameter]
+    public bool CommentsEnabled { get; set; }
+
+    [Parameter]
     public Func<string, string> WordStyle { get; set; }
+
+    private Comment m_currentCommentEdit;
 
     public InputTextArea Input { get; set; }
     public string ID { get; private set; } = Guid.NewGuid().ToString();
@@ -65,9 +86,16 @@
         StateHasChanged();
     }
 
-    private async Task OnPaste(ClipboardEventArgs paste)
+    private async Task AddComment()
     {
-
+        if (!CommentsEnabled)
+        {
+            return;
+        }
+        var newComment = new Comment { ParagraphIndex = Index };
+        await CommentAdded.InvokeAsync(newComment);
+        m_currentCommentEdit = newComment;
+        StateHasChanged();
     }
 
     public async Task HandleInput(KeyboardEventArgs e)
@@ -90,13 +118,13 @@
             var start = startJson.GetInt32();
             var end = endJson.GetInt32();
 
-            if(start == end)
+            if (start == end)
             {
-                if (start == 0 && e.Code == "ArrowLeft")
+                if (start == 0 && (e.Code == "ArrowLeft" || e.Code == "ArrowUp"))
                 {
                     await BackParagraph.InvokeAsync(this);
                 }
-                if(end >= Value.Length && e.Code == "ArrowRight")
+                if (end >= Value.Length && (e.Code == "ArrowRight" || e.Code == "ArrowDown"))
                 {
                     await ForwardParagraph.InvokeAsync(this);
                 }
@@ -109,12 +137,13 @@
         if (Focus())
         {
             await Input.Element.Value.FocusAsync();
-        }
-        var caret = CaretIndex();
-        if (caret.HasValue)
-        {
-            await JS.InvokeVoidAsync("setCursorPos", ID, caret.Value);
-            CaretIndex = null;
+
+            var caret = CaretIndex();
+            if (caret.HasValue)
+            {
+                await JS.InvokeVoidAsync("setCursorPos", ID, caret.Value);
+                CaretIndex = null;
+            }
         }
     }
 }

@@ -40,7 +40,17 @@
                                             {
                                                 color = type.GetColor().ToString();
                                             }
-                                            <MudAvatar Style="@($"background-color:{color};color:black !important;")" Size="Size.Small">@meta.Name.FirstOrDefault()</MudAvatar>
+                                            <MudAvatar Style="@($"background-color:{color};color:black !important;")" Size="Size.Small">
+                                                <MudTooltip>
+                                                    <ChildContent>
+                                                        @meta.Name.FirstOrDefault()
+                                                    </ChildContent>
+                                                    <TooltipContent>
+                                                        @meta.Name
+                                                    </TooltipContent>
+                                                </MudTooltip>
+                                            </MudAvatar>
+
                                         }
                                     </MudAvatarGroup>
                                 }

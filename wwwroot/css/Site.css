@@ -111,3 +111,20 @@
     border-radius: .5rem;
     align-items: center;
 }
+
+.textarea-minimal{
+    padding: 0 !important;
+}
+
+    .textarea-minimal .page {
+        padding: .5rem !important;
+        text-indent: 0 !important;
+    }
+
+    .textarea-minimal .grow-wrap {
+        margin-bottom: 0 !important;
+    }
+
+    .textarea-minimal textarea {
+        text-indent: 0 !important;
+    }

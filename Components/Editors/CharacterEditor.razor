@@ -21,12 +21,23 @@
                 </div>
             </MudStack>
             <MudStack Style="width: 100%;">
-                <MudChipSet OnClose="(i) => Target.CharacterTypes.Remove((eCharacterType)i.Value)" AllClosable=true >
-                    @foreach(var label in Target.CharacterTypes)
-                    {
-                        <MudChip>@label</MudChip>
-                    }
-                </MudChipSet>
+                <MudPaper Elevation="2">
+                    <MudStack Row=true>
+                        <MudChipSet OnClose="(i) => Target.CharacterTypes.Remove((eCharacterType)i.Tag)" AllClosable=true>
+                            @foreach (var label in Target.CharacterTypes)
+                            {
+                                <MudChip Tag="label">@label</MudChip>
+                            }
+                        </MudChipSet>
+                        <MudSpacer />
+                        <MudMenu Icon="@Icons.Material.Filled.Add" AnchorOrigin="Origin.BottomLeft">
+                            @foreach (var type in Enum.GetValues<eCharacterType>())
+                            {
+                                <MudMenuItem OnClick="() => Target.CharacterTypes.Add(type)">@type</MudMenuItem>
+                            }
+                        </MudMenu>
+                    </MudStack>
+                </MudPaper>
                 <MudTextField Label="Description" @bind-Value=@Target.Description Variant="Variant.Outlined" DisableUnderLine=true Lines="4" />
             </MudStack>
         </MudStack>

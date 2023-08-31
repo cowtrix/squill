@@ -7,7 +7,7 @@
 <div class="img-button">
     @if (!string.IsNullOrEmpty(Value))
     {
-        <image id="@m_guid" />
+        <img id="@m_guid" src="" style="display:block;width:100%;height:100%;" />
     }
     else
     {
@@ -35,12 +35,14 @@
 
     public async Task OnFileUploaded(InputFileChangeEventArgs args)
     {
-        MemoryStream ms = new MemoryStream();
-        await args.File.OpenReadStream().CopyToAsync(ms);
+        var ms = new MemoryStream();
+        await args.File.OpenReadStream(maxAllowedSize: 1024 * 1024 * 5)
+            .CopyToAsync(ms);
         var bytes = ms.ToArray();
         Value = args.File.Name;
         await ValueChanged.InvokeAsync(Value);
         Gallery.SaveNewImage(Session, args.File.Name, bytes);
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -50,7 +52,7 @@
             var imageStream = Gallery.GetImage(Session, Value);
             if (imageStream != null)
             {
-                var dotnetImageStream = new DotNetStreamReference(imageStream);
+                using var dotnetImageStream = new DotNetStreamReference(imageStream);
                 await JS.InvokeVoidAsync("setImage", m_guid.ToString(), dotnetImageStream);
             }
         }

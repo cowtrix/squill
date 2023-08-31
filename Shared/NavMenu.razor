@@ -1,13 +1,22 @@
 ﻿@using Squill.Services;
 @inject ProjectService ProjectService
+@inject UserService UserService
 
 <MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavLink Href="project/new" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">New Project</MudNavLink>
-    @foreach(var project in ProjectService.GetAllProjects())
+    @if (UserService.CurrentUser != null)
     {
-        <MudNavLink Href="@($"project/{project.Guid}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Workspaces">
-            @project.Name
-        </MudNavLink>
+        <MudNavLink Href="project/new" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">New Project</MudNavLink>
+        @foreach (var project in ProjectService.GetAllProjects(UserService.CurrentUser))
+        {
+            <MudNavLink Href="@($"project/{project.Guid}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Workspaces">
+                @project.Name
+            </MudNavLink>
+        }
+    }
+    else
+    {
+        <MudNavLink Href="login" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+        <MudNavLink Href="register" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
     }
 </MudNavMenu>

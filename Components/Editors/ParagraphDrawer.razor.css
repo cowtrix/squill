@@ -7,7 +7,7 @@
 
     .grow-wrap > div {
         transform: translate(0, 2px);
-        color: #00000055;
+        color: #00000000;
         pointer-events: none;
     }
 
@@ -40,4 +40,14 @@
     font-weight: 100;
     letter-spacing: 0;
     text-indent: .75rem;
+}
+
+.paragraph-actions{
+    position: absolute;
+    right: -1.5rem;
+    top: 0;
+    bottom: 0;
+    display: block;
+    z-index: 2;
+    pointer-events: all !important;
 }

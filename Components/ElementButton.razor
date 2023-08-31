@@ -5,24 +5,33 @@
 }
 
 <MudItem>
-    <MudPaper Width="250px" Height="150px" Style="@($"outline: 1px solid {type.GetColor()};display:flex;flex-direction:column;")">
+    <MudPaper Width="225px" Height="150px" Style="@($"outline: 1px solid {type.GetColor()};display:flex;flex-direction:column;")">
         <MudCardContent>
             <MudStack Row=true>
                 <MudIcon Icon="@type?.GetIcon()" Style="@($"color: {type.GetColor()};")" />
                 <MudText>@Element.Name</MudText>
             </MudStack>
             <MudText Style="@($"color: {type.GetColor()};")" Typo="Typo.subtitle2">@(type?.GetName())</MudText>
-                <MudText Typo="Typo.caption">Last Modified: @GetLastModified()</MudText>
-            </MudCardContent>
-            <MudSpacer />
-            <MudCardActions Style="justify-content:end;">
-                <MudToggleIconButton Toggled=@Element.IsPinned() ToggledChanged="TogglePinned" Icon="@Icons.Material.Filled.PushPin" ToggledIcon="@Icons.Material.Filled.PushPin" ToggledColor="Color.Secondary" ToggledSize="Size.Small" Size="Size.Small" />
-                <MudIconButton OnClick="() => TabManager.AddTab(Element)" Icon="@Icons.Material.Filled.OpenInNew" ToggledColor="Color.Secondary" ToggledSize="Size.Small" Size="Size.Small" />
-            </MudCardActions>
-        </MudPaper>
-    </MudItem>
+            <MudText Typo="Typo.caption">Last Modified: @GetLastModified()</MudText>
+        </MudCardContent>
+        <MudSpacer />
+        @{
+            var dirs = Session.GetCurrentSubDirectories();
+        }
+        <MudCardActions Style="justify-content:end;">
+            <MudMenu Icon="@Icons.Material.Filled.DriveFileMove" Size="Size.Small" AnchorOrigin="Origin.BottomLeft" Disabled="!dirs.Any()">
+                @foreach (var dir in dirs)
+                {
+                    <MudMenuItem OnClick="async () => await MoveToFolder(dir)">@dir</MudMenuItem>
+                }
+            </MudMenu>
+            <MudToggleIconButton Toggled=@Element.IsPinned() ToggledChanged="TogglePinned" Icon="@Icons.Material.Filled.PushPin" ToggledIcon="@Icons.Material.Filled.PushPin" ToggledColor="Color.Secondary" ToggledSize="Size.Small" Size="Size.Small" />
+            <MudIconButton OnClick="() => TabManager.AddTab(Element)" Icon="@Icons.Material.Filled.OpenInNew" Size="Size.Small" />
+        </MudCardActions>
+    </MudPaper>
+</MudItem>
 
-    @code {
+@code {
     [Parameter]
     public ElementMetaData Element { get; set; }
 
@@ -41,17 +50,23 @@
         await OnRedraw.InvokeAsync();
     }
 
+    private async Task MoveToFolder(string dir)
+    {
+        await Session.RenameElement(Element, dir, Element.Name);
+        await OnRedraw.InvokeAsync();
+    }
+
     private string GetLastModified()
     {
         var time = DateTimeOffset.FromUnixTimeMilliseconds(Element.LastModified);
         var delta = DateTimeOffset.UtcNow - time;
-        if(delta.Days == 0)
+        if (delta.Days == 0)
         {
-            if(delta.Hours > 0)
+            if (delta.Hours > 0)
             {
                 return $"{delta.Hours}h ago";
             }
-            if(delta.Minutes > 0)
+            if (delta.Minutes > 0)
             {
                 return $"{delta.Minutes}m ago";
             }

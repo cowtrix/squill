@@ -5,6 +5,7 @@ public abstract class ElementBase : IElement
     public Guid Guid { get; set; }
     public abstract bool ShouldTag { get; }
     public string ScratchPad { get; set; }
+    public List<string> Labels { get; set; } = new List<string>();
 
     public ElementBase()
     {

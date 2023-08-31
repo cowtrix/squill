@@ -15,7 +15,7 @@ public class GalleryService
     public void SaveNewImage(ProjectSession session, string name, byte[] data)
     {
         var img = Image.Load<Rgba32>(data);
-        var path = Path.Combine(session.Project.DataDir, "img", name);
+        var path = Path.Combine(session.Project.DataDir, ".img", name);
         var dir = Path.GetDirectoryName(path);
         if (!Directory.Exists(dir))
         {
@@ -24,9 +24,9 @@ public class GalleryService
         img.Save(path);
     }
 
-    public Stream GetImage(ProjectSession session, string name)
+    public MemoryStream GetImage(ProjectSession session, string name)
     {
-        var fullPath = Path.Combine(session.Project.DataDir, "img", name);
+        var fullPath = Path.Combine(session.Project.DataDir, ".img", name);
         if (!File.Exists(fullPath))
         {
             return null;

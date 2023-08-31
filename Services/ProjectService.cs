@@ -1,4 +1,5 @@
 ﻿using Squill.Data;
+using Squill.Data.Auth;
 using System;
 using System.Text.Json;
 using static MudBlazor.CategoryTypes;
@@ -9,6 +10,12 @@ public class ProjectService
 {
     public static string DataDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "squill_data");
     private static Dictionary<Guid, ProjectSession> m_activeSessions = new Dictionary<Guid, ProjectSession>();
+    private UserService m_userService;
+
+    public ProjectService(UserService userService)
+    {
+        m_userService = userService;
+    }
 
     private static string GetProjectMetaPath(string filename) => Path.Combine(DataDirectory, filename);
 
@@ -19,7 +26,7 @@ public class ProjectService
             return session;
         }
         var project = await GetProject(guid);
-        session = new ProjectSession(project);
+        session = new ProjectSession(m_userService.CurrentUser, project);
         m_activeSessions[project.Guid] = session;
         return session;
     }
@@ -45,7 +52,7 @@ public class ProjectService
         File.WriteAllText(GetProjectMetaPath($"{project.Guid}.meta"), JsonSerializer.Serialize(project));
     }
 
-    public IEnumerable<Project> GetAllProjects()
+    public IEnumerable<Project> GetAllProjects(User user)
     {
         if (!Directory.Exists(DataDirectory))
         {
@@ -54,6 +61,6 @@ public class ProjectService
         var allProj = Directory.GetFiles(DataDirectory, "*.meta");
         return allProj
             .Select(p => JsonSerializer.Deserialize<Project>(File.ReadAllText(p)))
-            .Where(p => p != null);
+            .Where(p => p != null && p.Owner == user.Name);
     }
 }

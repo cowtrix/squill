@@ -1,16 +1,13 @@
-window.setImage = async (imageElementId, imageStream) => {
-
-    console.log("Setting image for " + imageElementId)
-
+async function setImage(imgId, imageStream) {
+    console.log('setting image ' + imgId);
     const arrayBuffer = await imageStream.arrayBuffer();
-    console.log("Length was " + arrayBuffer.length)
+    console.log('got array buffer ' + imgId);
     const blob = new Blob([arrayBuffer]);
+    console.log('created blob ' + imgId);
     const url = URL.createObjectURL(blob);
-    const image = document.getElementById(imageElementId);
-    image.onload = () => {
-        URL.revokeObjectURL(url);
-    }
-    image.src = url;
+    console.log('created url ' + url);
+    document.getElementById(imgId).src = url;
+    console.log('set img source ' + url);
 }
 
 function getCursorPos(input) {

@@ -1,7 +1,9 @@
 ﻿@using Squill.Data;
 
 @{
-    var elements = Session.ElementMeta as IEnumerable<ElementMetaData>;
+    var elements = Session.ElementMeta
+        .Where(e => System.IO.Path.GetDirectoryName(e.Path) == Path.Combine(Session.Project.DataDir, Session.CurrentDirectory))
+        as IEnumerable<ElementMetaData>;
     switch (m_sortMode)
     {
         case SortMode.DateModified:
@@ -17,28 +19,64 @@
 }
 
 <MudToolBar Style="height:unset;margin:.5rem;">
-    <MudStack Row=true Style="width: 100%;align-items:center;">
-        <MudChipSet Filter=true MultiSelection=true @bind-SelectedChips=m_currentChips>
-            @foreach (var type in ElementFactory.SupportedTypes)
-            {
-                <MudChip Style="@($"background-color:{type.GetColor()};color:black !important;")" Icon="@type.GetIcon()" Tag="type">@type.GetName() <span class="count-pill">@Session.GetTypeCount(type)</span></MudChip>
-            }
-        </MudChipSet>
-        <MudSpacer />
-        <MudSelect Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Sort" @bind-Value=m_sortMode Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" IconSize="Size.Small" Style="height:2.5rem;margin:0;">
-            <MudSelectItem Value="SortMode.DateModified">Date Modified</MudSelectItem>
-            <MudSelectItem Value="SortMode.Alphabetical">Alphabetical</MudSelectItem>
-            <MudSelectItem Value="SortMode.Type">Type</MudSelectItem>
-        </MudSelect>
-        <MudIconButton Color="Color.Secondary" Icon="@Icons.Material.Filled.Refresh" OnClick="Session.RefreshMetadata" Variant="Variant.Filled" Size="Size.Small" Style="height:2.5rem;width:2.5rem;" />
+    <MudStack Style="width: 100%;align-items:center;">
+        <MudStack Row=true Style="width: 100%;align-items:center;">
+            <MudChipSet Filter=true MultiSelection=true @bind-SelectedChips=m_currentChips>
+                @foreach (var type in ElementFactory.SupportedTypes)
+                {
+                    <MudChip Style="@($"background-color:{type.GetColor()};color:black !important;")" Icon="@type.GetIcon()" Tag="type">@type.GetName() <span class="count-pill">@Session.GetTypeCount(type)</span></MudChip>
+                }
+            </MudChipSet>
+        </MudStack>
+        <MudStack Row=true Style="width: 100%;align-items:center;">
+            <MudStack Spacing="0" Style="width: 100%;height:2.5rem;align-items:center;" Row=true>
+                <MudText Typo="Typo.subtitle1">@Path.GetDirectoryName(Session.CurrentDirectory)/</MudText>
+                @if (m_editingDirectoryName)
+                {
+                    <MudInputString @bind-Value="CurrentDirectoryName" Variant="Variant.Outlined" Style="height:2.5rem;" AdornmentIcon="@Icons.Material.Filled.Edit" />
+                }
+                else if (!string.IsNullOrEmpty(Session.CurrentDirectory))
+                {
+                    <MudText Typo="Typo.subtitle1">@CurrentDirectoryName/</MudText>
+                    <MudIconButton Class="ml-2" Icon="@Icons.Material.Filled.Edit" OnClick="(_) => m_editingDirectoryName = true" Size="Size.Small" Variant="Variant.Outlined" />
+                }
+            </MudStack>
+            <MudSelect Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Sort" @bind-Value=m_sortMode Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense" IconSize="Size.Small" Style="height:2.5rem;margin:0;">
+                <MudSelectItem Value="SortMode.DateModified">Date Modified</MudSelectItem>
+                <MudSelectItem Value="SortMode.Alphabetical">Alphabetical</MudSelectItem>
+                <MudSelectItem Value="SortMode.Type">Type</MudSelectItem>
+            </MudSelect>
+            <MudIconButton Color="Color.Secondary" Icon="@Icons.Material.Filled.DriveFolderUpload" OnClick="() => UpDirectory()" Variant="Variant.Filled" Size="Size.Small" Style="height:2.5rem;width:2.5rem;" Disabled="string.IsNullOrEmpty(Session.CurrentDirectory)" />
+            <MudIconButton Color="Color.Secondary" Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => Session.CreateNewFolder()" Variant="Variant.Filled" Size="Size.Small" Style="height:2.5rem;width:2.5rem;" />
+            <MudIconButton Color="Color.Secondary" Icon="@Icons.Material.Filled.Refresh" OnClick="Session.RefreshMetadata" Variant="Variant.Filled" Size="Size.Small" Style="height:2.5rem;width:2.5rem;" />
+        </MudStack>
     </MudStack>
 </MudToolBar>
-<MudGrid Spacing="2" Justify="Justify.Center">
+<MudGrid Spacing="2" Class="border-collapse">
+    @foreach (var dir in Session.GetCurrentSubDirectories())
+    {
+        <MudItem>
+            <MudPaper Width="225px" Height="100px" Style="outline: 1px solid white;display:flex;flex-direction:column;">
+                <MudCardContent>
+                    <MudStack Row=true>
+                        <MudIcon Icon="@Icons.Material.Filled.Folder" />
+                        <MudText>@dir</MudText>
+                    </MudStack>
+                </MudCardContent>
+                <MudSpacer />
+                <MudCardActions Style="justify-content:end;">
+                    <MudIconButton OnClick="() => InDirectory(dir)" Icon="@Icons.Material.Filled.FolderOpen" ToggledColor="Color.Secondary" ToggledSize="Size.Small" Size="Size.Small" />
+                </MudCardActions>
+            </MudPaper>
+        </MudItem>
+    }
+</MudGrid>
+<MudGrid Spacing="2" Class="border-collapse">
     @foreach (var element in elements)
     {
         if (m_currentChips == null || !m_currentChips.Any() || m_currentChips.Any(c => (c.Tag as Type).FullName == element.Type))
         {
-            <ElementButton Element="element" Session=Session TabManager=TabManager OnRedraw="StateHasChanged"/>
+            <ElementButton Element="element" Session=Session TabManager=TabManager OnRedraw="StateHasChanged" />
         }
     }
 </MudGrid>
@@ -52,11 +90,49 @@
         Type,
     }
 
+    private string CurrentDirectoryName
+    {
+        get
+        {
+            return Path.GetFileName(Session.CurrentDirectory);
+        }
+        set
+        {
+            if (value != CurrentDirectoryName)
+            {
+                var newdir = Path.Combine(Path.GetDirectoryName(Session.CurrentDirectory), value);
+                var newPath = Path.Combine(Session.Project.DataDir, newdir);
+                Directory.Move(Path.Combine(Session.Project.DataDir, Session.CurrentDirectory), newPath);
+                InvokeAsync(async () =>
+                {
+                    await Session.RefreshMetadata();
+                    StateHasChanged();
+                });
+                Session.CurrentDirectory = newdir;
+            }
+            m_editingDirectoryName = false;
+        }
+    }
+
+    private bool m_editingDirectoryName;
+
     [Parameter]
     public ProjectSession Session { get; set; }
 
     [Parameter]
     public Squill.Components.TabManager TabManager { get; set; }
+
+    private void InDirectory(string dir)
+    {
+        Session.CurrentDirectory = Path.Combine(Session.CurrentDirectory, dir);
+        m_editingDirectoryName = false;
+    }
+
+    private void UpDirectory()
+    {
+        Session.CurrentDirectory = Path.GetDirectoryName(Session.CurrentDirectory);
+        m_editingDirectoryName = false;
+    }
 
     private MudChip[] m_currentChips;
     private SortMode m_sortMode;

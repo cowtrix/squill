@@ -6,10 +6,10 @@
 <MudPaper Elevation="15" Style="height: 1.5rem;" Outlined=true Square=true>
     <MudToolBar DisableGutters=true Style="width:100%;height: 1.5rem;overflow:hidden;">
         <MudStack Row="true" Spacing=0 Style="width:100%;align-items:center;">
-            <MudMenu Label="File" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined">
+            <MudMenu Label="File" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomLeft">
                 <MudMenuItem OnClick="async () => await Session.UpdateElement(Element)">Save</MudMenuItem>
             </MudMenu>
-            <MudMenu Label="View" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined">
+            <MudMenu Label="View" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomLeft">
                 <MudMenuItem OnClick="@(() => ToggleTab("Scratchpad"))">Scratchpad</MudMenuItem>
             </MudMenu>
             @Toolbar

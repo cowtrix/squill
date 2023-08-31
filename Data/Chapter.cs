@@ -11,6 +11,7 @@ public class Chapter : ElementComponent<Manuscript>
     public const string PARENT_INDEX_ATTRIB_KEY = "index";
 
     public string Content { get; set; }
+    public List<Comment> Comments { get; set; } = new List<Comment>();
 
     [JsonIgnore]
     public int WordCount => !string.IsNullOrEmpty(Content) ? Content.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length : 0;
@@ -23,6 +24,8 @@ public class Chapter : ElementComponent<Manuscript>
         if (!string.IsNullOrEmpty(Content))
         {
             var strip = Content
+                .Replace(Environment.NewLine, " ")
+                .Replace("\n", " ")
                 .Replace(".", "")
                 .Replace("\"", "")
                 .Replace("!", "")

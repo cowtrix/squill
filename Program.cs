@@ -9,6 +9,7 @@ StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configurat
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<ProjectService>();
 builder.Services.AddSingleton<GalleryService>();
 builder.Services.AddMudServices();
