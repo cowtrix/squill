@@ -1,7 +1,9 @@
-﻿@using Squill.Services;
+﻿@using Blazored.LocalStorage;
+@using Squill.Services;
 @page "/register/"
 @inject UserService UserService
 @inject NavigationManager NavManager
+@inject ILocalStorageService Storage
 
 <MudCard>
     <MudForm>
@@ -46,7 +48,7 @@
             return;
         }
 
-        await UserService.Register(m_userName, m_email, m_password);
+        await UserService.Register(Storage, m_userName, m_email, m_password);
 
         NavManager.NavigateTo("/", true);
     }

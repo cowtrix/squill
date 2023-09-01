@@ -3,18 +3,12 @@
 @using MudBlazor.Utilities;
 @using Squill.Data;
 
-@{
-    if (Target != null && Target.Avatar == null)
-    {
-        Target.Avatar = new CharacterAvatar();
-    }
-}
 
 <MudPaper Elevation="15" Outlined=true Square=true Class="border-collapse">
     <MudItem>
         <MudStack Row=true>
             <MudStack>
-                <ImageField @bind-Value=@Target.Avatar.URL Session=Session />
+                <ImageField @bind-Value=@Target.ImagePath Session=Session />
                 <div class="color-picker">
                     <div class="color-preview" style="background-color:@Color" />
                     <MudColorPicker Label="Tag Color" @bind-Value=@Color Variant="Variant.Outlined" IconSize="Size.Small" Margin="Margin.Dense" />

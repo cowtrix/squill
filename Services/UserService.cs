@@ -1,4 +1,6 @@
-﻿using Squill.Data.Auth;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Identity;
+using Squill.Data.Auth;
 using System.Text.Json;
 
 namespace Squill.Services;
@@ -21,9 +23,9 @@ public class UserService
 
     public bool UserExists(string username) => AllUsers.Any(u => u.Name == username);
 
-    public async Task Register(string username, string email, string password)
+    public async Task Register(ILocalStorageService storage, string username, string email, string password)
     {
-        if(UserExists(username))
+        if (UserExists(username))
         {
             throw new ArgumentException($"Username {username} already exists");
         }
@@ -33,14 +35,46 @@ public class UserService
             Email = email,
         };
         user.SetNewPassword(null, password);
-        File.WriteAllText(Path.Combine(ProjectService.DataDirectory, "usr", $"{username}.usr"), JsonSerializer.Serialize(user));
+        await SetToken(storage, user);
         CurrentUser = user;
     }
 
-    public async Task<bool> Login(string username, string password)
+    public async Task<bool> Login(ILocalStorageService storage, string username, string password)
     {
         var user = AllUsers.SingleOrDefault(u => u.Name == username);
-        if(user == null || !user.TryChallenge(password))
+        if (user == null || !user.TryChallenge(password))
+        {
+            return false;
+        }
+        await SetToken(storage, user);
+        CurrentUser = user;
+        return true;
+    }
+
+    private async Task SetToken(ILocalStorageService storage, User user)
+    {
+        var token = Guid.NewGuid().ToString();
+        user.Tokens.Add(token);
+        await storage.SetItemAsStringAsync("session", token);
+        await SaveUser(user);
+    }
+
+    private async Task SaveUser(User user)
+    {
+        await File.WriteAllTextAsync(
+            Path.Combine(ProjectService.DataDirectory, "usr", $"{user.Name}.usr"),
+            JsonSerializer.Serialize(user));
+    }
+
+    public async Task<bool> TryAutoLogin(ILocalStorageService storage)
+    {
+        var token = await storage.GetItemAsStringAsync("session");
+        if (string.IsNullOrEmpty(token))
+        {
+            return false;
+        }
+        var user = AllUsers.SingleOrDefault(u => u.Tokens.Contains(token));
+        if(user  == null)
         {
             return false;
         }

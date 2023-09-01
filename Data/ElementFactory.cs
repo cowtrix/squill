@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Squill.Data;
 
@@ -41,7 +41,7 @@ public static class ElementMetaDataExtensions
         {
             return null;
         }
-        return JsonSerializer.Deserialize<List<string>>(links).Select(s => Guid.Parse(s));
+        return JsonConvert.DeserializeObject<List<string>>(links).Select(s => Guid.Parse(s));
     }
 }
 
@@ -67,7 +67,7 @@ public class ElementFactory
         {
             path = path.Substring(0, path.Length - ".meta".Length);
         }
-        var meta = JsonSerializer.Deserialize<ElementMetaData>(File.ReadAllText(path + ".meta"));
+        var meta = JsonConvert.DeserializeObject<ElementMetaData>(File.ReadAllText(path + ".meta"), m_session.SerializerSettings);
         meta.Path = path;
         return meta;
     }
@@ -86,7 +86,8 @@ public class ElementFactory
         {
             throw new Exception();
         }
-        return JsonSerializer.Deserialize(File.ReadAllText(path), type) as T;
+        
+        return JsonConvert.DeserializeObject(File.ReadAllText(path), type, m_session.SerializerSettings) as T;
     }
 
     private string GetAutomaticFilename(Type t, string dir)
@@ -122,8 +123,8 @@ public class ElementFactory
             Type = type.FullName,
             LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
         };
-        File.WriteAllText(outputPath, JsonSerializer.Serialize(newEle));
-        File.WriteAllText(outputPath + ".meta", JsonSerializer.Serialize(meta));
+        File.WriteAllText(outputPath, JsonConvert.SerializeObject(newEle, m_session.SerializerSettings));
+        File.WriteAllText(outputPath + ".meta", JsonConvert.SerializeObject(meta, m_session.SerializerSettings));
         return (meta, newEle);
     }
 }

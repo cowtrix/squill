@@ -1,0 +1,40 @@
+﻿@using Squill.Data;
+@using Squill.Services;
+
+@inject IJSRuntime JS
+@inject GalleryService Gallery
+
+<img id="@m_guid" src="" style="display:block;width:100%;height:100%;" @attributes="AdditionalAttributes" />
+
+
+@code {
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    [Parameter]
+    public string Path { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private Guid m_guid;
+
+    protected override void OnInitialized()
+    {
+        m_guid = System.Guid.NewGuid();
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(Path))
+        {
+            var imageStream = Gallery.GetImage(Session, Path);
+            if (imageStream != null)
+            {
+                using var dotnetImageStream = new DotNetStreamReference(imageStream);
+                await JS.InvokeVoidAsync("setImage", m_guid.ToString(), dotnetImageStream);
+            }
+        }
+    }
+}

@@ -8,9 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="BlazorContentEditable" Version="2.0.0" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.2" />
     <PackageReference Include="Markdig" Version="0.32.0" />
     <PackageReference Include="MudBlazor" Version="6.0.13" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
   </ItemGroup>
 

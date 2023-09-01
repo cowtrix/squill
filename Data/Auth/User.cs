@@ -7,6 +7,7 @@ public class User
     public string Name { get; set; }
     public string Email { get; set; }
     public string Challenge { get; set; }
+    public List<string> Tokens { get; set; } = new List<string>();
 
     public bool TryChallenge(string password)
     {

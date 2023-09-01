@@ -1,7 +1,6 @@
 ﻿using LibGit2Sharp;
-using LibGit2Sharp.Handlers;
 using Squill.Data.Auth;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace Squill.Data;
 
@@ -13,8 +12,14 @@ public class ProjectSession
         m_user = user;
         m_factory = new ElementFactory(this);
         m_elementCache = new Dictionary<Guid, IElement>();
+        SerializerSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            Formatting = Formatting.Indented,
+        };
     }
 
+    public JsonSerializerSettings SerializerSettings { get; init; }
     public const string MASTER_NAME = "squill_master";
 
     public Project Project { get; set; }
@@ -29,6 +34,7 @@ public class ProjectSession
     private ElementFactory m_factory;
     private Dictionary<Guid, ElementMetaData> m_elementMetadata;
     private Dictionary<Guid, IElement> m_elementCache;
+
 
     public void TryStartSynchronize()
     {
@@ -117,7 +123,7 @@ public class ProjectSession
     public async Task UpdateElement(IElement element)
     {
         var meta = GetMetaData(element.Guid);
-        var save = JsonSerializer.Serialize(element, element.GetType());
+        var save = JsonConvert.SerializeObject(element, SerializerSettings);
         if (File.Exists(meta.Path))
         {
             var existing = await File.ReadAllTextAsync(meta.Path);
@@ -136,14 +142,14 @@ public class ProjectSession
     public async Task UpdateMetadata(ElementMetaData meta)
     {
         var metaPath = meta.Path + ".meta";
-        var save = JsonSerializer.Serialize(meta);
+        var save = JsonConvert.SerializeObject(meta, SerializerSettings);
         if (File.Exists(metaPath))
         {
             var existing = await File.ReadAllTextAsync(metaPath);
             if (existing != save)
             {
                 meta.LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                save = JsonSerializer.Serialize(meta);
+                save = JsonConvert.SerializeObject(meta, SerializerSettings);
                 await File.WriteAllTextAsync(metaPath, save);
             }
         }
@@ -161,7 +167,7 @@ public class ProjectSession
         File.Delete(meta.Path + ".meta");
         meta.Path = newPath;
         meta.Name = newName;
-        await File.WriteAllTextAsync(meta.Path + ".meta", JsonSerializer.Serialize(meta));
+        await File.WriteAllTextAsync(meta.Path + ".meta", JsonConvert.SerializeObject(meta, SerializerSettings));
     }
 
     public int GetTypeCount(Type t) => m_elementMetadata.Count(m => m.Value.Type == t.FullName);
@@ -237,3 +243,5 @@ public class ProjectSession
     }
 
 }
+
+

@@ -1,5 +1,5 @@
 ﻿using Squill.Services;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Squill.Data;
 

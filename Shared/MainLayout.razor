@@ -1,4 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using Blazored.LocalStorage;
+@using Squill.Services;
+@inherits LayoutComponentBase
+@inject UserService UserService
+@inject ILocalStorageService Storage
+@inject NavigationManager NavManager
 
 <MudThemeProvider IsDarkMode=true />
 <MudDialogProvider />
@@ -31,5 +36,19 @@
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (UserService.CurrentUser == null)
+            {
+                if(await UserService.TryAutoLogin(Storage))
+                {
+                    NavManager.NavigateTo(NavManager.Uri, true);
+                }
+            }
+        }
     }
 }

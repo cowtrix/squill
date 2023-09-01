@@ -15,6 +15,38 @@ public class ElementDisplay : Attribute
 
 public static class TypeExtensions
 {
+    public static IEnumerable<Type> GetTypesImplementing(this Type t)
+    {
+        Type interfaceType = t;
+
+        // Get all loaded assemblies
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+        // Iterate through each assembly and find types that implement the given interface
+        foreach (Assembly assembly in assemblies)
+        {
+            IEnumerable<Type> typesInAssembly;
+            try
+            {
+                // Get all types from the assembly (ignoring any exceptions)
+                typesInAssembly = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                // Handle exceptions if any type cannot be loaded
+                typesInAssembly = ex.Types.Where(t => t != null);
+            }
+
+            foreach (Type type in typesInAssembly)
+            {
+                if (interfaceType.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                {
+                    yield return type;
+                }
+            }
+        }
+    }
+
     public static string GetName(this Type type)
     {
         var attr = type.GetCustomAttributes(typeof(ElementDisplay), true)

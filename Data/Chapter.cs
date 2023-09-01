@@ -1,6 +1,5 @@
 ﻿using Squill.Shared;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Squill.Data;
 
@@ -33,7 +32,7 @@ public class Chapter : ElementComponent<Manuscript>
                 .Split(' ')
                 .ToHashSet();
             var links = session.ElementMeta.Where(m => m.ShouldTag() && strip.Contains(m.Name)).Select(m => m.Guid);
-            yield return ("links", JsonSerializer.Serialize(links));
+            yield return ("links", JsonConvert.SerializeObject(links, session.SerializerSettings));
         }
     }
 }

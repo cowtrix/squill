@@ -4,25 +4,24 @@ using System.Dynamic;
 
 namespace Squill.Data;
 
-[ElementDisplay(Icon = "Person")]
-public class Character : ElementBase
+public interface IImageProviderElement : IElement
 {
-    public CharacterAvatar Avatar { get; set; } = new CharacterAvatar();
+    public string ImagePath { get; }
+}
+
+[ElementDisplay(Icon = "Person")]
+public class Character : ElementBase, IImageProviderElement
+{
     public string Color { get; set; }
     public string Description { get; set; }
     public HashSet<eCharacterType> CharacterTypes { get; set; } = new HashSet<eCharacterType>();
-
     public override bool ShouldTag => true;
+    public string ImagePath { get; set; }
 
     public override IEnumerable<(string, string)> GetAttributes(ProjectSession session)
     {
         yield return ("color", !string.IsNullOrEmpty(Color) ? Color : session.GetMetaData(Guid).Name.GetDefaultColor().ToString());
     }
-}
-
-public class CharacterAvatar
-{
-    public string URL { get; set; }
 }
 
 public enum eCharacterType

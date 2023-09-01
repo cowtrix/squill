@@ -1,7 +1,9 @@
-﻿@using Squill.Services;
+﻿@using Blazored.LocalStorage;
+@using Squill.Services;
 @page "/login/"
 @inject UserService UserService
 @inject NavigationManager NavManager
+@inject ILocalStorageService Storage
 
 <MudCard>
     <MudForm>
@@ -38,7 +40,7 @@
             return;
         }
 
-        var result = await UserService.Login(m_userName, m_password);
+        var result = await UserService.Login(Storage, m_userName, m_password);
         if (!result)
         {
             m_error = "Could not login";

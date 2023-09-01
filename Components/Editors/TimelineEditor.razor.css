@@ -9,7 +9,20 @@
     margin-bottom: 3.2rem;
 }
 
-.p-relative{
+.p-relative {
     position: relative;
     flex-direction: row;
+}
+
+.component-wrapper {
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+}
+
+.component-actions {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    margin-left: .5rem;
 }

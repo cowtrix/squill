@@ -7,6 +7,10 @@
 <MudItem>
     <MudPaper Width="225px" Height="150px" Style="@($"outline: 1px solid {type.GetColor()};display:flex;flex-direction:column;")">
         <MudCardContent>
+            @if(Element is IImageProviderElement imgProvider)
+            {
+                <DynamicImage Session="Session" Path="@imgProvider.ImagePath" class="image-preview" />
+            }
             <MudStack Row=true>
                 <MudIcon Icon="@type?.GetIcon()" Style="@($"color: {type.GetColor()};")" />
                 <MudText>@Element.Name</MudText>
