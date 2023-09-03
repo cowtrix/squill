@@ -19,7 +19,7 @@
     border-radius: 1rem;
 }
 
-.mud-tooltip-arrow::after{
+.mud-tooltip-arrow::after {
     right: 50%;
     left: 50%;
 }
@@ -73,11 +73,11 @@
     }
 }
 
-.color-picker{
+.color-picker {
     position: relative;
 }
 
-.color-preview{
+.color-preview {
     position: absolute;
     display: block;
     width: 1.5rem;
@@ -112,7 +112,7 @@
     align-items: center;
 }
 
-.textarea-minimal{
+.textarea-minimal {
     padding: 0 !important;
 }
 
@@ -127,4 +127,33 @@
 
     .textarea-minimal textarea {
         text-indent: 0 !important;
+    }
+
+
+.mud-grid-item > .mud-paper {
+    position: relative;
+    overflow: clip;
+    z-index: 1;
+}
+
+.element-button .mud-card-content > * {
+    padding: .15rem 0.25rem .25rem 0.25rem;
+}
+
+img.image-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    object-fit: cover;
+    z-index: -1;
+    opacity: 1;
+    pointer-events: none;
+    padding: 0 !important;
+}
+
+    img.image-preview ~ div, img.image-preview ~ h6, img.image-preview ~ span {
+        text-shadow: 0 0 1rem rgba(0,0,0,1);
+        background-color: #000000ab;
     }

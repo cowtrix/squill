@@ -4,12 +4,12 @@
     var type = Type.GetType(Element.Type);
 }
 
-<MudItem>
+<MudItem Class="element-button">
     <MudPaper Width="225px" Height="150px" Style="@($"outline: 1px solid {type.GetColor()};display:flex;flex-direction:column;")">
         <MudCardContent>
-            @if(Element is IImageProviderElement imgProvider)
+            @if (Element.Attributes.TryGetValue("img", out var imagePath) && !string.IsNullOrWhiteSpace(imagePath))
             {
-                <DynamicImage Session="Session" Path="@imgProvider.ImagePath" class="image-preview" />
+                <DynamicImage Session="Session" Path="@imagePath" class="image-preview" />
             }
             <MudStack Row=true>
                 <MudIcon Icon="@type?.GetIcon()" Style="@($"color: {type.GetColor()};")" />

@@ -1,10 +1,10 @@
 ﻿using Squill.Shared;
 using Newtonsoft.Json;
 
-namespace Squill.Data;
+namespace Squill.Data.Elements;
 
 [ElementDisplay(Icon = "EditNote")]
-public class Chapter : ElementComponent<Manuscript>
+public class Chapter : OwnedElement<Manuscript>
 {
     public const string WORD_COUNT_ATTRIB_KEY = "word_count";
     public const string PARENT_INDEX_ATTRIB_KEY = "index";

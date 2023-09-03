@@ -1,6 +1,7 @@
 ﻿using LibGit2Sharp;
 using Squill.Data.Auth;
 using Newtonsoft.Json;
+using Squill.Data.Elements;
 
 namespace Squill.Data;
 
@@ -157,11 +158,11 @@ public class ProjectSession
 
     public async Task RenameElement(ElementMetaData meta, string dir, string newName)
     {
-        if (meta.Name == newName && meta.Path == dir)
+        var newPath = Path.Combine(Path.GetDirectoryName(meta.Path), dir, newName + Path.GetExtension(meta.Path));
+        if (meta.Name == newName && meta.Path == newPath)
         {
             return;
         }
-        var newPath = Path.Combine(Path.GetDirectoryName(meta.Path), dir, newName + Path.GetExtension(meta.Path));
         File.Copy(meta.Path, newPath);
         File.Delete(meta.Path);
         File.Delete(meta.Path + ".meta");

@@ -33,13 +33,14 @@
     outline: none;
     text-indent: 1rem;
 }
- 
+
 ::deep.text > textarea, .text {
     white-space: pre-wrap;
-    font-size: 1rem;
     font-weight: 100;
     letter-spacing: 0;
     text-indent: .75rem;
+    min-height: 1.5rem;
+    font-size: 1rem;
 }
 
 .paragraph-actions{

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Squill.Data;
+using Squill.Data.Elements;
 
 namespace Squill.Components.Editors;
 

@@ -1,8 +1,7 @@
 ﻿using MudBlazor.Utilities;
 using Squill.Shared;
-using System.Dynamic;
 
-namespace Squill.Data;
+namespace Squill.Data.Elements;
 
 public interface IImageProviderElement : IElement
 {
@@ -21,6 +20,7 @@ public class Character : ElementBase, IImageProviderElement
     public override IEnumerable<(string, string)> GetAttributes(ProjectSession session)
     {
         yield return ("color", !string.IsNullOrEmpty(Color) ? Color : session.GetMetaData(Guid).Name.GetDefaultColor().ToString());
+        yield return ("img", ImagePath);
     }
 }
 

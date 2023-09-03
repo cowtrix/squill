@@ -1,6 +1,6 @@
 ﻿using Squill.Shared;
 
-namespace Squill.Data;
+namespace Squill.Data.Elements;
 
 [ElementDisplay(Icon = "LibraryBooks")]
 public class Manuscript : ElementBase

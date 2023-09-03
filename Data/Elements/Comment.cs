@@ -1,4 +1,4 @@
-﻿namespace Squill.Data;
+﻿namespace Squill.Data.Elements;
 
 public class Comment
 {

@@ -1,4 +1,4 @@
-﻿namespace Squill.Data;
+﻿namespace Squill.Data.Elements;
 
 public abstract class ElementBase : IElement
 {
@@ -6,10 +6,11 @@ public abstract class ElementBase : IElement
     public abstract bool ShouldTag { get; }
     public string ScratchPad { get; set; }
     public List<string> Labels { get; set; } = new List<string>();
+    public List<ElementComponent> Components { get; set; } = new List<ElementComponent>();
 
     public ElementBase()
     {
-        Guid = System.Guid.NewGuid();
+        Guid = Guid.NewGuid();
     }
 
     public virtual IEnumerable<(string, string)> GetAttributes(ProjectSession session)

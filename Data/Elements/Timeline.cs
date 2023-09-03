@@ -3,20 +3,20 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Squill.Data;
+namespace Squill.Data.Elements;
 
 [ElementDisplay(Icon = "Timeline")]
 public class Timeline : ElementBase
 {
     public override bool ShouldTag => false;
 
-    
+
 
     public List<Event> Events { get; set; } = new List<Event>();
 
     public void SetIndex(Event ev, int index)
     {
-        if(index < 0 || index >= Events.Count)
+        if (index < 0 || index >= Events.Count)
         {
             return;
         }
@@ -34,8 +34,6 @@ public class Event
 public abstract class EventComponent
 {
     [JsonIgnore]
-    public abstract string Type { get; }
-    [JsonIgnore]
     public abstract object Value { get; set; }
     public abstract RenderFragment GetEditor();
 }
@@ -43,7 +41,6 @@ public abstract class EventComponent
 [ElementDisplay(Name = "Description")]
 public class DescriptionEventComponent : EventComponent
 {
-    public override string Type => "Description";
 
     public override object Value { get => Description; set => Description = (string)value; }
 
@@ -55,7 +52,7 @@ public class DescriptionEventComponent : EventComponent
         builder.OpenComponent<MudTextField<string>>(0);
         builder.AddAttribute(1, "Value", Description);
         builder.AddAttribute(2, "ValueChanged", EventCallback.Factory.Create<string>(this, (s) => Description = s));
-        builder.AddAttribute(3, "Label", Type);
+        builder.AddAttribute(3, "Label", GetType().GetName());
         builder.AddAttribute(3, "Lines", 5);
         builder.CloseComponent();
     };

@@ -1,6 +1,7 @@
 ﻿@inherits GenericEditorBase<Manuscript>
 
 @using Squill.Data;
+@using Squill.Data.Elements;
 
 @{
     base.BuildRenderTree(__builder);
@@ -100,7 +101,7 @@
 
     private async Task AddNewChapter()
     {
-        var newChapter = await Session.CreateNewElement(typeof(Chapter)) as IElementComponent;
+        var newChapter = await Session.CreateNewElement(typeof(Chapter)) as IOwnedElement;
         newChapter.Owner = Element.Guid.ToString();
         await Session.UpdateElement(newChapter);
         Target.Chapters.Add(newChapter.Guid.ToString());
