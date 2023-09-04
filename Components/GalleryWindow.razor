@@ -1,0 +1,48 @@
+﻿@using Squill.Data;
+@using Squill.Services;
+@inject GalleryService GalleryService
+
+@if (IsOpen)
+{
+    <div class="gallery-wrapper">
+        <MudPaper Elevation="15" Style="padding:1rem;" Class="gallery-window">
+            <MudStack Row=true>
+                <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="() => IsOpen = false" />
+            </MudStack>
+            @foreach (var img in GalleryService.GetAllImages(Session))
+            {
+                var path = img;
+                <div class="grid-item" @onclick="() => Select(path)">
+                    <DynamicImage Session="Session" Path="@img" class="image-display" />
+                </div>
+            }
+        </MudPaper>
+    </div>
+}
+
+@code {
+    public bool IsOpen { get; private set; }
+
+    public Action<string> Callback { get; private set; }
+
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GalleryService.OnOpen += OnOpen;
+    }
+
+    private void OnOpen(object? sender, Action<string> onSelected)
+    {
+        Callback = onSelected;
+        IsOpen = true;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Select(string value)
+    {
+        Callback.Invoke(value);
+        IsOpen = false;
+    }
+}

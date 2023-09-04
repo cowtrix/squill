@@ -1,11 +1,27 @@
-﻿namespace Squill.Data.Elements;
+﻿using Squill.Data.ElementComponents;
 
-public interface IElement
+namespace Squill.Data.Elements;
+
+public interface IElement : IAttributeProvider, IComponentOwner
 {
-    Guid Guid { get; }
-    IEnumerable<(string, string)> GetAttributes(ProjectSession session);
     bool ShouldTag { get; }
     string ScratchPad { get; set; }
+}
+
+public interface IAttributeProvider
+{
+    IEnumerable<(string, string)> GetAttributes(ProjectSession session);
+}
+
+public interface IComponentOwner
+{
+    Guid Guid { get; }
+    IEnumerable<ElementComponent> GetComponents(Type t);
+    IEnumerable<T> GetComponents<T>() where T : ElementComponent;
+    T GetComponent<T>() where T : ElementComponent;
+    ElementComponent AddComponent(Type t);
+    T AddComponent<T>() where T : ElementComponent;
+    void RemoveComponent(ElementComponent component);
 }
 
 public interface IContainerElement : IElement

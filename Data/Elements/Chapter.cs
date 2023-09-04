@@ -17,7 +17,7 @@ public class Chapter : OwnedElement<Manuscript>
 
     public override bool ShouldTag => true;
 
-    public override IEnumerable<(string, string)> GetAttributes(ProjectSession session)
+    protected override IEnumerable<(string, string)> GetUniqueAttributes(ProjectSession session)
     {
         yield return (WORD_COUNT_ATTRIB_KEY, WordCount.ToString());
         if (!string.IsNullOrEmpty(Content))

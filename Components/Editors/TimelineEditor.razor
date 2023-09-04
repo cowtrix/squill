@@ -1,6 +1,10 @@
-﻿@using Squill.Data;
+﻿@using Squill.Data.ElementComponents;
+@using Squill.Data.Elements;
+@using Squill.Data;
 @using Squill.Shared;
 @using Squill.Data.Elements;
+@using Squill.Data.ElementComponents;
+
 @inherits GenericEditorBase<Timeline>
 
 <MudPaper Outlined=true Square=true>
@@ -10,7 +14,7 @@
         {
             var ev = Target.Events[i];
             var counter = i;
-            var componentsCanAdd = typeof(EventComponent).GetTypesImplementing()
+            var componentsCanAdd = typeof(ElementComponent).GetTypesImplementing().Where(t => ElementComponent.CanApplyTo(t, typeof(Event)))
             .Where(t => !ev.Components.Any(c => c.GetType() == t));
             <MudCard Outlined=true Style="min-width:50%;max-width:30rem;align-self:center;z-index:1;" Elevation="10">
                 <MudCardContent>
@@ -18,7 +22,7 @@
                     @foreach (var component in ev.Components)
                     {
                         <div class="component-wrapper">
-                            @component.GetEditor()
+                            @component.GetEditor(Session, ev)
                             <div class="component-actions">
                                 <MudIconButton Size="Size.Small" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Delete" OnClick="() => RemoveComponent(ev, component)" />
                             </div>
@@ -50,7 +54,7 @@
 @code {
     private void AddComponent(Event ev, Type t)
     {
-        var newComponent = Activator.CreateInstance(t) as EventComponent;
+        var newComponent = Activator.CreateInstance(t) as ElementComponent;
         if (newComponent == null)
         {
             throw new Exception($"Failed to create type {t}");
@@ -59,7 +63,7 @@
         StateHasChanged();
     }
 
-    private void RemoveComponent(Event ev, EventComponent component)
+    private void RemoveComponent(Event ev, ElementComponent component)
     {
         ev.Components.Remove(component);
         StateHasChanged();

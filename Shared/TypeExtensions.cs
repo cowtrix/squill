@@ -49,6 +49,10 @@ public static class TypeExtensions
 
     public static string GetName(this Type type)
     {
+        if (type == null)
+        {
+            return "NULL";
+        }
         var attr = type.GetCustomAttributes(typeof(ElementDisplay), true)
             .Cast<ElementDisplay>()
             .FirstOrDefault();
@@ -57,6 +61,10 @@ public static class TypeExtensions
 
     public static string GetIcon(this Type type)
     {
+        if (type == null)
+        {
+            return "ERROR";
+        }
         var attr = type.GetCustomAttributes(typeof(ElementDisplay), true)
             .Cast<ElementDisplay>()
             .FirstOrDefault();
@@ -75,6 +83,10 @@ public static class TypeExtensions
 
     public static MudColor GetColor(this Type type)
     {
+        if(type == null)
+        {
+            return new MudColor(255, 255, 255, 255);
+        }
         var attr = type.GetCustomAttributes(typeof(ElementDisplay), true)
             .Cast<ElementDisplay>()
             .FirstOrDefault();

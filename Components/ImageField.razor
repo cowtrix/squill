@@ -13,7 +13,7 @@
         <MudIcon Icon="@Icons.Material.Filled.Image" />
     }
     <div class="img-actions fade-hover">
-        <MudIcon Icon="@Icons.Material.Filled.Add" />
+        <MudIconButton Size=Size.Small Icon="@Icons.Material.Filled.Add" OnClick="() => Gallery.OpenGallery(async (s) => await SetValueFromGallery(s))" />
         <div class="import-export">
             <MudIcon Icon="@Icons.Material.Filled.ImportExport" />
             <InputFile OnChange="OnFileUploaded" accept=".png" />
@@ -35,6 +35,12 @@
         await ValueChanged.InvokeAsync(Value);
         Gallery.SaveNewImage(Session, args.File.Name, bytes);
         StateHasChanged();
+    }
+
+    private async Task SetValueFromGallery(string path)
+    {
+        Value = path;
+        await ValueChanged.InvokeAsync(Value);
     }
 
 }

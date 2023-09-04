@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text.Json;
 using Newtonsoft.Json;
+using Squill.Data.ElementComponents;
 using Squill.Data.Elements;
 
 namespace Squill.Data;
@@ -38,7 +39,7 @@ public static class ElementMetaDataExtensions
 
     public static IEnumerable<Guid> GetEntityLinks(this ElementMetaData metaData)
     {
-        if(!metaData.Attributes.TryGetValue("links", out var links))
+        if (!metaData.Attributes.TryGetValue("links", out var links))
         {
             return null;
         }
@@ -87,8 +88,20 @@ public class ElementFactory
         {
             throw new Exception();
         }
-        
-        return JsonConvert.DeserializeObject(File.ReadAllText(path), type, m_session.SerializerSettings) as T;
+
+        var ele = JsonConvert.DeserializeObject(File.ReadAllText(path), type, m_session.SerializerSettings) as T;
+        var defaultComponents = type.GetCustomAttributes(typeof(DefaultComponentTypeAttribute), true)?
+           .Cast<DefaultComponentTypeAttribute>()
+           .FirstOrDefault()?
+           .DefaultTypes;
+        if (defaultComponents != null)
+        {
+            foreach (var defaultComponentType in defaultComponents.Where(e => !ele.GetComponents(e).Any()))
+            {
+                ele.AddComponent(defaultComponentType);
+            }
+        }
+        return ele;
     }
 
     private string GetAutomaticFilename(Type t, string dir)
@@ -111,6 +124,17 @@ public class ElementFactory
             name = GetAutomaticFilename(type, dir);
         }
         var newEle = Activator.CreateInstance(type) as IElement;
+        var defaultComponents = type.GetCustomAttributes(typeof(DefaultComponentTypeAttribute), true)?
+           .Cast<DefaultComponentTypeAttribute>()
+           .FirstOrDefault()?
+           .DefaultTypes;
+        if (defaultComponents != null)
+        {
+            foreach (var defaultComponentType in defaultComponents)
+            {
+                newEle.AddComponent(defaultComponentType);
+            }
+        }
         var outputPath = Path.Combine(m_session.Project.DataDir, $"{name}.{newEle.GetType().Name.ToLowerInvariant()}");
         if (!string.IsNullOrEmpty(dir))
         {

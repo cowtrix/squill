@@ -19,7 +19,7 @@
     align-items: end;
 }
 
-image {
+::deep img {
     width: 100%;
     height: 100%;
 }
@@ -44,4 +44,9 @@ image {
     width: 1.5rem;
     height: 1.5rem;
     position: relative;
+}
+
+::deep .img-actions > button {
+    width: 1.5rem;
+    height: 1.5rem;
 }
