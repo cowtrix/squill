@@ -1,0 +1,29 @@
+﻿@using Squill.Data;
+@using Squill.Data.Elements;
+
+<MudItem>
+     <MarkdownEditor Value="@Value" ValueChanged="OnValueChanged"  />
+</MudItem>
+
+@code {
+    [Parameter]
+    public new string Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public Func<string, string> WordStyle { get; set; }
+
+    [Parameter]
+    public bool Minimal { get; set; }
+
+    [Parameter]
+    public bool CommentsEnabled { get; set; }
+
+    [Parameter]
+    public EventCallback<Comment> CommentAdded { get; set; }
+
+    private async Task OnValueChanged(string newVal) => await ValueChanged.InvokeAsync(newVal);
+
+}

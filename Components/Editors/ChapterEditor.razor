@@ -4,60 +4,70 @@
 @using System.Text;
 @using Squill.Data.Elements;
 
-<MudPaper Elevation="15" Outlined=true Square=true >
-    @if (m_showElementBreakdown)
+<MudPaper Elevation="15" Outlined=true Square=true>
+    @if (CurrentTab == eTab.Edit)
     {
-        <MudPaper Square=true>
-            @foreach (var ele in m_entityCount)
-            {
-                <ElementLink Element="Guid.Parse(ele.Key.Guid)" Session="Session" TabManager="TabManager">
-                    <span class="count-pill">@ele.Value</span>
-                </ElementLink>
-            }
-        </MudPaper>
+        <MarkdownWrapper @bind-Value=Target.Content />
     }
-    <EditForm EditContext="m_context">
-        @{
-            m_entityCount.Clear();
+
+    else if (CurrentTab == eTab.Breakdown)
+    {
+        if (Breakdown == null || Target.Content != Breakdown.Content)
+        {
+            Breakdown = new ChapterBreakdown(Session, Target.Content);
         }
-        <MarkdownEditor @bind-Value=Target.Content 
-            WordStyle="InsertTags"
-            CommentsEnabled=true
-            CommentAdded="c => Target.Comments.Add(c)"/>
-    </EditForm>
+        <PlotlyChart @bind-Config="Breakdown.Config" @bind-Layout="Breakdown.Layout" Data="Breakdown.Data" @ref="Breakdown.Chart" />
+    }
 </MudPaper>
 
 @code {
-    private EditContext m_context;
-    private bool m_showElementBreakdown;
-    private Dictionary<ElementMetaData, int> m_entityCount = new Dictionary<ElementMetaData, int>();
-
-    protected override void OnInitialized()
+    public enum eTab
     {
-        m_context = new EditContext(Element);
+        Edit,
+        Breakdown,
     }
 
-    private string InsertTags(string rawInput)
+    public eTab CurrentTab { get; set; }
+
+    public class ChapterBreakdown : GraphProvider
     {
-        var sb = new StringBuilder();
-        var w = rawInput.Split(' ');
-        foreach (var word in w)
+        private Dictionary<ElementMetaData, int> m_entityCount;
+        private Dictionary<string, int> m_wordCount;
+
+        public string Content { get; private set; }
+
+        public override IList<ITrace> Data => new List<ITrace>
         {
-            var stripWord = word
+            new Bar
+            {
+                X = m_entityCount.Keys.Select(k => k.Name).Cast<object>().ToList(),
+                Y = m_entityCount.Values.Cast<object>().ToList(),
+                Name = "Elements"
+            },
+            new Bar
+            {
+                X = m_wordCount.Where(w => w.Value > 5).Select(kvp => kvp.Key).Cast<object>().ToList(),
+                Y = m_wordCount.Where(w => w.Value > 5).Select(kvp => kvp.Value).Cast<object>().ToList(),
+                Name = "Words"
+            }
+        };
+
+        public ChapterBreakdown(ProjectSession session, string value)
+        {
+            Content = value;
+            m_entityCount = new Dictionary<ElementMetaData, int>();
+            m_wordCount = new Dictionary<string, int>();
+            var w = value.Split(' ');
+            foreach (var word in w)
+            {
+                var stripWord = word
                 .Replace(".", "")
                 .Replace("\"", "")
                 .Replace("!", "")
-                .Replace("?", "");
-            var element = Session.ElementMeta.FirstOrDefault(m => m.Name == stripWord);
-            if (element != null && element.ShouldTag())
-            {
-                var color = Type.GetType(element.Type).GetColor().ToString();
-                if (element.Attributes.TryGetValue("color", out var colVal))
-                {
-                    color = colVal;
-                }
-                sb.Append($"<span class=\"tag\" style=\"background-color:{color};outline: 5px solid {color};\">");
-                if (!m_entityCount.TryGetValue(element, out var count))
+                .Replace("?", "")
+                .Replace("'s", "");
+
+                if(!m_wordCount.TryGetValue(stripWord, out var count))
                 {
                     count = 1;
                 }
@@ -65,21 +75,33 @@
                 {
                     count++;
                 }
-                m_entityCount[element] = count;
+                m_wordCount[stripWord] = count;
+
+                var element = session.ElementMeta.FirstOrDefault(m => m.Name == stripWord);
+                if (element != null && element.ShouldTag())
+                {
+                    if (!m_entityCount.TryGetValue(element, out count))
+                    {
+                        count = 1;
+                    }
+                    else
+                    {
+                        count++;
+                    }
+                    m_entityCount[element] = count;
+                }
             }
-            sb.Append(word);
-            if (element != null)
-            {
-                sb.Append("</span>");
-            }
-            sb.Append(' ');
         }
-        return sb.ToString();
     }
+
+    public ChapterBreakdown Breakdown { get; set; }
 
     public override RenderFragment Toolbar => __builder =>
     {
-        <MudToggleIconButton Icon="@Icons.Material.Filled.DataArray" Size="Size.Small" @bind-Toggled=m_showElementBreakdown ToggledIcon="@Icons.Material.Filled.DataArray" Style="width: 2rem" />
+        <MudButton StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" Style="width: 5rem" OnClick="() => CurrentTab = eTab.Edit">Edit</MudButton>
+        <MudDivider Vertical=true Style="margin: 0;height: 1.5rem;border-color:white;" />
+        <MudButton StartIcon="@Icons.Material.Filled.DataArray" Size="Size.Small" Style="width: 8rem" OnClick="() => CurrentTab = eTab.Breakdown">Breakdown</MudButton>
+        <MudDivider Vertical=true Style="margin: 0;height: 1.5rem;border-color:white;" />
         <MudSpacer />
         <MudTooltip Arrow=true RootStyle="display:flex;justify-content:center;">
             <ChildContent>
