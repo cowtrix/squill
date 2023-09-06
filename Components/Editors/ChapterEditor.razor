@@ -9,7 +9,6 @@
     {
         <MarkdownWrapper @bind-Value=Target.Content />
     }
-
     else if (CurrentTab == eTab.Breakdown)
     {
         if (Breakdown == null || Target.Content != Breakdown.Content)
@@ -40,19 +39,23 @@
         {
             new Bar
             {
-                X = m_entityCount.Keys.Select(k => k.Name).Cast<object>().ToList(),
-                Y = m_entityCount.Values.Cast<object>().ToList(),
-                Name = "Elements"
+                Y = m_wordCount.Where(w => w.Value > 5).Select(kvp => kvp.Key).Cast<object>().ToList(),
+                X = m_wordCount.Where(w => w.Value > 5).Select(kvp => kvp.Value).Cast<object>().ToList(),
+                Name = "Words",
+                Orientation = Plotly.Blazor.Traces.BarLib.OrientationEnum.H,
             },
             new Bar
             {
-                X = m_wordCount.Where(w => w.Value > 5).Select(kvp => kvp.Key).Cast<object>().ToList(),
-                Y = m_wordCount.Where(w => w.Value > 5).Select(kvp => kvp.Value).Cast<object>().ToList(),
-                Name = "Words"
-            }
+                Y = m_entityCount.Keys.Select(k => k.Name).Cast<object>().ToList(),
+                X = m_entityCount.Values.Cast<object>().ToList(),
+                Name = "Elements",
+                Orientation = Plotly.Blazor.Traces.BarLib.OrientationEnum.H,
+            },
         };
 
-        public ChapterBreakdown(ProjectSession session, string value)
+        protected override int Height => m_wordCount.Count * 2;
+
+        public ChapterBreakdown(ProjectSession session, string value) : base()
         {
             Content = value;
             m_entityCount = new Dictionary<ElementMetaData, int>();
@@ -67,20 +70,10 @@
                 .Replace("?", "")
                 .Replace("'s", "");
 
-                if(!m_wordCount.TryGetValue(stripWord, out var count))
-                {
-                    count = 1;
-                }
-                else
-                {
-                    count++;
-                }
-                m_wordCount[stripWord] = count;
-
                 var element = session.ElementMeta.FirstOrDefault(m => m.Name == stripWord);
                 if (element != null && element.ShouldTag())
                 {
-                    if (!m_entityCount.TryGetValue(element, out count))
+                    if (!m_entityCount.TryGetValue(element, out var count))
                     {
                         count = 1;
                     }
@@ -90,7 +83,25 @@
                     }
                     m_entityCount[element] = count;
                 }
+
+                if (element == null && stripWord.Length > 3)
+                {
+                    if (!m_wordCount.TryGetValue(stripWord, out var count))
+                    {
+                        count = 1;
+                    }
+                    else
+                    {
+                        count++;
+                    }
+                    m_wordCount[stripWord] = count;
+                }
             }
+            m_entityCount = m_entityCount.OrderBy(kvp => kvp.Value)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            m_wordCount = m_wordCount.OrderBy(kvp => kvp.Value)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            Layout.Height = Height;
         }
     }
 

@@ -1,0 +1,27 @@
+﻿@inherits GenericEditorBase<Location>
+
+@using MudBlazor.Utilities;
+@using Squill.Data;
+@using Squill.Data.ElementComponents;
+@using Squill.Data.Elements;
+
+@{
+    var description = Target.GetComponent<DescriptionComponent>();
+    var avatar = Target.GetComponent<AvatarComponent>();
+}
+
+<MudPaper Elevation="15" Outlined=true Square=true Class="border-collapse">
+    <MudItem>
+        <MudStack Row=true>
+            <MudStack>
+                @avatar.GetEditor(Session, Target)
+            </MudStack>
+            <MudStack Style="width: 100%;">
+                @description.GetEditor(Session, Target)
+            </MudStack>
+        </MudStack>
+    </MudItem>
+</MudPaper>
+
+@code {
+}

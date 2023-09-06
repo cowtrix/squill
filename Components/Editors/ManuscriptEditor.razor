@@ -73,7 +73,7 @@
             }
             <MudDivider />
             <MudButtonGroup Variant="Variant.Outlined">
-                <ElementPicker Label="Add Existing Chapter" ValueChanged="AddExistingChapter" ElementType=typeof(Chapter) />
+                <ElementPicker Label="Add Existing Chapter" ValueChanged="AddExistingChapter" ElementType=typeof(Chapter) Filter="(e) => !Target.Chapters.Contains(e.Guid.ToString())" />
                 <MudButton OnClick="AddNewChapter" Variant="Variant.Outlined"><MudIcon Icon="@Icons.Material.Filled.Add" />New Chapter</MudButton>
             </MudButtonGroup>
         </MudStack>
@@ -81,11 +81,11 @@
 </MudItem>
 
 @code {
-    private async Task AddExistingChapter(ElementMetaData chapter)
+    private async Task AddExistingChapter(Guid chapter)
     {
-        if (!Target.Chapters.Contains(chapter.Guid.ToString()))
+        if (!Target.Chapters.Contains(chapter.ToString()))
         {
-            Target.Chapters.Add(chapter.Guid.ToString());
+            Target.Chapters.Add(chapter.ToString());
             var chapterObj = Session.GetElement<Chapter>(chapter);
             chapterObj.Owner = Target.Guid.ToString();
             await Session.UpdateElement(chapterObj);

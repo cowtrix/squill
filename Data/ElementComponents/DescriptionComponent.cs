@@ -14,7 +14,7 @@ public class DescriptionComponent : ValueElementComponent<string>
         builder.AddAttribute(1, "Value", Value);
         builder.AddAttribute(2, "ValueChanged", EventCallback.Factory.Create<string>(this, (s) => Value = s));
         builder.AddAttribute(3, "Label", GetType().GetName());
-        builder.AddAttribute(3, "Lines", 5);
+        builder.AddAttribute(3, "Lines", 2);
         builder.CloseComponent();
     };
 }

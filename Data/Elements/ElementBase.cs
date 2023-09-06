@@ -27,5 +27,8 @@ public abstract class ElementBase : ElementComponentOwnerBase, IElement
         yield break;
     }
 
-    
+    public virtual void OnBeforeSerialize()
+    {
+
+    }
 }

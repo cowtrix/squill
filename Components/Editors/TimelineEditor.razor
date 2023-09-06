@@ -15,7 +15,7 @@
             var ev = Target.Events[i];
             var counter = i;
             var componentsCanAdd = typeof(ElementComponent).GetTypesImplementing().Where(t => ElementComponent.CanApplyTo(t, typeof(Event)))
-            .Where(t => !ev.Components.Any(c => c.GetType() == t));
+            .Where(t => t.GetCustomAttributes(true).Any(t => t is MultipleComponentAttribute) || !ev.Components.Any(c => c.GetType() == t));
             <MudCard Outlined=true Style="min-width:50%;max-width:30rem;align-self:center;z-index:1;" Elevation="10">
                 <MudCardContent>
                     <MudTextField Label="Title" @bind-Value=ev.Title />
@@ -54,12 +54,7 @@
 @code {
     private void AddComponent(Event ev, Type t)
     {
-        var newComponent = Activator.CreateInstance(t) as ElementComponent;
-        if (newComponent == null)
-        {
-            throw new Exception($"Failed to create type {t}");
-        }
-        ev.Components.Add(newComponent);
+        ev.AddComponent(t);
         StateHasChanged();
     }
 

@@ -1,9 +1,35 @@
 ﻿@using Squill.Data;
 
-<MudMenu StartIcon="@ElementType.GetIcon()" Label="@Label" @bind-Value=Value Variant="Variant.Outlined" Dense=true >
-    @foreach (var match in Session.ElementMeta.Where(m => m.Type == ElementType.FullName))
+<MudMenu StartIcon="@((m_lastType ?? ElementType).GetIcon())" Label="@($"{Label} {m_lastName}")" @bind-Value=Value Variant="Variant.Outlined" Dense=true Style="width: 100%; height: 1.75rem;">
+    @foreach (var match in Session.ElementMeta)
     {
+        var type = Type.GetType(match.Type);
+        if (!ElementType.IsAssignableFrom(type))
+        {
+            continue;
+        }
+        if (Filter != null && !Filter.Invoke(match))
+        {
+            continue;
+        }
+        if (m_explicitTypeFilter != null && !m_explicitTypeFilter.IsAssignableFrom(type))
+        {
+            continue;
+        }
         <MudMenuItem OnClick="async () => await SetItem(match)">@match.Name</MudMenuItem>
+    }
+</MudMenu>
+<MudMenu StartIcon="@(m_explicitTypeFilter != null ? m_explicitTypeFilter.GetIcon() : @Icons.Material.Filled.FilterList)" Dense=true Style="width: 1.75rem; height: 1.75rem;margin-left:.5rem;">
+    @{
+        var subTypes = ElementType.GetTypesImplementing();
+        if (subTypes.Any())
+        {
+            foreach (var type in subTypes)
+            {
+                var t = type;
+                <MudMenuItem OnClick="() => m_explicitTypeFilter = t">@type.GetName()</MudMenuItem>
+            }
+        }
     }
 </MudMenu>
 
@@ -12,22 +38,41 @@
     public Type ElementType { get; set; }
 
     [Parameter]
-    public ElementMetaData Value { get; set; }
-
-    [Parameter]
     public string Label { get; set; }
 
     [Parameter]
-    public EventCallback<ElementMetaData> ValueChanged { get; set; }
+    public Guid Value { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> ValueChanged { get; set; }
+
+    [Parameter]
+    public Func<ElementMetaData, bool> Filter { get; set; }
 
     [CascadingParameter]
     public ProjectSession Session { get; set; }
 
+    private string m_lastName;
+    private Type m_lastType;
+    private Type m_explicitTypeFilter;
+
     private Converter<ElementMetaData> m_converter = new Converter<ElementMetaData> { SetFunc = m => m?.Name };
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        var meta = Session.GetMetaData(Value);
+        if (meta != null)
+        {
+            m_lastName = meta.Name;
+            m_lastType = Type.GetType(meta.Type);
+        }
+    }
 
     private async Task SetItem(ElementMetaData metaData)
     {
-        Value = metaData;
+        m_lastName = metaData?.Name;
+        Value = Guid.Parse(metaData.Guid);
         await ValueChanged.InvokeAsync(Value);
     }
 }

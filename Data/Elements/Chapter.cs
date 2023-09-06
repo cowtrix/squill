@@ -26,6 +26,7 @@ public class Chapter : OwnedElement<Manuscript>
                 .Replace(Environment.NewLine, " ")
                 .Replace("\n", " ")
                 .Replace(".", "")
+                .Replace(",", "")
                 .Replace("\"", "")
                 .Replace("!", "")
                 .Replace("?", "")

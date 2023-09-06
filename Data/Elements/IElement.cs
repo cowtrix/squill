@@ -6,6 +6,7 @@ public interface IElement : IAttributeProvider, IComponentOwner
 {
     bool ShouldTag { get; }
     string ScratchPad { get; set; }
+    void OnBeforeSerialize();
 }
 
 public interface IAttributeProvider

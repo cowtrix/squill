@@ -22,7 +22,7 @@ public class Timeline : ElementBase
     }
 }
 
-[ComponentType(typeof(DescriptionComponent))]
+[ComponentType(typeof(DescriptionComponent), typeof(ElementLinkComponent))]
 public class Event : ElementComponentOwnerBase
 {
     public string Title { get; set; }

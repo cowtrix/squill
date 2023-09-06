@@ -112,6 +112,17 @@ public class ProjectSession
         return (T)ele;
     }
 
+    public T GetElement<T>(Guid guid) where T : class
+    {
+        if (!m_elementCache.TryGetValue(guid, out var ele))
+        {
+            var metaData = GetMetaData(guid);
+            ele = m_factory.GetElementAtPath(metaData.Path);
+            m_elementCache[ele.Guid] = ele;
+        }
+        return (T)ele;
+    }
+
     public ElementMetaData? GetMetaData(Guid guid)
     {
         if (!m_elementMetadata.TryGetValue(guid, out var ele))
@@ -125,6 +136,7 @@ public class ProjectSession
     {
         var meta = GetMetaData(element.Guid);
         var save = JsonConvert.SerializeObject(element, SerializerSettings);
+        element.OnBeforeSerialize();
         if (File.Exists(meta.Path))
         {
             var existing = await File.ReadAllTextAsync(meta.Path);
