@@ -1,7 +1,7 @@
 .EasyMDEContainer .CodeMirror {
     color: #ccc;
     border-color: #333;
-    background-color: #000;
+    background-color: #222;
 }
 .EasyMDEContainer .cm-s-easymde .CodeMirror-cursor {
     border-color: #ccc;
@@ -31,4 +31,8 @@
 
 .editor-preview {
     background: #000;
+}
+
+.minimal > .EasyMDEContainer > .editor-toolbar, .minimal > .EasyMDEContainer > .editor-statusbar {
+    display: none;
 }

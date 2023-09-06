@@ -1,7 +1,7 @@
 ﻿@using Squill.Data;
 @using Squill.Data.Elements;
 
-<MudItem>
+<MudItem Class="@(Minimal ? "minimal" : "")">
      <MarkdownEditor Value="@Value" ValueChanged="OnValueChanged"  />
 </MudItem>
 
@@ -24,6 +24,9 @@
     [Parameter]
     public EventCallback<Comment> CommentAdded { get; set; }
 
+    public MarkdownEditor Editor { get; private set; }
+
     private async Task OnValueChanged(string newVal) => await ValueChanged.InvokeAsync(newVal);
+
 
 }
