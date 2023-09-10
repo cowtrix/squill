@@ -1,8 +1,11 @@
 ﻿@using Squill.Data;
 @using Squill.Data.Elements;
 
-<MudItem Class="@(Minimal ? "minimal" : "")">
-     <MarkdownEditor Value="@Value" ValueChanged="OnValueChanged"  />
+<MudItem Class="@(Minimal ? "minimal" : "document")" Style="width:100%;">
+     <MarkdownEditor Value="@Value" 
+         ValueChanged="OnValueChanged" 
+         MinHeight="@(Minimal ? "1rem" : "300px")" 
+         Placeholder="@Label"/>
 </MudItem>
 
 @code {
@@ -17,6 +20,9 @@
 
     [Parameter]
     public bool Minimal { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
 
     [Parameter]
     public bool CommentsEnabled { get; set; }

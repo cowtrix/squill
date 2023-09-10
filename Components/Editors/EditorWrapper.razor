@@ -1,4 +1,5 @@
 ﻿@using Squill.Data;
+@using Squill.Data.ElementComponents;
 @using Squill.Data.Elements;
 @{
     var meta = Session.GetMetaData(Element.Guid);
@@ -30,6 +31,16 @@
                     else
                     {
                         @ChildContent
+                    }
+                    @if (Element != null)
+                    {
+                        var componentsCanAdd = Element.GetApplicableComponents();
+                        <MudMenu Size="Size.Small" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Add" Disabled="!componentsCanAdd.Any()">
+                            @foreach (var subType in componentsCanAdd)
+                            {
+                                <MudMenuItem OnClick="() => Element.AddComponent(subType)">@subType.GetName()</MudMenuItem>
+                            }
+                        </MudMenu>
                     }
                 </CascadingValue>
             </CascadingValue>

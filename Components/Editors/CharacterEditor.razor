@@ -35,6 +35,10 @@
                     </MudStack>
                 </MudPaper>
                 @description.GetEditor(Session, Target)
+                @foreach (var component in Target.Components.Where(c => !(c is AvatarComponent) && !(c is DescriptionComponent)))
+                {
+                    @component.GetEditor(Session, Target);
+                }
             </MudStack>
         </MudStack>
     </MudItem>

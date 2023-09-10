@@ -14,8 +14,7 @@
         {
             var ev = Target.Events[i];
             var counter = i;
-            var componentsCanAdd = typeof(ElementComponent).GetTypesImplementing().Where(t => ElementComponent.CanApplyTo(t, typeof(Event)))
-            .Where(t => t.GetCustomAttributes(true).Any(t => t is MultipleComponentAttribute) || !ev.Components.Any(c => c.GetType() == t));
+            var componentsCanAdd = ev.GetApplicableComponents();
             <MudCard Outlined=true Style="min-width:50%;max-width:30rem;align-self:center;z-index:1;" Elevation="10">
                 <MudCardContent>
                     <MudTextField Label="Title" @bind-Value=ev.Title />

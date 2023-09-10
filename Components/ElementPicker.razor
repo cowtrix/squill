@@ -1,37 +1,38 @@
 ﻿@using Squill.Data;
 
-<MudMenu StartIcon="@((m_lastType ?? ElementType).GetIcon())" Label="@($"{Label} {m_lastName}")" @bind-Value=Value Variant="Variant.Outlined" Dense=true Style="width: 100%; height: 1.75rem;">
-    @foreach (var match in Session.ElementMeta)
-    {
-        var type = Type.GetType(match.Type);
-        if (!ElementType.IsAssignableFrom(type))
+    <MudMenu StartIcon="@((m_lastType ?? ElementType).GetIcon())" Label="@($"{Label} {m_lastName}")" @bind-Value=Value Variant="Variant.Outlined" Style="flex-grow:1;">
+        @foreach (var match in Session.ElementMeta)
         {
-            continue;
-        }
-        if (Filter != null && !Filter.Invoke(match))
-        {
-            continue;
-        }
-        if (m_explicitTypeFilter != null && !m_explicitTypeFilter.IsAssignableFrom(type))
-        {
-            continue;
-        }
-        <MudMenuItem OnClick="async () => await SetItem(match)">@match.Name</MudMenuItem>
-    }
-</MudMenu>
-<MudMenu StartIcon="@(m_explicitTypeFilter != null ? m_explicitTypeFilter.GetIcon() : @Icons.Material.Filled.FilterList)" Dense=true Style="width: 1.75rem; height: 1.75rem;margin-left:.5rem;">
-    @{
-        var subTypes = ElementType.GetTypesImplementing();
-        if (subTypes.Any())
-        {
-            foreach (var type in subTypes)
+            var type = Type.GetType(match.Type);
+            if (!ElementType.IsAssignableFrom(type))
             {
-                var t = type;
-                <MudMenuItem OnClick="() => m_explicitTypeFilter = t">@type.GetName()</MudMenuItem>
+                continue;
+            }
+            if (Filter != null && !Filter.Invoke(match))
+            {
+                continue;
+            }
+            if (m_explicitTypeFilter != null && !m_explicitTypeFilter.IsAssignableFrom(type))
+            {
+                continue;
+            }
+            <MudMenuItem OnClick="async () => await SetItem(match)">@match.Name</MudMenuItem>
+        }
+    </MudMenu>
+<MudIconButton Icon="@Icons.Material.Filled.LinkOff" Size="Size.Small" OnClick="() => TabManager.AddTab(Session.GetMetaData(Value))" Disabled="Value == default" />
+<MudMenu StartIcon="@(m_explicitTypeFilter != null ? m_explicitTypeFilter.GetIcon() : @Icons.Material.Filled.FilterList)" >
+        @{
+            var subTypes = ElementType.GetTypesImplementing();
+            if (subTypes.Any())
+            {
+                foreach (var type in subTypes)
+                {
+                    var t = type;
+                    <MudMenuItem OnClick="() => m_explicitTypeFilter = t">@type.GetName()</MudMenuItem>
+                }
             }
         }
-    }
-</MudMenu>
+    </MudMenu>
 
 @code {
     [Parameter]
@@ -51,6 +52,9 @@
 
     [CascadingParameter]
     public ProjectSession Session { get; set; }
+
+    [CascadingParameter]
+    public Squill.Components.TabManager TabManager { get; set; }
 
     private string m_lastName;
     private Type m_lastType;

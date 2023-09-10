@@ -33,6 +33,18 @@
     background: #000;
 }
 
+.minimal > .EasyMDEContainer{
+    width: 100%;
+}
+
 .minimal > .EasyMDEContainer > .editor-toolbar, .minimal > .EasyMDEContainer > .editor-statusbar {
     display: none;
 }
+
+
+@media (min-width: 800px) {
+    .document .CodeMirror {
+        padding:3rem;
+    }
+}
+

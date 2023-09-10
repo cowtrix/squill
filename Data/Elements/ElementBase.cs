@@ -29,6 +29,5 @@ public abstract class ElementBase : ElementComponentOwnerBase, IElement
 
     public virtual void OnBeforeSerialize()
     {
-
     }
 }

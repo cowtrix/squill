@@ -2,7 +2,10 @@
 
 using MudBlazor;
 using MudBlazor.Utilities;
+using Squill.Data.ElementComponents;
+using Squill.Data.Elements;
 using System.Reflection;
+using static MudBlazor.CategoryTypes;
 
 namespace Squill.Shared;
 
@@ -45,6 +48,14 @@ public static class TypeExtensions
                 }
             }
         }
+    }
+
+    public static IEnumerable<Type> GetApplicableComponents(this IComponentOwner owner)
+    {
+        var componentsCanAdd = typeof(ElementComponent).GetTypesImplementing().Where(t => ElementComponent.CanApplyTo(t, owner.GetType()))
+                            .Where(t => t.GetCustomAttributes(true).Any(t => t is MultipleComponentAttribute) || !owner.GetComponents(owner.GetType()).Any())
+                            .ToList();
+        return componentsCanAdd;
     }
 
     public static string GetName(this Type type)

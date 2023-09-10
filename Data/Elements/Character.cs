@@ -8,6 +8,7 @@ namespace Squill.Data.Elements;
 [DefaultComponentType(
     typeof(DescriptionComponent), 
     typeof(AvatarComponent))]
+[ComponentType(typeof(ElementLinkComponent), typeof(StringAttributeComponent))]
 public class Character : ElementBase
 {
     public HashSet<eCharacterType> CharacterTypes { get; set; } = new HashSet<eCharacterType>();

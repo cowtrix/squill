@@ -3,10 +3,6 @@
 @using Squill.Data;
 @using Squill.Data.Elements;
 
-@{
-    base.BuildRenderTree(__builder);
-}
-
 <MudItem Style="margin: 1rem;">
     <MudPaper Style="padding: 1rem;">
         <MudPaper Elevation="5" Style="display:flex;margin-bottom: 1.5rem;padding: .75rem;align-items:center;">
@@ -107,5 +103,16 @@
         Target.Chapters.Add(newChapter.Guid.ToString());
         await Invalidate();
         TabManager.AddTab(Session.GetMetaData(newChapter.Guid));
+    }
+
+    public override RenderFragment Toolbar => __builder =>
+    {
+        <MudButton StartIcon="@Icons.Material.Filled.ImportExport" Size="Size.Small" Style="width: 5rem" OnClick="ExportDocument">Export</MudButton>
+        <MudDivider Vertical=true Style="margin: 0;height: 1.5rem;border-color:white;" />
+    };
+
+    private async Task ExportDocument()
+    {
+        await ExportHelper.Export(Session, Meta, Target, ExportHelper.eExportFormat.HTML);
     }
 }
