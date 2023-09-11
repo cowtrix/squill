@@ -57,8 +57,11 @@
     height: 100%;
 }
 
-.minimal > .EasyMDEContainer{
+.minimal > .EasyMDEContainer {
     width: 100%;
+    min-width: 20rem;
+    min-height: 4rem;
+    height: 100%;
 }
 
 .minimal > .EasyMDEContainer > .editor-toolbar, .minimal > .EasyMDEContainer > .editor-statusbar {
@@ -75,5 +78,10 @@
         width: 100vw;
         max-height: 100%;
     }
+
+        .EasyMDEContainer > .CodeMirror {
+            top: 3rem;
+            bottom: 2rem;
+        }
 }
 

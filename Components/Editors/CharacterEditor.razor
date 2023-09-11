@@ -4,12 +4,15 @@
 @using Squill.Data.ElementComponents;
 @using Squill.Data.Elements;
 
-@{
-    var description = Target.GetComponent<DescriptionComponent>();
-    var avatar = Target.GetComponent<AvatarComponent>();
-}
-
 <div class="sq-editor">
+    @if(Target != null)
+    {
+        foreach (var component in Target.Components)
+        {
+            @component.GetEditor(Session, Target)
+        }
+    }
+    
     @*<MudItem>
         <MudStack Row=true>
             <MudStack>

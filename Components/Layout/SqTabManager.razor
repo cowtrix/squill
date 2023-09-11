@@ -10,16 +10,16 @@
         var tab = TabService.Tabs[i];
         if (tab.Target != null)
         {
-            <div class="sq-tab @(i == TabService.Index ? "selected" : "")" style="background-color:@Type.GetType(tab.Target.Type).GetColor().ToHexString()" @onclick="() => TabService.AddTab(tab.Target)">
+            <div class="sq-tab @(i == TabService.Index ? "selected" : "")" style="background-color:@Type.GetType(tab.Target.Type).GetColor().ToHexString()" >
                 <SqIcon IconName="@Type.GetType(tab.Target.Type).GetIcon()" />
-                <span>@tab.Target.Name</span>
+                <span @onclick="() => TabService.AddTab(tab.Target)">@tab.Target.Name</span>
                 <SqIconButton Icon="x-lg" OnClick="() => TabService.RemoveTab(tab.Target)" />
             </div>
         }
         else
         {
-            <div class="sq-tab" @onclick="() => TabService.NextIndex = 0">
-                <SqIcon IconName="" />
+            <div class="sq-tab @(i == TabService.Index ? "selected" : "")" @onclick="() => TabService.NextIndex = 0">
+                <SqIcon IconName="grid-3x3-gap-fill" />
                 <span>@tab.NameOverride</span>
             </div>
         }

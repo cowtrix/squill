@@ -92,6 +92,14 @@ body {
     padding: 1rem;
 }
 
+.sq-editor{
+    width: 100%;
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
 .disabled {
     cursor: default;
     filter: contrast(50%);

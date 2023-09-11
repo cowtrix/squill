@@ -14,9 +14,9 @@
         <SqIcon IconName="image-alt" />
     }
     <div class="img-actions fade-hover">
-        <SqIconButton Size=Size.Small Icon="cloud-plus-fill" OnClick="() => Gallery.OpenGallery(async (s) => await SetValueFromGallery(s))" />
+        <SqIconButton Icon="cloud-plus-fill" OnClick="() => Gallery.OpenGallery(async (s) => await SetValueFromGallery(s))" />
         <div class="import-export">
-            <SqIcon Icon="upload" />
+            <SqIconButton Icon="upload" />
             <InputFile OnChange="OnFileUploaded" accept=".png" />
         </div>
     </div>
