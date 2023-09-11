@@ -1,5 +1,5 @@
 .EasyMDEContainer .CodeMirror {
-    color: #ccc;
+    color: #aaa;
     border-color: #333;
     background-color: #222;
 }
@@ -33,23 +33,47 @@
     background: #000;
 }
 
-.EasyMDEContainer, .EasyMDEContainer > .CodeMirror {
-    height: calc(100% - 4rem);
-    overflow: clip;
+.EasyMDEContainer{
+    position: relative;
 }
 
-    .minimal > .EasyMDEContainer {
+    .EasyMDEContainer > .CodeMirror {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 3rem;
+        bottom: 2rem;
         width: 100%;
     }
+
+.CodeMirror-scroll{
+    height: 100%;
+}
+
+.EasyMDEContainer {
+    max-height: 100%;
+    width: 100%;
+    max-width: 50rem;
+    height: 100%;
+}
+
+.minimal > .EasyMDEContainer{
+    width: 100%;
+}
 
 .minimal > .EasyMDEContainer > .editor-toolbar, .minimal > .EasyMDEContainer > .editor-statusbar {
     display: none;
 }
 
+.editor-statusbar{
+    position: absolute;
+    bottom: .5rem;
+}
 
 @media (min-width: 800px) {
-    .document .CodeMirror {
-        padding:4rem;
+    .EasyMDEContainer {
+        width: 100vw;
+        max-height: 100%;
     }
 }
 

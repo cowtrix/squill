@@ -2,5 +2,13 @@
     position: relative;
     align-self: center;
     margin-top: 5rem;
-    max-width: 50rem;
+    max-width: 80vw;
+    flex-grow: 1;
+}
+
+@media (max-width: 800px) {
+    .sq-editor-wrapper {
+        max-width: unset;
+        width: 100vw;
+    }
 }

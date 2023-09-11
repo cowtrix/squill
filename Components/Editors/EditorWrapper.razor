@@ -49,6 +49,12 @@
     </CascadingValue>
 </MudForm>*@
 
+<SqToolbar>
+    <SqMenu Label="File" Placement="SqMenu.eMenuPlacement.BottomRight" AdditionalClasses="sq-toolbar-menu-item">
+        <SqMenuButton Icon="save" Label="Save" OnClick="async () => await Session.UpdateElement(Element)" />
+    </SqMenu>
+</SqToolbar>
+
 <div class="sq-editor-wrapper">
     <CascadingValue Value="Element">
         <CascadingValue Value="Session">

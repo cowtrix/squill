@@ -28,11 +28,7 @@ else if (!Session.IsSynchronized)
 else
 {
     <DiffDisplay Session="Session" />
-    <SqToolbar>
-        <SqMenu Label="File" Placement="SqMenu.eMenuPlacement.BottomRight" AdditionalClasses="sq-toolbar-menu-item">
-            <SqMenuButton Icon="save" Label="Save" />
-        </SqMenu>
-    </SqToolbar>
+    
 
     if (TabManager.CurrentTab == null || TabManager.CurrentTab.Target == null)
     {
