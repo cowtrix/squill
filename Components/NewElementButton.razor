@@ -1,19 +1,14 @@
-﻿@using Squill.Data;
+﻿@using Squill.Components.Layout
+@using Squill.Data;
 @using Squill.Data.Elements;
 
-@*<MudSelect T="Type" AdornmentIcon="@Icons.Material.Filled.Add" AnchorOrigin="Origin.BottomRight" SelectedValuesChanged="OnSelected" Style="max-width:1.5rem;">
-    @foreach (var elementType in ElementFactory.SupportedTypes)
-    {
-        <MudSelectItem Value="elementType">@elementType.Name</MudSelectItem>
-    }
-</MudSelect>*@
 
-<MudMenu Icon="@Icons.Material.Filled.Add">
+<SqMenu Icon="plus-lg" AdditionalClasses="new-element-button">
     @foreach (var elementType in ElementFactory.SupportedTypes)
     {
-        <MudMenuItem OnClick="async () => await OnSelected(elementType)">@elementType.Name</MudMenuItem>
+        <SqMenuButton Label="@elementType.Name" OnClick="async () => await OnSelected(elementType)" />
     }
-</MudMenu>
+</SqMenu>
 
 @code {
     [Parameter]

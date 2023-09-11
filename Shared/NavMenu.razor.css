@@ -1,0 +1,39 @@
+﻿.sq-navbar {
+    background-color: var(--sq-card-bg-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+    box-shadow: var(--sq-card-shadow);
+    padding: 0 .25rem 0 .25rem;
+}
+
+.container-fluid {
+    display: flex;
+    flex-grow: 1;
+}
+
+.navbar-brand {
+    color: white;
+    text-decoration: none;
+    font-variant-caps: small-caps;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    margin-right: .5rem;
+    flex-grow: 1;
+}
+
+.sq-logo {
+    width: 2rem;
+    height: 2rem;
+    margin-right: .25rem;
+}
+
+::deep .navbar-profile {
+    align-self: end;
+}

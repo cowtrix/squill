@@ -1,46 +1,63 @@
 ﻿@using Blazored.LocalStorage;
 @using Squill.Services;
+@using Squill.Components.Layout;
 @page "/login/"
 @inject UserService UserService
 @inject NavigationManager NavManager
 @inject ILocalStorageService Storage
 
-<MudCard>
-    <MudForm>
-        <MudCardContent>
-            <MudStack Style="padding: 2rem;">
-                @if (!string.IsNullOrEmpty(m_error))
-                {
-                    <MudText Color="Color.Error">@m_error</MudText>
-                }
-                <MudTextField Label="Username" @bind-Value=m_userName Variant="Variant.Outlined" />
-                <MudTextField Label="Password" @bind-Value=m_password Variant="Variant.Outlined" InputType="InputType.Password" />
-                <MudButton OnClick="async () => await TryLogin()">Login</MudButton>
-            </MudStack>
-        </MudCardContent>
-    </MudForm>
-</MudCard>
+<div class="sq-form sq-auth-form">
+    <EditForm EditContext="m_context" OnSubmit="TryLogin">
+        <div class="sq-form-content">
+            @if (!string.IsNullOrEmpty(m_error))
+            {
+                <span class="sq-error">@m_error</span>
+            }
+            <SqInputText Label="Username" @bind-Value=m_model.Username />
+            <SqInputText Label="Password" @bind-Value=m_model.Password type="password" />
+            <button class="sq-button" type="submit">Login</button>
+        </div>
+    </EditForm>
+</div>
 
 @code {
-    private string m_userName;
-    private string m_password;
+    public static string URL => "/login";
+    public class LoginModel
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+    private EditContext m_context;
+    private LoginModel m_model = new LoginModel();
     private string m_error;
 
-    private async Task TryLogin()
+    protected override void OnInitialized()
     {
-        if(string.IsNullOrEmpty(m_userName))
+        m_context = new EditContext(m_model);
+    }
+
+    private async Task TryLogin(EditContext context)
+    {
+        var model = context.Model as LoginModel;
+        if(model == null)
+        {
+            m_error = "Error parsing model";
+            return;
+        }
+
+        if (string.IsNullOrEmpty(model.Username))
         {
             m_error = "Invalid username";
             return;
         }
 
-        if(string.IsNullOrEmpty(m_password) || m_password.Length < 5)
+        if (string.IsNullOrEmpty(model.Password) || model.Password.Length < 5)
         {
             m_error = "Invalid password";
             return;
         }
 
-        var result = await UserService.Login(Storage, m_userName, m_password);
+        var result = await UserService.Login(Storage, model.Username, model.Password);
         if (!result)
         {
             m_error = "Could not login";

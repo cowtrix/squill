@@ -5,49 +5,23 @@
 @inject ILocalStorageService Storage
 @inject NavigationManager NavManager
 
-<MudThemeProvider IsDarkMode=true />
-<MudDialogProvider />
-<MudSnackbarProvider />
-
-<MudLayout>
-    <MudAppBar Elevation="0">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudSpacer />
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
-        <MudDrawerHeader>
-            <MudStack Row=true>
-                <MudImage Src="/img/squill_logo.png" Height="32" />
-                <MudText Typo="Typo.h6">Squill</MudText>
-            </MudStack>
-        </MudDrawerHeader>
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent>
-        <MudContainer Class="my-8">
+<div class="page">
+    <NavMenu />
+    <main>
+        <article class="content">
             @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+        </article>
+    </main>
+</div>
 
-@code {
-    bool _drawerOpen = true;
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
+@code{
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if(firstRender && UserService.CurrentUser == null)
         {
-            if (UserService.CurrentUser == null)
+            if(await UserService.TryAutoLogin(Storage))
             {
-                if(await UserService.TryAutoLogin(Storage))
-                {
-                    NavManager.NavigateTo(NavManager.Uri, true);
-                }
+                NavManager.NavigateTo(NavManager.Uri, true);
             }
         }
     }

@@ -2,9 +2,11 @@
 
 @using Squill.Data;
 @using Squill.Data.Elements;
+@using Squill.Services;
+@inject TabService TabManager
 
-<MudItem Style="margin: 1rem;">
-    <MudPaper Style="padding: 1rem;">
+<div class="sq-editor">
+    @*<MudPaper Style="padding: 1rem;">
         <MudPaper Elevation="5" Style="display:flex;margin-bottom: 1.5rem;padding: .75rem;align-items:center;">
             <MudIcon Icon="@Icons.Material.Outlined.Numbers" Size="Size.Small" />Word Count: @Target.Chapters.Sum(c => int.Parse(Session.GetMetaData(Guid.Parse(c)).Attributes[Chapter.WORD_COUNT_ATTRIB_KEY]))
         </MudPaper>
@@ -73,8 +75,8 @@
                 <MudButton OnClick="AddNewChapter" Variant="Variant.Outlined"><MudIcon Icon="@Icons.Material.Filled.Add" />New Chapter</MudButton>
             </MudButtonGroup>
         </MudStack>
-    </MudPaper>
-</MudItem>
+    </MudPaper>*@
+</div>
 
 @code {
     private async Task AddExistingChapter(Guid chapter)
@@ -107,8 +109,8 @@
 
     public override RenderFragment Toolbar => __builder =>
     {
-        <MudButton StartIcon="@Icons.Material.Filled.ImportExport" Size="Size.Small" Style="width: 5rem" OnClick="ExportDocument">Export</MudButton>
-        <MudDivider Vertical=true Style="margin: 0;height: 1.5rem;border-color:white;" />
+        //<MudButton StartIcon="@Icons.Material.Filled.ImportExport" Size="Size.Small" Style="width: 5rem" OnClick="ExportDocument">Export</MudButton>
+        //<MudDivider Vertical=true Style="margin: 0;height: 1.5rem;border-color:white;" />
     };
 
     private async Task ExportDocument()

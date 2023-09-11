@@ -2,7 +2,7 @@
 
 namespace Squill.Data.Elements;
 
-[ElementDisplay(Icon = "LibraryBooks")]
+[ElementDisplay(Icon = "journals")]
 public class Manuscript : ElementBase
 {
     public override bool ShouldTag => false;

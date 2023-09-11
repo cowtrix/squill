@@ -1,11 +1,8 @@
 ﻿
-
-using MudBlazor;
-using MudBlazor.Utilities;
 using Squill.Data.ElementComponents;
 using Squill.Data.Elements;
+using Squill.Data.Utility;
 using System.Reflection;
-using static MudBlazor.CategoryTypes;
 
 namespace Squill.Shared;
 
@@ -79,39 +76,29 @@ public static class TypeExtensions
         var attr = type.GetCustomAttributes(typeof(ElementDisplay), true)
             .Cast<ElementDisplay>()
             .FirstOrDefault();
-
-        if(!string.IsNullOrEmpty(attr?.Icon))
-        {
-            var allIcons = typeof(Icons.Material.Filled).GetFields(BindingFlags.Public | BindingFlags.Static);
-            var pickIcon = allIcons.SingleOrDefault(i => i.Name == attr.Icon);
-            if (pickIcon != null)
-            {
-                return (string)pickIcon.GetValue(null);
-            }
-        }
-        return Icons.Material.Filled.InsertDriveFile;
+        return attr?.Icon;
     }
 
-    public static MudColor GetColor(this Type type)
+    public static SqColor GetColor(this Type type)
     {
-        if(type == null)
+        if (type == null)
         {
-            return new MudColor(255, 255, 255, 255);
+            return new SqColor(255, 255, 255, 255);
         }
         var attr = type.GetCustomAttributes(typeof(ElementDisplay), true)
             .Cast<ElementDisplay>()
             .FirstOrDefault();
-        if(attr.Color != null)
+        if (attr.Color != null)
         {
-            return new MudColor(attr.Color);
+            return new SqColor(attr.Color);
         }
         return type.GetDefaultColor();
     }
 
-    public static MudColor GetDefaultColor(this object obj)
+    public static SqColor GetDefaultColor(this object obj)
     {
         var rnd = new Random(obj.ToString().Sum(c => (int)c));
-        return new MudColor(rnd.NextDouble() * 360, .8, .7, 255);
+        return ColorExtensions.FromHSLA(rnd.NextDouble() * 360, .8, .7, 255);
     }
 
 }

@@ -1,7 +1,7 @@
 ﻿using Squill.Shared;
 using Microsoft.AspNetCore.Components;
 using Squill.Data.Elements;
-using MudBlazor;
+using Squill.Components.Layout;
 
 namespace Squill.Data.ElementComponents;
 
@@ -16,14 +16,13 @@ public class StringAttributeComponent : ValueElementComponent<string>
         builder.OpenElement(index++, "div");
         builder.AddAttribute(index++, "class", "string-attribute");
 
-        builder.OpenComponent<MudTextField<string>>(index++);
+        builder.OpenComponent<SqInputText>(index++);
         builder.AddAttribute(index++, "Label", "Key");
         builder.AddAttribute(index++, "Value", Key);
         builder.AddAttribute(index++, "ValueChanged", EventCallback.Factory.Create<string>(this, (s) => Key = s));
         builder.CloseComponent();
 
-        builder.OpenComponent<MudTextField<string>>(index++);
-        builder.AddAttribute(index++, "Label", "Value");
+        builder.OpenComponent<SqInputText>(index++);
         builder.AddAttribute(index++, "Value", Value);
         builder.AddAttribute(index++, "ValueChanged", EventCallback.Factory.Create<string>(this, (s) => Value = s));
         builder.CloseComponent();

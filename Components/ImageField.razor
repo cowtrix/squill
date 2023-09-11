@@ -1,6 +1,7 @@
 ﻿@using Squill.Data;
 @using Squill.Services;
-@inherits MudInput<string>
+@using Squill.Components.Layout
+
 @inject GalleryService Gallery
 
 <div class="img-button">
@@ -10,18 +11,24 @@
     }
     else
     {
-        <MudIcon Icon="@Icons.Material.Filled.Image" />
+        <SqIcon IconName="image-alt" />
     }
     <div class="img-actions fade-hover">
-        <MudIconButton Size=Size.Small Icon="@Icons.Material.Filled.Add" OnClick="() => Gallery.OpenGallery(async (s) => await SetValueFromGallery(s))" />
+        <SqIconButton Size=Size.Small Icon="cloud-plus-fill" OnClick="() => Gallery.OpenGallery(async (s) => await SetValueFromGallery(s))" />
         <div class="import-export">
-            <MudIcon Icon="@Icons.Material.Filled.ImportExport" />
+            <SqIcon Icon="upload" />
             <InputFile OnChange="OnFileUploaded" accept=".png" />
         </div>
     </div>
 </div>
 
 @code {
+    [Parameter]
+    public string Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
     [Parameter]
     public ProjectSession Session { get; set; }
 

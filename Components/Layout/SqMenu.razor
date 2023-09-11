@@ -1,0 +1,89 @@
+﻿<div class="sq-menu-container">
+    <button class="sq-button sq-menu @(Disabled ? "disabled": "") @GetPlacementClass() @AdditionalClasses" @onclick="ToggleMenu">
+        @if (!string.IsNullOrEmpty(Icon))
+        {
+            <SqIcon IconName="@Icon" />
+        }
+        @if (!string.IsNullOrEmpty(Label))
+        {
+            <span "sq-menu-text">
+                @Label
+            </span>
+        }
+    </button>
+
+    <div class="sq-menu-dropdown @(IsOpen ? "" : "hidden")">
+        <CascadingValue Value="this">
+            @ChildContent
+        </CascadingValue>
+    </div>
+</div>
+@code {
+    public enum eMenuPlacement
+    {
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight,
+    }
+
+    [Parameter]
+    public string Icon { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string AdditionalClasses { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public eMenuPlacement Placement { get; set; }
+
+    public bool IsOpen
+    {
+        get => m_isOpen;
+        set
+        {
+            if (value == m_isOpen)
+            {
+                return;
+            }
+            m_isOpen = value;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+    private bool m_isOpen;
+
+    private string GetPlacementClass()
+    {
+        switch (Placement)
+        {
+            case eMenuPlacement.TopLeft:
+                return "top left";
+            case eMenuPlacement.TopRight:
+                return "top right";
+            case eMenuPlacement.BottomLeft:
+                return "bottom left";
+            case eMenuPlacement.BottomRight:
+                return "bottom right";
+            default:
+                throw new Exception();
+        }
+    }
+
+    private async Task ToggleMenu()
+    {
+        if (Disabled)
+        {
+            IsOpen = false;
+            return;
+        }
+        IsOpen = !IsOpen;
+    }
+}

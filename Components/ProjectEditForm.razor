@@ -1,18 +1,20 @@
 ﻿@using Squill.Data;
+@using Squill.Components.Layout
 
-<MudItem>
-    <MudPaper Class="pa-4">
-        <MudForm @ref="m_form">
-            <MudStack>
-                <MudText>@Project.Guid</MudText>
-                <MudTextField Label="Name" @bind-Value=Project.Name />
-                <MudTextField Label="URL" @bind-Value=Project.RepositoryURL />
-                <MudTextField Label="Token" @bind-Value=Project.RepositoryToken />
-                <MudButton OnClick="OnSubmitForm">Submit</MudButton>
-            </MudStack>
-        </MudForm>
-    </MudPaper>
-</MudItem>
+<div class="sq-form">
+    <EditForm EditContext="m_context" OnSubmit="OnSubmit">
+        <div class="sq-form-content">
+            @if (!string.IsNullOrEmpty(m_error))
+            {
+                <span class="sq-error">@m_error</span>
+            }
+            <SqInputText Label="Name" @bind-Value=Project.Name />
+            <SqInputText Label="Repository URL" @bind-Value=Project.RepositoryURL />
+            <SqInputText Label="Repository Token" @bind-Value=Project.RepositoryToken />
+            <SqIconButton Icon="save-fill" type="submit">Save</SqIconButton>
+        </div>
+    </EditForm>
+</div>
 
 @code {
     [Parameter]
@@ -21,10 +23,11 @@
     [Parameter]
     public EventCallback OnSubmit { get; set; }
 
-    private MudForm m_form;
+    private EditContext m_context;
+    private string m_error;
 
-    private async Task OnSubmitForm()
+    protected override void OnInitialized()
     {
-        await OnSubmit.InvokeAsync();
+        m_context = new EditContext(Project);
     }
 }

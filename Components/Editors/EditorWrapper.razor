@@ -1,11 +1,12 @@
-﻿@using Squill.Data;
+﻿@using Squill.Components.Layout;
+@using Squill.Data;
 @using Squill.Data.ElementComponents;
 @using Squill.Data.Elements;
 @{
     var meta = Session.GetMetaData(Element.Guid);
 }
 
-<MudPaper Elevation="15" Style="height: 1.5rem;" Outlined=true Square=true>
+@*<MudPaper Elevation="15" Style="height: 1.5rem;" Outlined=true Square=true>
     <MudToolBar DisableGutters=true Style="width:100%;height: 1.5rem;overflow:hidden;">
         <MudStack Row="true" Spacing=0 Style="width:100%;align-items:center;">
             <MudMenu Label="File" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomLeft">
@@ -46,7 +47,17 @@
             </CascadingValue>
         </CascadingValue>
     </CascadingValue>
-</MudForm>
+</MudForm>*@
+
+<div class="sq-editor-wrapper">
+    <CascadingValue Value="Element">
+        <CascadingValue Value="Session">
+            <CascadingValue Value="meta">
+                @ChildContent
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+</div>
 
 @code {
     private string m_currentTab;
@@ -72,12 +83,7 @@
     public RenderFragment Toolbar => CurrentEditor?.Toolbar;
 
     [Parameter]
-    public Squill.Components.TabManager TabManager { get; set; }
-
-    [Parameter]
     public IElement Element { get; set; }
 
     public EditorBase CurrentEditor { get; set; }
-
-    public CascadingValue<MudForm> Form { get; set; } = new CascadingValue<MudForm>();
 }

@@ -1,0 +1,38 @@
+﻿<div class="sq-button sq-menu-button @AdditionalClasses" @onclick=Click @attributes=AdditionalAttributes>
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <SqIcon IconName="@Icon" />
+    }
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="sq-menu-button-text">
+            @Label
+        </span>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public SqMenu Menu { get; set; }
+
+    [Parameter]
+    public string Icon { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public string AdditionalClasses { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private async Task Click()
+    {
+        Menu.IsOpen = false;
+        await OnClick.InvokeAsync();
+    }
+}

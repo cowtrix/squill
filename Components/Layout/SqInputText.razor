@@ -1,0 +1,15 @@
+﻿<div class="sq-input-text-container">
+    <span class="sq-input-text-label">@Label</span>
+    <InputText ValueChanged="ValueChanged" Value="@Value" ValueExpression="() => Value" AdditionalAttributes="AdditionalAttributes" />
+</div>
+
+@code {
+    [Parameter]
+    public string Label { get; set; }
+    [Parameter]
+    public string Value { get; set; }
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+}

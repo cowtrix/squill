@@ -3,6 +3,7 @@
 @page "/project/"
 @using Squill.Components
 @using Squill.Components.Editors
+@using Squill.Components.Layout
 @using Squill.Data;
 @using Squill.Services;
 @using Squill.Data.Elements;
@@ -10,9 +11,10 @@
 @inject ProjectService ProjectService
 @inject NavigationManager NavManager
 @inject UserService UserService
+@inject TabService TabManager
 
 <PageTitle>@GetPageTitle()</PageTitle>
-<TabManager @ref=TabManager Session="Session" />
+<SqTabManager Session="Session" />
 <GalleryWindow Session="Session" />
 
 @if (UserService.CurrentUser == null)
@@ -26,9 +28,48 @@ else if (!Session.IsSynchronized)
 else
 {
     <DiffDisplay Session="Session" />
-    @if (TabManager != null)
+    <SqToolbar>
+        <SqMenu Label="File" Placement="SqMenu.eMenuPlacement.BottomRight" AdditionalClasses="sq-toolbar-menu-item">
+            <SqMenuButton Icon="save" Label="Save" />
+        </SqMenu>
+    </SqToolbar>
+
+    if (TabManager.CurrentTab == null || TabManager.CurrentTab.Target == null)
     {
-        <MudTabs @bind-ActivePanelIndex="TabManager.Index" Border="true" Outlined="true" PanelClass="tab-panel-container" ApplyEffectsToContainer="true">
+        <ProjectExplorer Session=Session />
+    }
+    else
+    {
+        <EditorWrapper Session="Session" @ref=EditorWrapper Element="Session.GetElement<IElement>(TabManager.CurrentTab.Target)" >
+            <ChildContent>
+                <CascadingValue Value="EditorWrapper">
+                    @{
+                        var t = Type.GetType(TabManager.CurrentTab.Target.Type);
+                        switch (t.Name)
+                        {
+                            case nameof(Manuscript):
+                                <ManuscriptEditor />
+                                break;
+                            case nameof(Chapter):
+                                <ChapterEditor />
+                                break;
+                            case nameof(Character):
+                                <CharacterEditor />
+                                break;
+                            case nameof(Timeline):
+                                <TimelineEditor />
+                                break;
+                            case nameof(Location):
+                                <LocationEditor />
+                                break;
+                        }
+                    }
+                </CascadingValue>
+            </ChildContent>
+        </EditorWrapper>
+    }
+
+        @*<MudTabs >
             <ChildContent>
                 @foreach (var tab in TabManager.Tabs)
                 {
@@ -80,7 +121,7 @@ else
                         if (tab.IsEditing)
                         {
                             <MudStack Class="tab-rename" Row="true" Style="max-height: 2rem;">
-                                <MudTextField @bind-Value=tab.NameOverride Style="margin: 0;" IconSize="Size.Small" Margin="Margin.Dense" />
+                                <MudTextField  />
                                 <MudIconButton Size=Size.Small Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Check" OnClick="async (_) => await TabManager.FinishRename(context)" />
                             </MudStack>
                         }
@@ -104,8 +145,7 @@ else
                     }
                 }
             </TabPanelHeader>
-        </MudTabs>
-    }
+        </MudTabs>*@
 }
 
 @code {
@@ -116,8 +156,6 @@ else
     public string Element { get; set; }
 
     public ProjectSession Session { get; set; }
-
-    public TabManager TabManager { get; set; }
 
     private EditorWrapper EditorWrapper { get; set; }
 
@@ -134,10 +172,10 @@ else
         }
     }
 
-    private void FocusTab(object? sender, TabManager.TabView tab)
+    private void FocusTab(object? sender, TabService.TabView tab)
     {
-        if (tab?.Target != null)
-        {
+        if (tab != null && tab.Target != null && !tab.Closed)
+    {
             NavManager.NavigateTo($"/project/{Session.Project.Guid}/{tab.Target.Guid}");
         }
         else

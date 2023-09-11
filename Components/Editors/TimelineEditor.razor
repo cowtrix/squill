@@ -1,4 +1,5 @@
-﻿@using Squill.Data.ElementComponents;
+﻿@using Squill.Components.Layout
+@using Squill.Data.ElementComponents;
 @using Squill.Data.Elements;
 @using Squill.Data;
 @using Squill.Shared;
@@ -7,47 +8,41 @@
 
 @inherits GenericEditorBase<Timeline>
 
-<MudPaper Outlined=true Square=true>
-    <MudStack Class="border-collapse p-relative" Justify="Justify.Center">
-        <div class="line"></div>
-        @for (var i = 0; i < Target.Events.Count; i++)
-        {
-            var ev = Target.Events[i];
-            var counter = i;
-            var componentsCanAdd = ev.GetApplicableComponents();
-            <MudCard Outlined=true Style="min-width:50%;max-width:30rem;align-self:center;z-index:1;" Elevation="10">
-                <MudCardContent>
-                    <MudTextField Label="Title" @bind-Value=ev.Title />
-                    @foreach (var component in ev.Components)
-                    {
-                        <div class="component-wrapper">
-                            @component.GetEditor(Session, ev)
-                            <div class="component-actions">
-                                <MudIconButton Size="Size.Small" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Delete" OnClick="() => RemoveComponent(ev, component)" />
-                            </div>
+<div class="sq-editor timeline-editor">
+    @for (var i = 0; i < Target.Events.Count; i++)
+    {
+        var ev = Target.Events[i];
+        var counter = i;
+        var componentsCanAdd = ev.GetApplicableComponents();
+        <div class="sq-card">
+            <div class="sq-card-header">
+                <SqInputText Label="Title" @bind-Value=ev.Title />
+                @foreach (var component in ev.Components)
+                {
+                    <div class="component-wrapper">
+                        @component.GetEditor(Session, ev)
+                        <div class="component-actions">
+                            <SqIconButton Icon="trash-fill" OnClick="() => RemoveComponent(ev, component)" />
                         </div>
+                    </div>
+                }
+            </div>
+            <div class="sq-card-actions">
+                <SqIconButton Icon="trash-fill" OnClick="() => Target.Events.Remove(ev)" />
+                <SqIconButton Icon="chevron-up" OnClick="() => Target.SetIndex(ev, counter - 1)" Disabled="counter <= 0" />
+                <SqIconButton Icon="chevron-down" OnClick="() => Target.SetIndex(ev, counter + 1)" Disabled="counter >= Target.Events.Count - 1" />
+                <SqMenu Icon="plus-lg" Disabled="!componentsCanAdd.Any()">
+                    @foreach (var subType in componentsCanAdd)
+                    {
+                        <MudMenuItem OnClick="() => AddComponent(ev, subType)">@subType.GetName()</MudMenuItem>
                     }
-                </MudCardContent>
-                <MudCardActions>
-                    <MudStack Row=true Spacing="1">
-                        <MudIconButton Size="Size.Small" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Delete" OnClick="() => Target.Events.Remove(ev)" />
-                        <MudIconButton Size="Size.Small" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.KeyboardArrowUp" OnClick="() => Target.SetIndex(ev, counter - 1)" Disabled="counter <= 0" />
-                        <MudIconButton Size="Size.Small" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.KeyboardArrowDown" OnClick="() => Target.SetIndex(ev, counter + 1)" Disabled="counter >= Target.Events.Count - 1" />
-                        <MudMenu Size="Size.Small" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Add" Disabled="!componentsCanAdd.Any()">
-                            @foreach (var subType in componentsCanAdd)
-                            {
-                                <MudMenuItem OnClick="() => AddComponent(ev, subType)">@subType.GetName()</MudMenuItem>
-                            }
-                        </MudMenu>
-                    </MudStack>
-                </MudCardActions>
-            </MudCard>
-        }
-        <MudButton OnClick="() => Target.Events.Add(new Event())" Variant="Variant.Outlined" Style="min-width:50%;max-width:30rem;z-index:1;align-self:center;">
-            <MudIcon Icon="@Icons.Material.Filled.Add" />
-        </MudButton>
-    </MudStack>
-</MudPaper>
+                </SqMenu>
+            </div>
+        </div>
+    }
+    <SqIconButton OnClick="() => Target.Events.Add(new Event())" />
+
+</div>
 
 
 @code {

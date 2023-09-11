@@ -4,7 +4,7 @@
 @using System.Text;
 @using Squill.Data.Elements;
 
-<MudPaper Elevation="15" Outlined=true Square=true>
+<div class="sq-chapter-editor">
     @if (CurrentTab == eTab.Edit)
     {
         <MarkdownWrapper @bind-Value=Target.Content />
@@ -17,7 +17,7 @@
         }
         <PlotlyChart @bind-Config="Breakdown.Config" @bind-Layout="Breakdown.Layout" Data="Breakdown.Data" @ref="Breakdown.Chart" />
     }
-</MudPaper>
+</div>
 
 @code {
     public enum eTab
@@ -109,7 +109,7 @@
 
     public override RenderFragment Toolbar => __builder =>
     {
-        <MudButton StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" Style="width: 5rem" OnClick="() => CurrentTab = eTab.Edit">Edit</MudButton>
+        @*<MudButton StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" Style="width: 5rem" OnClick="() => CurrentTab = eTab.Edit">Edit</MudButton>
         <MudDivider Vertical=true Style="margin: 0;height: 1.5rem;border-color:white;" />
         <MudButton StartIcon="@Icons.Material.Filled.DataArray" Size="Size.Small" Style="width: 8rem" OnClick="() => CurrentTab = eTab.Breakdown">Breakdown</MudButton>
         <MudDivider Vertical=true Style="margin: 0;height: 1.5rem;border-color:white;" />
@@ -139,6 +139,6 @@
                 <span class="toolbar-label">Chapter of <ElementLink Element="ownerGuid" Session="Session" TabManager="TabManager" /></span>
             }
         }
-        <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
+        <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />*@
     };
 }

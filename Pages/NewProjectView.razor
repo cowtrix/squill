@@ -7,11 +7,10 @@
 @inject ProjectService ProjectService
 @inject NavigationManager NavManager
 
-<MudContainer Fixed="true">
-    <ProjectEditForm Project=m_newProject OnSubmit="CreateNewProject" />
-</MudContainer>
+<ProjectEditForm Project=m_newProject OnSubmit="CreateNewProject" />
 
 @code {
+    public static string URL => "/project/new";
     private Project m_newProject = new Project { Guid = System.Guid.NewGuid(), Name = "Untitled Project" };
 
     private async Task CreateNewProject()

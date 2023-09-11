@@ -2,7 +2,6 @@
 using HtmlRendererCore.PdfSharp;
 using PdfSharpCore.Pdf;
 using Squill.Data.Elements;
-using System.Reflection.Metadata;
 using System.Text;
 
 namespace Squill.Data;

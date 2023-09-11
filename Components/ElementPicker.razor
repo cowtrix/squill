@@ -1,6 +1,10 @@
-﻿@using Squill.Data;
+﻿@using Squill.Components.Layout
+@using Squill.Data;
+@using Squill.Services;
+@inject TabService TabManager
 
-    <MudMenu StartIcon="@((m_lastType ?? ElementType).GetIcon())" Label="@($"{Label} {m_lastName}")" @bind-Value=Value Variant="Variant.Outlined" Style="flex-grow:1;">
+<div class="sq-element-picker">
+    <SqMenu Icon="@((m_lastType ?? ElementType).GetIcon())" Label="@($"{Label} {m_lastName}")" >
         @foreach (var match in Session.ElementMeta)
         {
             var type = Type.GetType(match.Type);
@@ -16,11 +20,11 @@
             {
                 continue;
             }
-            <MudMenuItem OnClick="async () => await SetItem(match)">@match.Name</MudMenuItem>
+            <SqMenuButton Label="@match.Name" OnClick="async () => await SetItem(match)" />
         }
-    </MudMenu>
-<MudIconButton Icon="@Icons.Material.Filled.LinkOff" Size="Size.Small" OnClick="() => TabManager.AddTab(Session.GetMetaData(Value))" Disabled="Value == default" />
-<MudMenu StartIcon="@(m_explicitTypeFilter != null ? m_explicitTypeFilter.GetIcon() : @Icons.Material.Filled.FilterList)" >
+    </SqMenu>
+    <SqIconButton Icon="box-arrow-up-right" OnClick="() => TabManager.AddTab(Session.GetMetaData(Value))" Disabled="Value == default" />
+    <SqMenu Icon="@(m_explicitTypeFilter != null ? m_explicitTypeFilter.GetIcon() : "filter")">
         @{
             var subTypes = ElementType.GetTypesImplementing();
             if (subTypes.Any())
@@ -28,11 +32,12 @@
                 foreach (var type in subTypes)
                 {
                     var t = type;
-                    <MudMenuItem OnClick="() => m_explicitTypeFilter = t">@type.GetName()</MudMenuItem>
+                    <SqMenuButton Label="@type.GetName()" OnClick="() => m_explicitTypeFilter = t" />
                 }
             }
         }
-    </MudMenu>
+    </SqMenu>
+</div>
 
 @code {
     [Parameter]
@@ -53,14 +58,9 @@
     [CascadingParameter]
     public ProjectSession Session { get; set; }
 
-    [CascadingParameter]
-    public Squill.Components.TabManager TabManager { get; set; }
-
     private string m_lastName;
     private Type m_lastType;
     private Type m_explicitTypeFilter;
-
-    private Converter<ElementMetaData> m_converter = new Converter<ElementMetaData> { SetFunc = m => m?.Name };
 
     protected override void OnParametersSet()
     {

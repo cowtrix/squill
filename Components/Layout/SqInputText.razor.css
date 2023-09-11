@@ -1,0 +1,13 @@
+﻿.sq-input-text-container {
+    display: flex;
+}
+
+.sq-input-text-label {
+    display: flex;
+    flex-grow: 1;
+    margin-right: .5rem;
+}
+
+::deep .sq-input-text-container > input {
+    display: flex;
+}

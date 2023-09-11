@@ -1,0 +1,32 @@
+﻿.sq-tab-container {
+    position: fixed;
+    top: 0;
+    right: 3rem;
+    width: calc(100vw - 20rem);
+    height: 2.5rem;
+    z-index: 11;
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    flex-direction: row-reverse;
+}
+
+.sq-tab {
+    cursor: pointer;
+    background-color: gray;
+    border-radius: 1rem 1rem 0 0;
+    padding: .25rem .5rem .25rem .5rem;
+    display: flex;
+    gap: .25rem;
+}
+
+    .sq-tab.selected {
+        border-top: 2px groove var(--sq-selected-color);
+        border-left: 2px groove var(--sq-selected-color);
+        border-right: 2px groove var(--sq-selected-color);
+    }
+
+
+    ::deep .sq-tab > .sq-button {
+        transform: scale(70%);
+    }

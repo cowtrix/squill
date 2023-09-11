@@ -1,1 +1,11 @@
-﻿
+﻿::deep .new-element-button {
+    box-shadow: var(--sq-card-shadow);
+    border-radius: var(--sq-card-border-radius);
+    display: flex;
+    width: 10rem;
+    height: 5rem;
+}
+
+::deep button {
+    color: red;
+}

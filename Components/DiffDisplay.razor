@@ -1,4 +1,5 @@
-﻿@using Squill.Data;
+﻿@using Squill.Components.Layout
+@using Squill.Data;
 
 
 @{
@@ -6,45 +7,52 @@
     if (diff != null)
     {
         <div class="diff-container">
-            <MudTooltip Arrow=true>
+            <SqTooltip>
                 <ChildContent>
                     @if (!m_isSyncing)
                     {
-                        <MudIconButton Color="Color.Secondary" Icon="@Icons.Material.Filled.Commit" OnClick="Sync" Size="Size.Small" />
+                        <SqIconButton Icon="node-plus-fill" OnClick="Sync" AdditionalClasses="sync" />
                     }
                     else
                     {
-                        <MudIconButton Color="Color.Secondary" Icon="@Icons.Material.Filled.Refresh" Size="Size.Small" Class="spin" />
+                        <SqIconButton Icon="arrow-clockwise" AdditionalClasses="sync spin" />
                     }
                 </ChildContent>
                 <TooltipContent>
                     Sync Changes
                 </TooltipContent>
-            </MudTooltip>
-            <MudTooltip Arrow=true>
+            </SqTooltip>
+            <SqTooltip>
                 <ChildContent>
-                    <MudChip Color="Color.Success" Icon="@Icons.Material.Filled.Add" Text="@diff.Added.Count().ToString()" Size="Size.Small" />
+                    <div class="git-diff-node add">
+                        <SqIcon IconName="plus-lg" />
+                        <span>@diff.Added.Count()</span>
+                    </div>
                 </ChildContent>
                 <TooltipContent>
                     Added
                 </TooltipContent>
-            </MudTooltip>
-            <MudTooltip Arrow=true>
+            </SqTooltip>
+            <SqTooltip>
                 <ChildContent>
-                    <MudChip Color="Color.Error" Icon="@Icons.Material.Filled.HorizontalRule" Text="@diff.Deleted.Count().ToString()" Size="Size.Small" />
+                    <div class="git-diff-node del">
+                        <SqIcon IconName="dash-lg" /> <span>@diff.Deleted.Count()</span>
+                    </div>
                 </ChildContent>
                 <TooltipContent>
                     Deleted
                 </TooltipContent>
-            </MudTooltip>
-            <MudTooltip Arrow=true Placement="Placement.Start">
+            </SqTooltip>
+            <SqTooltip>
                 <ChildContent>
-                    <MudChip Color="Color.Info" Icon="@Icons.Material.Filled.Edit" Text="@diff.Modified.Count().ToString()" Size="Size.Small" />
+                    <div class="git-diff-node mod">
+                        <SqIcon IconName="pencil-fill" /> <span>@diff.Modified.Count()</span>
+                    </div>
                 </ChildContent>
                 <TooltipContent>
                     Modified
                 </TooltipContent>
-            </MudTooltip>
+            </SqTooltip>
         </div>
     }
 }

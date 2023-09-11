@@ -1,5 +1,16 @@
-﻿<h3>ExportWindow</h3>
+﻿@using Squill.Components.Layout
+
+@if (IsOpen)
+{
+    <div class="sq-window-wrapper gallery-wrapper">
+        <div class="sq-window gallery-window">
+            <div class="sq-window-toolbar">
+                <SqIconButton Icon="x-lg" OnClick="() => IsOpen = false" />
+            </div>
+        </div>
+    </div>
+}
 
 @code {
-
+    public bool IsOpen { get; private set; }
 }

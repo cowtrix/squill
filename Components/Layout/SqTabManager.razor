@@ -1,0 +1,60 @@
+﻿@using Squill.Data;
+@using Squill.Data.Utility;
+@using Squill.Services;
+
+@inject TabService TabService
+
+<div class="sq-tab-container">
+    @for (var i = 0; i < TabService.Tabs.Count; ++i)
+    {
+        var tab = TabService.Tabs[i];
+        if (tab.Target != null)
+        {
+            <div class="sq-tab @(i == TabService.Index ? "selected" : "")" style="background-color:@Type.GetType(tab.Target.Type).GetColor().ToHexString()" @onclick="() => TabService.AddTab(tab.Target)">
+                <SqIcon IconName="@Type.GetType(tab.Target.Type).GetIcon()" />
+                <span>@tab.Target.Name</span>
+                <SqIconButton Icon="x-lg" OnClick="() => TabService.RemoveTab(tab.Target)" />
+            </div>
+        }
+        else
+        {
+            <div class="sq-tab" @onclick="() => TabService.NextIndex = 0">
+                <SqIcon IconName="" />
+                <span>@tab.NameOverride</span>
+            </div>
+        }
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public ProjectSession Session { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (TabService.NextIndex.HasValue == true)
+        {
+            await TabService.Update();
+            StateHasChanged();
+        }
+    }
+
+    /*public void BeginRename(MudTabPanel tab)
+        {
+        var tabView = tab.Tag as TabManager.TabView;
+        tabView.IsEditing = true;
+        tabView.NameOverride = tabView.Target.Name;
+        StateHasChanged();
+    }
+
+    public async Task FinishRename(MudTabPanel tab)
+        {
+        var tabView = tab.Tag as TabManager.TabView;
+        tabView.IsEditing = false;
+        var containerDir = tabView.Target.Path.Replace(Session.Project.DataDir, "").Replace($"\\{Path.GetFileName(tabView.Target.Path)}", "");
+        await Session.RenameElement(tabView.Target, containerDir, tabView.NameOverride);
+        StateHasChanged();
+    }*/
+
+}

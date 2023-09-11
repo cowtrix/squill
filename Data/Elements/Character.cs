@@ -1,14 +1,15 @@
-﻿using MudBlazor.Utilities;
-using Squill.Data.ElementComponents;
+﻿using Squill.Data.ElementComponents;
 using Squill.Shared;
 
 namespace Squill.Data.Elements;
 
-[ElementDisplay(Icon = "Person")]
+[ElementDisplay(Icon = "person-bounding-box")]
 [DefaultComponentType(
     typeof(DescriptionComponent), 
     typeof(AvatarComponent))]
-[ComponentType(typeof(ElementLinkComponent), typeof(StringAttributeComponent))]
+[ComponentType(
+    typeof(ElementLinkComponent), 
+    typeof(StringAttributeComponent))]
 public class Character : ElementBase
 {
     public HashSet<eCharacterType> CharacterTypes { get; set; } = new HashSet<eCharacterType>();

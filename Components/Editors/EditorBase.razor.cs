@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
+using Squill.Components.Layout;
 using Squill.Data;
 using Squill.Data.Elements;
 
@@ -17,13 +17,7 @@ public abstract class EditorBase : ComponentBase, IAsyncDisposable
     public ProjectSession Session { get; set; }
 
     [CascadingParameter]
-    public MudForm Form { get; set; }
-
-    [CascadingParameter]
     public EditorWrapper Wrapper { get; set; }
-
-    [CascadingParameter]
-    public Squill.Components.TabManager TabManager { get; set; }
 
     public virtual RenderFragment Toolbar { get; }
 
@@ -43,10 +37,4 @@ public abstract class EditorBase : ComponentBase, IAsyncDisposable
         await Session.UpdateElement(Element);
         StateHasChanged();
     }
-}
-
-public abstract partial class GenericEditorBase<T> : EditorBase
-    where T: class, IElement
-{
-    public T Target { get => Element as T; set => Element = value; }
 }

@@ -1,14 +1,15 @@
-﻿@using Squill.Data;
+﻿@using Squill.Components.Layout
+@using Squill.Data;
 @using Squill.Services;
 @inject GalleryService GalleryService
 
 @if (IsOpen)
 {
-    <div class="gallery-wrapper">
-        <MudPaper Elevation="15" Style="padding:1rem;" Class="gallery-window">
-            <MudStack Row=true>
-                <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="() => IsOpen = false" />
-            </MudStack>
+    <div class="sq-window-wrapper gallery-wrapper">
+        <div class="sq-window gallery-window">
+            <div class="sq-window-toolbar">
+                <SqIconButton Icon="x-lg" OnClick="() => IsOpen = false" />
+            </div>
             @foreach (var img in GalleryService.GetAllImages(Session))
             {
                 var path = img;
@@ -16,7 +17,7 @@
                     <DynamicImage Session="Session" Path="@img" class="image-display" />
                 </div>
             }
-        </MudPaper>
+        </div>
     </div>
 }
 

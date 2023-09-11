@@ -1,6 +1,5 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
-using MudBlazor.Services;
 using Squill.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +12,8 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<ProjectService>();
 builder.Services.AddSingleton<GalleryService>();
+builder.Services.AddScoped<TabService>();
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddMudServices();
 builder.Services.AddHttpClient();
 builder.Services.AddSignalR(e => {
     e.MaximumReceiveMessageSize = 102400000;

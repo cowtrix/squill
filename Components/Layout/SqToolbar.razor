@@ -1,0 +1,21 @@
+﻿@using Squill.Services;
+@inject TabService TabManager
+
+<div class="sq-toolbar" @attributes=AdditionalAttributes>
+    @ChildContent
+    <div class="sq-toolbar-tabs">
+        @foreach(var tab in TabManager.Tabs)
+        {
+            
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+}

@@ -2,7 +2,6 @@
 using Squill.Data.Auth;
 using System;
 using System.Text.Json;
-using static MudBlazor.CategoryTypes;
 
 namespace Squill.Services;
 
@@ -54,6 +53,10 @@ public class ProjectService
 
     public IEnumerable<Project> GetAllProjects(User user)
     {
+        if(user == null)
+        {
+            return Enumerable.Empty<Project>();
+        }
         if (!Directory.Exists(DataDirectory))
         {
             Directory.CreateDirectory(DataDirectory);

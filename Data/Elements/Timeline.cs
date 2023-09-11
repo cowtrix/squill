@@ -4,7 +4,7 @@ using Squill.Data.ElementComponents;
 
 namespace Squill.Data.Elements;
 
-[ElementDisplay(Icon = "Timeline")]
+[ElementDisplay(Icon = "calendar-range-fill")]
 public class Timeline : ElementBase
 {
     public override bool ShouldTag => false;

@@ -1,4 +1,34 @@
-﻿body {
+﻿:root {
+    --sq-bg-color: #222222;
+    --sq-button-bg-color: #444444;
+    --sq-button-bg-color-hover: #333333;
+    --sq-button-border-radius: .25rem;
+    --sq-card-bg-color: #666666;
+    --sq-card-border-radius: .25rem;
+    --sq-toolbar-bg-color: #555555;
+    --sq-card-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.7);
+    --sq-text-default-color: #FFFFFF;
+    --sq-tab-bg-color: #8fb2b2;
+    --sq-selected-color: #51ebe2;
+}
+
+body {
+    background-color: var(--sq-bg-color);
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: var(--sq-text-default-color);
+    margin: 0;
+}
+
+.page {
+    margin-top: 2.5rem;
+}
+
+.page, main, article {
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+    flex-direction: column;
+    min-height: calc(100vh - 4rem);
 }
 
 .fade-hover {
@@ -19,75 +49,6 @@
     border-radius: 1rem;
 }
 
-.mud-tooltip-arrow::after {
-    right: 50%;
-    left: 50%;
-}
-
-.spin {
-    -webkit-animation-name: spin;
-    -webkit-animation-duration: 2000ms;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: linear;
-    -moz-animation-name: spin;
-    -moz-animation-duration: 2000ms;
-    -moz-animation-iteration-count: infinite;
-    -moz-animation-timing-function: linear;
-    -ms-animation-name: spin;
-    -ms-animation-duration: 2000ms;
-    -ms-animation-iteration-count: infinite;
-    -ms-animation-timing-function: linear;
-    animation-name: spin;
-    animation-duration: 2000ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-}
-
-@-moz-keyframes spin {
-    from {
-        -moz-transform: rotate(0deg);
-    }
-
-    to {
-        -moz-transform: rotate(360deg);
-    }
-}
-
-@-webkit-keyframes spin {
-    from {
-        -webkit-transform: rotate(0deg);
-    }
-
-    to {
-        -webkit-transform: rotate(360deg);
-    }
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.color-picker {
-    position: relative;
-}
-
-.color-preview {
-    position: absolute;
-    display: block;
-    width: 1.5rem;
-    height: 1.5rem;
-    right: 16%;
-    top: 50%;
-    transform: translate(0, -50%);
-    border-radius: 1.5rem;
-}
-
 .border-collapse {
     padding: 1rem;
 }
@@ -99,76 +60,40 @@
     }
 }
 
-.tab-panel-container {
+.sq-button {
+    cursor: pointer;
+    min-width: 2rem;
+    color: white;
+    background-color: var(--sq-button-bg-color);
+    border: none;
+    border-radius: var(--sq-button-border-radius);
+    font-size: 1rem;
     display: flex;
-    flex-direction: column;
-}
-
-.manuscript-row {
-    flex-wrap: wrap;
-    outline: 1px solid #ffffff33;
-    outline-offset: 2px;
-    border-radius: .5rem;
-    align-items: center;
-}
-
-.textarea-minimal {
-    padding: 0 !important;
-}
-
-    .textarea-minimal .page {
-        padding: .5rem !important;
-        text-indent: 0 !important;
-    }
-
-    .textarea-minimal .grow-wrap {
-        margin-bottom: 0 !important;
-    }
-
-    .textarea-minimal textarea {
-        text-indent: 0 !important;
-    }
-
-
-.mud-grid-item > .mud-paper {
-    position: relative;
-    overflow: clip;
-    z-index: 1;
-}
-
-.element-button .mud-card-content > * {
-    padding: .15rem 0.25rem .25rem 0.25rem;
-}
-
-img.image-preview {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
-    opacity: 1;
-    pointer-events: none;
-    padding: 0 !important;
-}
-
-    img.image-preview ~ div, img.image-preview ~ h6, img.image-preview ~ span {
-        text-shadow: 0 0 1rem rgba(0,0,0,1);
-        background-color: #000000ab;
-    }
-
-.mud-menu > button {
-    width: 100%;
     justify-content: center;
-    align-content: center;
-    height: 2rem;
-    max-height: 2rem;
-    min-width: unset;
+    align-items: center;
+    border-top: 1px solid #aaaaaa;
+    border-bottom: 1px solid #000000;
 }
 
-.string-attribute {
-    display: flex;
+    .sq-button:hover {
+        background-color: var(--sq-button-bg-color-hover);
+        outline: 1px solid white;
+    }
+
+.sq-form {
+    background-color: var(--sq-card-bg-color);
+    border-radius: var(--sq-card-border-radius);
+    padding: 1rem;
+}
+
+.sq-card {
+    background-color: var(--sq-card-bg-color);
+    border-radius: var(--sq-card-border-radius);
+    padding: 1rem;
+}
+
+.disabled {
+    cursor: default;
+    filter: contrast(50%);
+    pointer-events: none;
 }

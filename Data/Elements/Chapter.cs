@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Squill.Data.Elements;
 
-[ElementDisplay(Icon = "EditNote")]
+[ElementDisplay(Icon = "blockquote-left")]
 public class Chapter : OwnedElement<Manuscript>
 {
     public const string WORD_COUNT_ATTRIB_KEY = "word_count";

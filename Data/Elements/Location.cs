@@ -3,7 +3,7 @@ using Squill.Shared;
 
 namespace Squill.Data.Elements;
 
-[ElementDisplay(Icon = "LocationPin")]
+[ElementDisplay(Icon = "geo-fill")]
 [DefaultComponentType(
     typeof(DescriptionComponent),
     typeof(AvatarComponent))]

@@ -1,4 +1,7 @@
-﻿@using Squill.Data;
+﻿@using Squill.Components.Layout;
+@using Squill.Data;
+@using Squill.Services;
+@inject TabService TabManager
 
 @{
     var meta = Session.GetMetaData(Element);
@@ -16,9 +19,6 @@
 @code {
     [Parameter]
     public Guid Element { get; set; }
-
-    [Parameter]
-    public Squill.Components.TabManager TabManager { get; set; }
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }

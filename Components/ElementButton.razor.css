@@ -6,4 +6,34 @@
     bottom: 0;
     width: 100%;
     height: 100%;
+    object-fit: cover;
+}
+
+.element-button {
+    background-color: var(--sq-card-bg-color);
+    box-shadow: var(--sq-card-shadow);
+    border-radius: var(--sq-card-border-radius);
+    display: flex;
+    width: 10rem;
+    height: 5rem;
+    position: relative;
+    overflow: clip;
+    flex-direction: column;
+    outline: 1px solid white;
+}
+
+.element-header, .element-actions {
+    z-index: 1;
+    text-shadow: 0 0 5px black;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.element-header {
+    flex-grow: 1;
+}
+
+.element-actions {
+    align-self: end;
 }

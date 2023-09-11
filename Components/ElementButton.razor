@@ -1,46 +1,70 @@
-﻿@using Squill.Data;
+﻿@using Squill.Components.Layout;
+@using Squill.Data;
+@using Squill.Data.Utility;
+@using Squill.Services;
+
+@inject TabService TabManager
 
 @{
     var type = Type.GetType(Element.Type);
 }
 
-<MudItem Class="element-button">
-    <MudPaper Width="225px" Height="150px" Style="@($"outline: 1px solid {type.GetColor()};display:flex;flex-direction:column;")">
-        <MudCardContent>
-            @if (Element.Attributes.TryGetValue("img", out var imagePath) && !string.IsNullOrWhiteSpace(imagePath))
-            {
-                <DynamicImage Session="Session" Path="@imagePath" class="image-preview" />
-            }
-            <MudStack Row=true>
-                <MudIcon Icon="@type?.GetIcon()" Style="@($"color: {type.GetColor()};")" />
-                <MudText>@Element.Name</MudText>
-            </MudStack>
-            <MudText Style="@($"color: {type.GetColor()};")" Typo="Typo.subtitle2">@(type?.GetName())</MudText>
-            <MudText Typo="Typo.caption">Last Modified: @GetLastModified()</MudText>
-        </MudCardContent>
-        <MudSpacer />
+<div class="sq-card element-button" style="outline-color:@type.GetColor().ToHexString()">
+    @if (Element.Attributes.TryGetValue("img", out var imagePath) && !string.IsNullOrWhiteSpace(imagePath))
+    {
+        <DynamicImage Session="Session" Path="@imagePath" class="image-preview" />
+    }
+    <div class="element-header" style="color: @type.GetColor().ToHexString()">
+        <SqIcon IconName="@type?.GetIcon()" />
+        <span class="element-name">@Element.Name</span>
+    </div>
+    <div class="element-actions">
         @{
+            var pinIcon = Element.IsPinned() ? "pin-fill" : "pin";
             var dirs = Session.GetCurrentSubDirectories();
         }
-        <MudCardActions Style="justify-content:end;">
-            <MudMenu Icon="@Icons.Material.Filled.DriveFileMove" Size="Size.Small" AnchorOrigin="Origin.BottomLeft" Disabled="!dirs.Any()">
-                @foreach (var dir in dirs)
-                {
-                    <MudMenuItem OnClick="async () => await MoveToFolder(dir)">@dir</MudMenuItem>
-                }
-            </MudMenu>
-            <MudToggleIconButton Toggled=@Element.IsPinned() ToggledChanged="TogglePinned" Icon="@Icons.Material.Filled.PushPin" ToggledIcon="@Icons.Material.Filled.PushPin" ToggledColor="Color.Secondary" ToggledSize="Size.Small" Size="Size.Small" />
-            <MudIconButton OnClick="() => TabManager.AddTab(Element)" Icon="@Icons.Material.Filled.OpenInNew" Size="Size.Small" />
-        </MudCardActions>
-    </MudPaper>
-</MudItem>
+        <SqMenu Icon="folder-symlink-fill" Disabled="!dirs.Any()">
+            @foreach (var dir in dirs)
+            {
+                <SqMenuButton Label="@dir" OnClick="async () => await MoveToFolder(dir)" />
+            }
+        </SqMenu>
+        <SqIconButton Icon="@pinIcon" OnClick="() => TogglePinned()" />
+        <SqIconButton Icon="box-arrow-up-right" OnClick="() => TabManager.AddTab(Element)" />
+    </div>
+    @*<MudPaper Width="225px" Height="150px" Style="@($"outline: 1px solid {type.GetColor()};display:flex;flex-direction:column;")">
+    <MudCardContent>
+    @if (Element.Attributes.TryGetValue("img", out var imagePath) && !string.IsNullOrWhiteSpace(imagePath))
+    {
+    <DynamicImage Session="Session" Path="@imagePath" class="image-preview" />
+    }
+    <MudStack Row=true>
+    <MudIcon Icon="@type?.GetIcon()" Style="@($"color: {type.GetColor()};")" />
+    <MudText>@Element.Name</MudText>
+    </MudStack>
+    <MudText Style="@($"color: {type.GetColor()};")" Typo="Typo.subtitle2">@(type?.GetName())</MudText>
+    <MudText Typo="Typo.caption">Last Modified: @GetLastModified()</MudText>
+    </MudCardContent>
+    <MudSpacer />
+    @{
+    var dirs = Session.GetCurrentSubDirectories();
+    }
+    <MudCardActions Style="justify-content:end;">
+    <MudMenu Icon="@Icons.Material.Filled.DriveFileMove" Size="Size.Small" AnchorOrigin="Origin.BottomLeft" Disabled="!dirs.Any()">
+    @foreach (var dir in dirs)
+    {
+    <MudMenuItem OnClick="async () => await MoveToFolder(dir)">@dir</MudMenuItem>
+    }
+    </MudMenu>
+    <MudToggleIconButton Toggled=@Element.IsPinned() ToggledChanged="TogglePinned" Icon="@Icons.Material.Filled.PushPin" ToggledIcon="@Icons.Material.Filled.PushPin" ToggledColor="Color.Secondary" ToggledSize="Size.Small" Size="Size.Small" />
+    <MudIconButton OnClick="() => TabManager.AddTab(Element)" Icon="@Icons.Material.Filled.OpenInNew" Size="Size.Small" />
+    </MudCardActions>
+    </MudPaper>*@
+</div>
 
 @code {
     [Parameter]
     public ElementMetaData Element { get; set; }
-
-    [Parameter]
-    public Squill.Components.TabManager TabManager { get; set; }
 
     [Parameter]
     public ProjectSession Session { get; set; }
