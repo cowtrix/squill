@@ -12,38 +12,6 @@
             @component.GetEditor(Session, Target)
         }
     }
-    
-    @*<MudItem>
-        <MudStack Row=true>
-            <MudStack>
-                @avatar.GetEditor(Session, Target)
-            </MudStack>
-            <MudStack Style="width: 100%;">
-                <MudPaper Elevation="2">
-                    <MudStack Row=true>
-                        <MudChipSet OnClose="(i) => Target.CharacterTypes.Remove((eCharacterType)i.Tag)" AllClosable=true>
-                            @foreach (var label in Target.CharacterTypes)
-                            {
-                                <MudChip Tag="label">@label</MudChip>
-                            }
-                        </MudChipSet>
-                        <MudSpacer />
-                        <MudMenu Icon="@Icons.Material.Filled.Add" AnchorOrigin="Origin.BottomLeft">
-                            @foreach (var type in Enum.GetValues<eCharacterType>())
-                            {
-                                <MudMenuItem OnClick="() => Target.CharacterTypes.Add(type)">@type</MudMenuItem>
-                            }
-                        </MudMenu>
-                    </MudStack>
-                </MudPaper>
-                @description.GetEditor(Session, Target)
-                @foreach (var component in Target.Components.Where(c => !(c is AvatarComponent) && !(c is DescriptionComponent)))
-                {
-                    @component.GetEditor(Session, Target);
-                }
-            </MudStack>
-        </MudStack>
-    </MudItem>*@
 </div>
 
 @code {

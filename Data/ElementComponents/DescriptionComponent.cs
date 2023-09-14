@@ -15,6 +15,7 @@ public class DescriptionComponent : ValueElementComponent<string>
         builder.AddAttribute(2, "ValueChanged", EventCallback.Factory.Create<string>(this, (s) => Value = s));
         builder.AddAttribute(3, "Label", "Description");
         builder.AddAttribute(3, "Minimal", true);
+        builder.AddAttribute(1, "AdditionalClasses", "sq-description");
         builder.CloseComponent();
     };
 }

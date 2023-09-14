@@ -1,10 +1,22 @@
 ﻿@if (!Disabled)
 {
-    <button class="sq-button sq-icon-button @AdditionalClasses" @onclick=OnClick @attributes=AdditionalAttributes><SqIcon IconName="@Icon" /></button>
+    <button class="sq-button sq-icon-button @AdditionalClasses" @onclick=OnClick @attributes=AdditionalAttributes>
+        <SqIcon IconName="@Icon" />
+        @if (!string.IsNullOrEmpty(Label))
+        {
+            <span class="sq-button-text">@Label</span>
+        }
+    </button>
 }
 else
 {
-    <button class="sq-button sq-icon-button @AdditionalClasses" @onclick=OnClick @attributes=AdditionalAttributes disabled><SqIcon IconName="@Icon" /></button>
+    <button class="sq-button sq-icon-button @AdditionalClasses" @onclick=OnClick @attributes=AdditionalAttributes disabled>
+        <SqIcon IconName="@Icon" />
+        @if (!string.IsNullOrEmpty(Label))
+        {
+            <span class="sq-button-text">@Label</span>
+        }
+    </button>
 }
 
 @code {
@@ -13,6 +25,9 @@ else
 
     [Parameter]
     public string Icon { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
 
     [Parameter]
     public string AdditionalClasses { get; set; }

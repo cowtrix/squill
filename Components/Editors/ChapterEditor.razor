@@ -5,17 +5,20 @@
 @using Squill.Data.Elements;
 
 <div class="sq-chapter-editor">
-    @if (CurrentTab == eTab.Edit)
+    @if (Target != null)
     {
-        <MarkdownWrapper @bind-Value=Target.Content />
-    }
-    else if (CurrentTab == eTab.Breakdown)
-    {
-        if (Breakdown == null || Target.Content != Breakdown.Content)
+        @if (CurrentTab == eTab.Edit)
         {
-            Breakdown = new ChapterBreakdown(Session, Target.Content);
+            <MarkdownWrapper @bind-Value=Target.Content />
         }
-        <PlotlyChart @bind-Config="Breakdown.Config" @bind-Layout="Breakdown.Layout" Data="Breakdown.Data" @ref="Breakdown.Chart" />
+        else if (CurrentTab == eTab.Breakdown)
+        {
+            if (Breakdown == null || Target.Content != Breakdown.Content)
+            {
+                Breakdown = new ChapterBreakdown(Session, Target.Content);
+            }
+            <PlotlyChart @bind-Config="Breakdown.Config" @bind-Layout="Breakdown.Layout" Data="Breakdown.Data" @ref="Breakdown.Chart" />
+        }
     }
 </div>
 

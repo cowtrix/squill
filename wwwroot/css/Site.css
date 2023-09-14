@@ -92,8 +92,9 @@ body {
     padding: 1rem;
 }
 
-.sq-editor{
+.sq-editor {
     width: 100%;
+    max-width: 50rem;
     display: flex;
     flex-grow: 1;
     flex-wrap: wrap;
@@ -104,4 +105,32 @@ body {
     cursor: default;
     filter: contrast(50%);
     pointer-events: none;
+}
+
+.sq-description {
+    min-width: 20rem;
+    min-height: 10rem;
+}
+
+.string-attribute{
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.sq-input-text-container {
+    display: flex;
+    align-items: center;
+    color: #FFFFFF77;
+    font-size: .85rem;
+}
+
+.string-attribute input {
+    background-color: var(--sq-bg-color);
+    border: none;
+    outline: 1px solid #FFFFFF77;
+    border-radius: var(--sq-button-border-radius);
+    height: 1.5rem;
+    color: white;
+    padding: 0 .5rem 0 .5rem;
 }

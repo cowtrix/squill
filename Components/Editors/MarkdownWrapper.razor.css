@@ -31,3 +31,7 @@
     color: white;
 }
 
+.sq-markdown-wrapper{
+    display: flex;
+    flex-grow: 1;
+}

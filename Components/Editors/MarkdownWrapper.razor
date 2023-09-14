@@ -1,7 +1,7 @@
 ﻿@using Squill.Data;
 @using Squill.Data.Elements;
 
-<div class="sq-markdown-wrapper @(Minimal ? "minimal" : "document")">
+<div class="sq-markdown-wrapper @(Minimal ? "minimal" : "document") @AdditionalClasses">
      <MarkdownEditor Value="@Value" 
          ValueChanged="OnValueChanged" 
          MinHeight="@(Minimal ? "1rem" : "300px")" 
@@ -23,6 +23,9 @@
 
     [Parameter]
     public string Label { get; set; }
+
+    [Parameter]
+    public string AdditionalClasses { get; set; }
 
     [Parameter]
     public bool CommentsEnabled { get; set; }

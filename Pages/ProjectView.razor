@@ -28,8 +28,12 @@ else if (!Session.IsSynchronized)
 else
 {
     <DiffDisplay Session="Session" />
-    if (TabManager.Index == 0)
+    if (TabManager.Index == 0 || TabManager.CurrentTab?.Target == null)
     {
+        if(TabManager.Index != 0)
+        {
+            TabManager.NextIndex = 0;
+        }
         <ProjectExplorer Session=Session />
     }
     else

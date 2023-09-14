@@ -1,80 +1,132 @@
 ﻿@inherits GenericEditorBase<Manuscript>
 
+@using Squill.Components.Layout
 @using Squill.Data;
 @using Squill.Data.Elements;
 @using Squill.Services;
 @inject TabService TabManager
 
 <div class="sq-editor">
-    @*<MudPaper Style="padding: 1rem;">
-        <MudPaper Elevation="5" Style="display:flex;margin-bottom: 1.5rem;padding: .75rem;align-items:center;">
-            <MudIcon Icon="@Icons.Material.Outlined.Numbers" Size="Size.Small" />Word Count: @Target.Chapters.Sum(c => int.Parse(Session.GetMetaData(Guid.Parse(c)).Attributes[Chapter.WORD_COUNT_ATTRIB_KEY]))
-        </MudPaper>
-        <MudStack Spacing="1">
-            @for (var i = 0; i < Target.Chapters.Count; ++i)
-            {
-                var chapterGuid = Target.Chapters[i];
-                var index = i;
-                var chapter = Session.GetMetaData(Guid.Parse(chapterGuid));
-                if (chapter != null)
-                {
-                    chapter.Attributes.TryGetValue(Chapter.WORD_COUNT_ATTRIB_KEY, out var wordCount);
-                    <MudItem>
-                        <MudStack Row="true" Class="manuscript-row">
-                            <span style="width: 1rem;">@(index + 1).</span>
-                            <span style="width: 30%;">@chapter.Name</span>
-                            <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
-                            <span style="width: 10%;">@(wordCount ?? "0") Words</span>
-                            <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
-                            @{
-                                var links = chapter.GetEntityLinks();
-                                if (links != null)
+    @for (var i = 0; i < Target.Chapters.Count; ++i)
+    {
+        var chapterGuid = Target.Chapters[i];
+        var index = i;
+        var chapter = Session.GetMetaData(Guid.Parse(chapterGuid));
+        if (chapter != null)
+        {
+            chapter.Attributes.TryGetValue(Chapter.WORD_COUNT_ATTRIB_KEY, out var wordCount);
+            <div class="manuscript-row">
+                <span style="width: 1rem;">@(index + 1).</span>
+                <span style="width: 30%;">@chapter.Name</span>
+                <span style="width: 10%;">@(wordCount ?? "0") Words</span>
+                @{
+                    var links = chapter.GetEntityLinks();
+                    @*if (links != null)
+                    {
+                        <MudAvatarGroup MaxSize="Size.Small" Max="6">
+                            @foreach (var entityLink in chapter.GetEntityLinks())
+                            {
+                                var meta = Session.GetMetaData(entityLink);
+                                var type = Type.GetType(meta.Type);
+                                if (!meta.Attributes.TryGetValue("color", out var color))
                                 {
-                                    <MudAvatarGroup MaxSize="Size.Small" Max="6">
-                                        @foreach (var entityLink in chapter.GetEntityLinks())
-                                        {
-                                            var meta = Session.GetMetaData(entityLink);
-                                            var type = Type.GetType(meta.Type);
-                                            if (!meta.Attributes.TryGetValue("color", out var color))
-                                            {
-                                                color = type.GetColor().ToString();
-                                            }
-                                            <MudAvatar Style="@($"background-color:{color};color:black !important;")" Size="Size.Small">
-                                                <MudTooltip>
-                                                    <ChildContent>
-                                                        @meta.Name.FirstOrDefault()
-                                                    </ChildContent>
-                                                    <TooltipContent>
-                                                        @meta.Name
-                                                    </TooltipContent>
-                                                </MudTooltip>
-                                            </MudAvatar>
-
-                                        }
-                                    </MudAvatarGroup>
+                                    color = type.GetColor().ToString();
                                 }
+                                <MudAvatar Style="@($"background-color:{color};color:black !important;")" Size="Size.Small">
+                                    <MudTooltip>
+                                        <ChildContent>
+                                            @meta.Name.FirstOrDefault()
+                                        </ChildContent>
+                                        <TooltipContent>
+                                            @meta.Name
+                                        </TooltipContent>
+                                    </MudTooltip>
+                                </MudAvatar>
+
                             }
-                            <MudSpacer />
-                            <MudIconButton Icon="@Icons.Material.Filled.ExpandMore" OnClick="() => Reorder(chapter, index + 1)" Style="padding:0;" Disabled="@(index == Target.Chapters.Count - 1)" />
-                            <MudIconButton Icon="@Icons.Material.Filled.ExpandLess" OnClick="() => Reorder(chapter, index - 1)" Style="padding:0;" Disabled="@(index == 0)" />
-                            <MudIconButton Icon="@Icons.Material.Filled.LinkOff" OnClick="() => Target.Chapters.Remove(chapter.Guid)" Style="padding:0;" />
-                            <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => TabManager.AddTab(chapter)" Style="padding:0;" />
-                        </MudStack>
-                    </MudItem>
+                        </MudAvatarGroup>
+                    }*@
                 }
-                else
-                {
-                    <MudItem>
-                        <MudText Color="Color.Error">Bad Element Ref: @chapterGuid</MudText>
-                    </MudItem>
-                }
-            }
-            <MudDivider />
-            <MudButtonGroup Variant="Variant.Outlined">
-                <ElementPicker Label="Add Existing Chapter" ValueChanged="AddExistingChapter" ElementType=typeof(Chapter) Filter="(e) => !Target.Chapters.Contains(e.Guid.ToString())" />
-                <MudButton OnClick="AddNewChapter" Variant="Variant.Outlined"><MudIcon Icon="@Icons.Material.Filled.Add" />New Chapter</MudButton>
-            </MudButtonGroup>
-        </MudStack>
+                <SqIconButton Icon="chevron-up" OnClick="() => Reorder(chapter, index + 1)" Disabled="@(index == Target.Chapters.Count - 1)" />
+                <SqIconButton Icon="chevron-down" OnClick="() => Reorder(chapter, index - 1)" Disabled="@(index == 0)" />
+                <SqIconButton Icon="x-lg" OnClick="() => Target.Chapters.Remove(chapter.Guid)" />
+                <SqIconButton Icon="box-arrow-up-right" OnClick="() => TabManager.AddTab(chapter)" />
+            </div>
+        }
+        else
+        {
+            <span class="sq-error">Bad Element Ref: @chapterGuid</span>
+        }
+    }
+    @*<MudPaper Style="padding: 1rem;">
+    <MudPaper Elevation="5" Style="display:flex;margin-bottom: 1.5rem;padding: .75rem;align-items:center;">
+    <MudIcon Icon="@Icons.Material.Outlined.Numbers" Size="Size.Small" />Word Count: @Target.Chapters.Sum(c => int.Parse(Session.GetMetaData(Guid.Parse(c)).Attributes[Chapter.WORD_COUNT_ATTRIB_KEY]))
+    </MudPaper>
+    <MudStack Spacing="1">
+    @for (var i = 0; i < Target.Chapters.Count; ++i)
+    {
+    var chapterGuid = Target.Chapters[i];
+    var index = i;
+    var chapter = Session.GetMetaData(Guid.Parse(chapterGuid));
+    if (chapter != null)
+    {
+    chapter.Attributes.TryGetValue(Chapter.WORD_COUNT_ATTRIB_KEY, out var wordCount);
+    <MudItem>
+    <MudStack Row="true" Class="manuscript-row">
+    <span style="width: 1rem;">@(index + 1).</span>
+    <span style="width: 30%;">@chapter.Name</span>
+    <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
+    <span style="width: 10%;">@(wordCount ?? "0") Words</span>
+    <MudDivider Vertical=true Style="margin: 0 .5rem 0 .5rem;height: 1.5rem;" />
+    @{
+    var links = chapter.GetEntityLinks();
+    if (links != null)
+    {
+    <MudAvatarGroup MaxSize="Size.Small" Max="6">
+    @foreach (var entityLink in chapter.GetEntityLinks())
+    {
+    var meta = Session.GetMetaData(entityLink);
+    var type = Type.GetType(meta.Type);
+    if (!meta.Attributes.TryGetValue("color", out var color))
+    {
+    color = type.GetColor().ToString();
+    }
+    <MudAvatar Style="@($"background-color:{color};color:black !important;")" Size="Size.Small">
+    <MudTooltip>
+    <ChildContent>
+    @meta.Name.FirstOrDefault()
+    </ChildContent>
+    <TooltipContent>
+    @meta.Name
+    </TooltipContent>
+    </MudTooltip>
+    </MudAvatar>
+
+    }
+    </MudAvatarGroup>
+    }
+    }
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Material.Filled.ExpandMore" OnClick="() => Reorder(chapter, index + 1)" Style="padding:0;" Disabled="@(index == Target.Chapters.Count - 1)" />
+    <MudIconButton Icon="@Icons.Material.Filled.ExpandLess" OnClick="() => Reorder(chapter, index - 1)" Style="padding:0;" Disabled="@(index == 0)" />
+    <MudIconButton Icon="@Icons.Material.Filled.LinkOff" OnClick="() => Target.Chapters.Remove(chapter.Guid)" Style="padding:0;" />
+    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => TabManager.AddTab(chapter)" Style="padding:0;" />
+    </MudStack>
+    </MudItem>
+    }
+    else
+    {
+    <MudItem>
+    <MudText Color="Color.Error">Bad Element Ref: @chapterGuid</MudText>
+    </MudItem>
+    }
+    }
+    <MudDivider />
+    <MudButtonGroup Variant="Variant.Outlined">
+    <ElementPicker Label="Add Existing Chapter" ValueChanged="AddExistingChapter" ElementType=typeof(Chapter) Filter="(e) => !Target.Chapters.Contains(e.Guid.ToString())" />
+    <MudButton OnClick="AddNewChapter" Variant="Variant.Outlined"><MudIcon Icon="@Icons.Material.Filled.Add" />New Chapter</MudButton>
+    </MudButtonGroup>
+    </MudStack>
     </MudPaper>*@
 </div>
 

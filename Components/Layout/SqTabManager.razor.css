@@ -9,6 +9,7 @@
     justify-content: end;
     align-items: end;
     flex-direction: row-reverse;
+    gap: .25rem;
 }
 
 .sq-tab {
@@ -20,12 +21,14 @@
     text-shadow: 0 0 4px rgba(0,0,0,1);
     justify-content: center;
     align-items: center;
+    filter: contrast(60%);
 }
 
     .sq-tab.selected {
         border-top: 2px groove var(--sq-selected-color);
         border-left: 2px groove var(--sq-selected-color);
         border-right: 2px groove var(--sq-selected-color);
+        filter: revert;
     }
 
     .sq-tab > span {

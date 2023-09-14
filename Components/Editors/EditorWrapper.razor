@@ -6,60 +6,21 @@
     var meta = Session.GetMetaData(Element.Guid);
 }
 
-@*<MudPaper Elevation="15" Style="height: 1.5rem;" Outlined=true Square=true>
-    <MudToolBar DisableGutters=true Style="width:100%;height: 1.5rem;overflow:hidden;">
-        <MudStack Row="true" Spacing=0 Style="width:100%;align-items:center;">
-            <MudMenu Label="File" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomLeft">
-                <MudMenuItem OnClick="async () => await Session.UpdateElement(Element)">Save</MudMenuItem>
-            </MudMenu>
-            <MudMenu Label="View" StartIcon="@Icons.Material.Filled.FileCopy" Size="Size.Small" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomLeft">
-                <MudMenuItem OnClick="@(() => ToggleTab("Scratchpad"))">Scratchpad</MudMenuItem>
-            </MudMenu>
-            @Toolbar
-        </MudStack>
-    </MudToolBar>
-</MudPaper>
-
-<MudForm @ref=Form.Value Class="form-container">
-    <CascadingValue Value="TabManager">
-        <CascadingValue Value="Element">
-            <CascadingValue Value="Session">
-                <CascadingValue Value="meta">
-                    @if (m_currentTab == "Scratchpad")
-                    {
-                        <MarkdownEditor @bind-Value=Element.ScratchPad />
-                    }
-                    else
-                    {
-                        @ChildContent
-                    }
-                    @if (Element != null)
-                    {
-                        var componentsCanAdd = Element.GetApplicableComponents();
-                        <MudMenu Size="Size.Small" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Add" Disabled="!componentsCanAdd.Any()">
-                            @foreach (var subType in componentsCanAdd)
-                            {
-                                <MudMenuItem OnClick="() => Element.AddComponent(subType)">@subType.GetName()</MudMenuItem>
-                            }
-                        </MudMenu>
-                    }
-                </CascadingValue>
-            </CascadingValue>
-        </CascadingValue>
-    </CascadingValue>
-</MudForm>*@
-
 <SqToolbar>
     <SqMenu Label="File" Placement="SqMenu.eMenuPlacement.BottomRight" AdditionalClasses="sq-toolbar-menu-item">
         <SqMenuButton Icon="save" Label="Save" OnClick="async () => await Session.UpdateElement(Element)" />
+        @Toolbar
     </SqMenu>
+
 </SqToolbar>
 
 <div class="sq-editor-wrapper">
     <CascadingValue Value="Element">
         <CascadingValue Value="Session">
             <CascadingValue Value="meta">
-                @ChildContent
+                <EditForm EditContext="m_editContext">
+                    @ChildContent
+                </EditForm>
             </CascadingValue>
         </CascadingValue>
     </CascadingValue>
@@ -89,7 +50,26 @@
     public RenderFragment Toolbar => CurrentEditor?.Toolbar;
 
     [Parameter]
-    public IElement Element { get; set; }
+    public IElement Element { get => m_element; 
+        set
+        {
+            if(Element?.Guid == value?.Guid)
+            {
+                return;
+            }
+            m_element = value;
+            m_editContext = new EditContext(m_element);
+            InvokeAsync(StateHasChanged);
+        }
+    }
+    private IElement m_element;
 
     public EditorBase CurrentEditor { get; set; }
+
+    private EditContext m_editContext;
+
+    protected override void OnInitialized()
+    {
+        m_editContext = new EditContext(Element);
+    }
 }

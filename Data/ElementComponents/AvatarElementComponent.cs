@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Squill.Components;
 using Squill.Data.Elements;
+using Squill.Data.Utility;
 using Squill.Shared;
 
 namespace Squill.Data.ElementComponents;
@@ -12,7 +13,7 @@ public class AvatarComponent : ElementComponent
 
     public override IEnumerable<(string, string)> GetAttributes(ProjectSession session)
     {
-        yield return ("color", !string.IsNullOrEmpty(Color) ? Color : session.GetMetaData(Owner).Name.GetDefaultColor().ToString());
+        yield return ("color", !string.IsNullOrEmpty(Color) ? Color : session.GetMetaData(Owner).Name.GetDefaultColor().ToHexString());
         yield return ("img", ImagePath);
     }
 

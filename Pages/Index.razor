@@ -1,4 +1,21 @@
 ﻿@page "/"
+@using Squill.Components.Layout
+@using Squill.Services;
+
+@inject UserService UserService
+@inject NavigationManager NavManager
+@inject ProjectService ProjectService
 
 <PageTitle>Index</PageTitle>
 
+<div class="projects-list">
+    @if (UserService.CurrentUser != null)
+    {
+        <SqIconButton Icon="plus-lg" Label="New Project" OnClick="() => NavManager.NavigateTo(NewProjectView.URL)" />
+        @foreach (var project in ProjectService.GetAllProjects(UserService.CurrentUser))
+        {
+            var url = $"project/{project.Guid}";
+            <SqIconButton Label="@project.Name" OnClick="() => NavManager.NavigateTo(url)" />
+        }
+    }
+</div>

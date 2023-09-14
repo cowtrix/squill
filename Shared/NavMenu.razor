@@ -19,14 +19,8 @@
         else
         {
             <SqMenu Icon="person-circle" AdditionalClasses="navbar-profile" Placement="SqMenu.eMenuPlacement.BottomLeft">
-                <SqMenuButton Icon="plus-lg" Label="New Project" OnClick="() => NavManager.NavigateTo(NewProjectView.URL)" />
-                @foreach (var project in ProjectService.GetAllProjects(UserService.CurrentUser))
-                {
-                    var url = $"project/{project.Guid}";
-                    <SqMenuButton Label="@project.Name" OnClick="() => NavManager.NavigateTo(url)" />
-                }
+                
             </SqMenu>
-
         }
     </div>
 </div>

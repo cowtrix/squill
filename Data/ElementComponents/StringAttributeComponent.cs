@@ -23,6 +23,7 @@ public class StringAttributeComponent : ValueElementComponent<string>
         builder.CloseComponent();
 
         builder.OpenComponent<SqInputText>(index++);
+        builder.AddAttribute(index++, "Label", "Value");
         builder.AddAttribute(index++, "Value", Value);
         builder.AddAttribute(index++, "ValueChanged", EventCallback.Factory.Create<string>(this, (s) => Value = s));
         builder.CloseComponent();

@@ -1,0 +1,15 @@
+﻿.projects-list {
+    width: 100%;
+    max-width: 20rem;
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 1rem;
+    align-self: center;
+    margin-top: 2rem;
+}
+
+::deep button {
+    min-height: 3rem;
+}
