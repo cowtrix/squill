@@ -1,0 +1,34 @@
+﻿@using Squill.Data.Elements;
+@using Squill.Data;
+@using Squill.Data.Utility;
+
+<div class="tag-summary">
+    @foreach (var chapter in Session.GetElements<Chapter>())
+    {
+        var chaptermeta = Session.GetMetaData(chapter.Guid);
+        var content = chapter.Content;
+        var finds = content.AllIndexesOf(Meta.Name);
+        if (!finds.Any())
+        {
+            continue;
+        }
+        <div class="sq-card tag-chapter-container">
+            <span class="tag-chapter-title">@chaptermeta.Name</span>
+            @foreach (var match in finds)
+            {
+                var excerpt = content.Substring(Math.Max(0, match - 25), Math.Min(50, content.Length - 1 - match));
+                <div class="tag-chapter-mention-container">
+                    @excerpt
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public ElementMetaData Meta { get; set; }
+
+    [Parameter]
+    public ProjectSession Session { get; set; }
+}

@@ -1,4 +1,5 @@
-﻿@using Squill.Components.Layout
+﻿@using Squill.Components.Editors
+@using Squill.Components.Layout
 @using Squill.Data;
 
 
@@ -11,7 +12,7 @@
                 <ChildContent>
                     @if (!m_isSyncing)
                     {
-                        <SqIconButton Icon="node-plus-fill" OnClick="Sync" AdditionalClasses="sync" />
+                        <SqIconButton Icon="node-plus-fill" OnClick="ShowCommitDialogue" AdditionalClasses="sync" />
                     }
                     else
                     {
@@ -57,23 +58,41 @@
     }
 }
 
+@if (m_commitDialogueOpen)
+{
+    <SqModal OnDismiss="() => m_commitDialogueOpen = false" OnSubmit="Sync">
+        <MarkdownWrapper @bind-Value="@m_commitMessage" Placeholder="Commit Message" Minimal=true />
+    </SqModal>
+}
+
 @code {
     [Parameter]
     public ProjectSession Session { get; set; }
 
+    private string m_commitMessage;
+    private bool m_commitDialogueOpen;
     private bool m_isSyncing;
+
+    private async Task ShowCommitDialogue()
+    {
+        m_commitDialogueOpen = true;
+        StateHasChanged();
+    }
 
     private async Task Sync()
     {
+        m_commitDialogueOpen = false;
         if (m_isSyncing)
         {
+            StateHasChanged();
             return;
         }
         new Task(() =>
         {
             m_isSyncing = true;
-            Session.Commit("", true);
+            Session.Commit(m_commitMessage, true);
             m_isSyncing = false;
+            m_commitMessage = null;
             InvokeAsync(StateHasChanged);
         }).Start();
         StateHasChanged();

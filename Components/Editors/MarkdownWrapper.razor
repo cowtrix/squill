@@ -5,7 +5,7 @@
      <MarkdownEditor Value="@Value" 
          ValueChanged="OnValueChanged" 
          MinHeight="@(Minimal ? "1rem" : "300px")" 
-         Placeholder="@Label"/>
+         Placeholder="@Placeholder"/>
 </div>
 
 @code {
@@ -22,7 +22,7 @@
     public bool Minimal { get; set; }
 
     [Parameter]
-    public string Label { get; set; }
+    public string Placeholder { get; set; }
 
     [Parameter]
     public string AdditionalClasses { get; set; }

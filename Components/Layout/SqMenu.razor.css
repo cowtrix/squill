@@ -9,7 +9,7 @@
     display: flex;
     position: relative;
     flex-grow: 0;
-    z-index: 99;
+    width: fit-content;
 }
 
 .sq-menu-dropdown {
@@ -20,6 +20,7 @@
     min-width: 7rem;
     overflow: clip;
     padding: .1rem;
+    z-index: 99;
 }
 
 .left ~ .sq-menu-dropdown {

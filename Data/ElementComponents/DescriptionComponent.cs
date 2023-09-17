@@ -13,7 +13,7 @@ public class DescriptionComponent : ValueElementComponent<string>
         builder.OpenComponent<MarkdownWrapper>(0);
         builder.AddAttribute(1, "Value", Value);
         builder.AddAttribute(2, "ValueChanged", EventCallback.Factory.Create<string>(this, (s) => Value = s));
-        builder.AddAttribute(3, "Label", "Description");
+        builder.AddAttribute(3, "Placeholder", "Description");
         builder.AddAttribute(3, "Minimal", true);
         builder.AddAttribute(1, "AdditionalClasses", "sq-description");
         builder.CloseComponent();

@@ -8,6 +8,7 @@
     position: fixed;
     left: 0;
     right: 0;
+    z-index: 9;
 }
 
 ::deep .sq-toolbar .sq-menu {

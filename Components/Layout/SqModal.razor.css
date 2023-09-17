@@ -1,0 +1,31 @@
+﻿.sq-modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 25;
+}
+
+.sq-modal-dismiss {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #00000066;
+    z-index: 24;
+}
+
+.sq-modal {
+    display: flex;
+    flex-direction: column;
+    min-width: 20rem;
+    max-width: 50rem;
+    position: relative;
+    z-index: 26;
+    gap: 1rem;
+}

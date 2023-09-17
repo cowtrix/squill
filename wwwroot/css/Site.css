@@ -86,6 +86,11 @@ body {
     padding: 1rem;
 }
 
+form {
+    display: flex;
+    flex-direction: column;
+}
+
 .sq-card {
     background-color: var(--sq-card-bg-color);
     border-radius: var(--sq-card-border-radius);
@@ -99,6 +104,7 @@ body {
     flex-grow: 1;
     flex-wrap: wrap;
     gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .disabled {
@@ -116,21 +122,4 @@ body {
     display: flex;
     gap: .5rem;
     align-items: center;
-}
-
-.sq-input-text-container {
-    display: flex;
-    align-items: center;
-    color: #FFFFFF77;
-    font-size: .85rem;
-}
-
-.string-attribute input {
-    background-color: var(--sq-bg-color);
-    border: none;
-    outline: 1px solid #FFFFFF77;
-    border-radius: var(--sq-button-border-radius);
-    height: 1.5rem;
-    color: white;
-    padding: 0 .5rem 0 .5rem;
 }

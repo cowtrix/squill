@@ -2,6 +2,7 @@
 @using Squill.Data;
 @using Squill.Data.ElementComponents;
 @using Squill.Data.Elements;
+@using Squill.Data.Utility;
 @{
     var meta = Session.GetMetaData(Element.Guid);
 }
@@ -20,6 +21,20 @@
             <CascadingValue Value="meta">
                 <EditForm EditContext="m_editContext">
                     @ChildContent
+                    @{
+                        var componentsCanAdd = Element.GetApplicableComponents();
+                        <SqMenu Icon="plus-lg" Label="Add Component" Placement="SqMenu.eMenuPlacement.TopRight" Disabled="@(!componentsCanAdd.Any())">
+                            @foreach (var comp in componentsCanAdd)
+                            {
+                                var t = comp;
+                                <SqMenuButton Label="@comp.GetName()" Icon="@comp.GetIcon()" OnClick="() => Element.AddComponent(t)" />
+                            }
+                        </SqMenu>
+                    }
+                    @if (Element.ShouldTag)
+                    {
+                        <TagDisplay Meta="meta" Session="Session" />
+                    }
                 </EditForm>
             </CascadingValue>
         </CascadingValue>
@@ -50,10 +65,12 @@
     public RenderFragment Toolbar => CurrentEditor?.Toolbar;
 
     [Parameter]
-    public IElement Element { get => m_element; 
+    public IElement Element
+    {
+        get => m_element;
         set
         {
-            if(Element?.Guid == value?.Guid)
+            if (Element?.Guid == value?.Guid)
             {
                 return;
             }

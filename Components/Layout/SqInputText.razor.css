@@ -1,13 +1,23 @@
 ﻿.sq-input-text-container {
     display: flex;
+    align-items: center;
 }
 
 .sq-input-text-label {
     display: flex;
     flex-grow: 1;
     margin-right: .5rem;
+    color: #FFFFFF77;
+    font-size: .85rem;
 }
 
 ::deep .sq-input-text-container > input {
     display: flex;
+    background-color: var(--sq-bg-color);
+    border: none;
+    outline: 1px solid #FFFFFF77;
+    border-radius: var(--sq-button-border-radius);
+    height: 1.5rem;
+    color: white;
+    padding: 0 .5rem 0 .5rem;
 }

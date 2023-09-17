@@ -112,6 +112,13 @@ public class ProjectSession
         return (T)ele;
     }
 
+    public IEnumerable<T> GetElements<T>() where T : class
+    {
+        var tName = typeof(T).FullName;
+        return m_elementMetadata.Values.Where(v => v.Type == tName)
+            .Select(m => GetElement<T>(m));
+    }
+
     public T GetElement<T>(Guid guid) where T : class
     {
         if (!m_elementCache.TryGetValue(guid, out var ele))
